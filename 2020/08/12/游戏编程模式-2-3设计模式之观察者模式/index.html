@@ -1,0 +1,505 @@
+
+ <!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>[游戏编程模式] 2.3设计模式之观察者模式 | LiuWen&#39;s Blogs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Liu Wen">
+    
+
+    
+    <meta name="description" content="观察者模式Model-View-Controller架构就是观察者模式的例子，C#中的Event委托也是使用的观察者模式  进度条更新初阶版本下面样例产生了编译时的依赖（违背了抽象依赖细节）应该依赖抽象基类（MainForm与ProgressBar之间产生了依赖） 1234567891011121314151617181920212223242526272829303132333435363738">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[游戏编程模式] 2.3设计模式之观察者模式">
+<meta property="og:url" content="http://yoursite.com/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="观察者模式Model-View-Controller架构就是观察者模式的例子，C#中的Event委托也是使用的观察者模式  进度条更新初阶版本下面样例产生了编译时的依赖（违背了抽象依赖细节）应该依赖抽象基类（MainForm与ProgressBar之间产生了依赖） 1234567891011121314151617181920212223242526272829303132333435363738">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/sum_up.png">
+<meta property="article:published_time" content="2020-08-12T07:33:02.000Z">
+<meta property="article:modified_time" content="2020-08-13T04:09:00.970Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="游戏编程模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/sum_up.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="LiuWen&#39;s Blogs" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="LiuWen&#39;s Blogs" title="LiuWen&#39;s Blogs"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="LiuWen&#39;s Blogs">LiuWen&#39;s Blogs</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/08/12/游戏编程模式-2-3设计模式之观察者模式/" title="[游戏编程模式] 2.3设计模式之观察者模式" itemprop="url">[游戏编程模式] 2.3设计模式之观察者模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Liu Wen" target="_blank" itemprop="author">Liu Wen</a>
+		
+  <p class="article-time">
+    <time datetime="2020-08-12T07:33:02.000Z" itemprop="datePublished"> Published 2020-08-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">观察者模式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E5%BA%A6%E6%9D%A1%E6%9B%B4%E6%96%B0%E5%88%9D%E9%98%B6%E7%89%88%E6%9C%AC"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">进度条更新初阶版本</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E8%BF%9B%E5%BA%A6%E6%9D%A1%E6%9B%B4%E6%96%B0%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E6%94%B9%E8%BF%9B%E7%89%88%E6%9C%AC"><span class="toc-number">1.0.0.2.</span> <span class="toc-text">文件读取进度条更新观察者模式改进版本</span></a></li></ol></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p><strong>Model-View-Controller架构就是观察者模式的例子，C#中的Event委托也是使用的观察者模式</strong></p>
+<hr>
+<h5 id="进度条更新初阶版本"><a href="#进度条更新初阶版本" class="headerlink" title="进度条更新初阶版本"></a>进度条更新初阶版本</h5><p><strong>下面样例产生了编译时的依赖（违背了抽象依赖细节）应该依赖抽象基类（MainForm与ProgressBar之间产生了依赖）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">class FileSplitter</span><br><span class="line">&#123;</span><br><span class="line">    string m_filePath;</span><br><span class="line">    int m_fileNumber;</span><br><span class="line">    ProgressBar* m_progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    FileSplitter(const string&amp; filePath, int fileNumber, ProgressBar* progressBar) :</span><br><span class="line">        m_filePath(filePath), </span><br><span class="line">        m_fileNumber(fileNumber),</span><br><span class="line">        m_progressBar(progressBar)&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void split()&#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;1.读取大文件</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;2.分批次向小文件中写入</span><br><span class="line">        for (int i &#x3D; 0; i &lt; m_fileNumber; i++)&#123;</span><br><span class="line">            &#x2F;&#x2F;...</span><br><span class="line">            float progressValue &#x3D; m_fileNumber;</span><br><span class="line">            progressValue &#x3D; (i + 1) &#x2F; progressValue;</span><br><span class="line">            &#x2F;&#x2F;更新进度条</span><br><span class="line">            &#x2F;&#x2F;不能依赖实现细节</span><br><span class="line">            m_progressBar-&gt;setValue(progressValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    class MainForm : public Form</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line">    &#x2F;&#x2F;依赖ProgressBar</span><br><span class="line">    ProgressBar* progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    void Button1_Click()&#123;</span><br><span class="line"></span><br><span class="line">        string filePath &#x3D; txtFilePath-&gt;getText();</span><br><span class="line">        int number &#x3D; atoi(txtFileNumber-&gt;getText().c_str());</span><br><span class="line"></span><br><span class="line">        FileSplitter splitter(filePath, number, progressBar);</span><br><span class="line"></span><br><span class="line">        splitter.split();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h5 id="文件读取进度条更新观察者模式改进版本"><a href="#文件读取进度条更新观察者模式改进版本" class="headerlink" title="文件读取进度条更新观察者模式改进版本"></a>文件读取进度条更新观察者模式改进版本</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;修改后，将progressbar抽象成接口，紧耦合变成松耦合，编译就不依赖progress</span><br><span class="line">&#x2F;&#x2F;变成了良好的耦合，符合依赖倒置原则</span><br><span class="line">&#x2F;&#x2F;iprogress接口</span><br><span class="line">class IProgress&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void DoProgress(float value)&#x3D;0;</span><br><span class="line">    virtual ~IProgress()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;被观察对象拥有一个观察者对象的集合（相当于subject）</span><br><span class="line">class FileSplitter</span><br><span class="line">&#123;</span><br><span class="line">    string m_filePath;</span><br><span class="line">    int m_fileNumber;</span><br><span class="line">    &#x2F;&#x2F;改良：使支持多个观察者，加入vector 或者list等</span><br><span class="line">    List&lt;IProgress*&gt;  m_iprogressList; &#x2F;&#x2F; 抽象通知机制，支持多个观察者</span><br><span class="line">    </span><br><span class="line">public:</span><br><span class="line">    FileSplitter(const string&amp; filePath, int fileNumber) :</span><br><span class="line">        m_filePath(filePath), </span><br><span class="line">        m_fileNumber(fileNumber)&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void split()&#123;</span><br><span class="line">        &#x2F;&#x2F;1.读取大文件</span><br><span class="line">        &#x2F;&#x2F;2.分批次向小文件中写入</span><br><span class="line">        for (int i &#x3D; 0; i &lt; m_fileNumber; i++)&#123;</span><br><span class="line">            &#x2F;&#x2F;...</span><br><span class="line">            float progressValue &#x3D; m_fileNumber;</span><br><span class="line">            progressValue &#x3D; (i + 1) &#x2F; progressValue;</span><br><span class="line">            onProgress(progressValue);&#x2F;&#x2F;发送通知</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;原本列表初始化已经不适用，添加add和remove操作函数</span><br><span class="line">    void addIProgress(IProgress* iprogress)&#123;</span><br><span class="line">        m_iprogressList.push_back(iprogress);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void removeIProgress(IProgress* iprogress)&#123;</span><br><span class="line">        m_iprogressList.remove(iprogress);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;继续优化，protected下写onProgress，层次更清晰</span><br><span class="line">protected:</span><br><span class="line">    &#x2F;&#x2F;对于onprogress也需要改变</span><br><span class="line">    virtual void onProgress(float value)&#123;</span><br><span class="line">        List&lt;IProgress*&gt;::iterator itor&#x3D;m_iprogressList.begin();</span><br><span class="line">        while (itor !&#x3D; m_iprogressList.end() )</span><br><span class="line">            (*itor)-&gt;DoProgress(value); &#x2F;&#x2F;更新进度条</span><br><span class="line">            itor++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">class ConsoleNotifier : public IProgress &#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void DoProgress(float value)&#123;</span><br><span class="line">        cout &lt;&lt; &quot;.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class MainForm : public Form, public IProgress</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line"></span><br><span class="line">    ProgressBar* progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    void Button1_Click()&#123;</span><br><span class="line"></span><br><span class="line">        string filePath &#x3D; txtFilePath-&gt;getText();</span><br><span class="line">        int number &#x3D; atoi(txtFileNumber-&gt;getText().c_str());</span><br><span class="line"></span><br><span class="line">        ConsoleNotifier cn;</span><br><span class="line"></span><br><span class="line">        FileSplitter splitter(filePath, number);</span><br><span class="line">        &#x2F;&#x2F;添加监听</span><br><span class="line">        splitter.addIProgress(this); &#x2F;&#x2F;订阅通知</span><br><span class="line">        splitter.addIProgress(&amp;cn)； &#x2F;&#x2F;订阅通知</span><br><span class="line"></span><br><span class="line">        splitter.split();</span><br><span class="line"></span><br><span class="line">        splitter.removeIProgress(this);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;重写DoProgress</span><br><span class="line">    virtual void DoProgress(float value)&#123;</span><br><span class="line">        progressBar-&gt;setValue(value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<div style="width:80%;margin:auto"><img src="/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/sum_up.png" class="" title="观察者模式要点总结"></div>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/游戏编程模式/">游戏编程模式</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" data-title="[游戏编程模式] 2.3设计模式之观察者模式 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2020/08/13/c-单例模式/" title="[c#]c#中单例模式的实现">
+  <strong>上一篇：</strong><br/>
+  <span>
+  [c#]c#中单例模式的实现</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2020/08/11/游戏编程模式-2-2设计模式之享元模式/"  title="[游戏编程模式]2.2设计模式之享元模式">
+ <strong>下一篇：</strong><br/> 
+ <span>[游戏编程模式]2.2设计模式之享元模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">观察者模式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E5%BA%A6%E6%9D%A1%E6%9B%B4%E6%96%B0%E5%88%9D%E9%98%B6%E7%89%88%E6%9C%AC"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">进度条更新初阶版本</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E8%BF%9B%E5%BA%A6%E6%9D%A1%E6%9B%B4%E6%96%B0%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E6%94%B9%E8%BF%9B%E7%89%88%E6%9C%AC"><span class="toc-number">1.0.0.2.</span> <span class="toc-text">文件读取进度条更新观察者模式改进版本</span></a></li></ol></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="https://github.com/sysuleo" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/游戏编程模式/" title="游戏编程模式">游戏编程模式<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shader/" title="shader">shader<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Protobuf-gRPC/" title="Protobuf&amp;gRPC">Protobuf&amp;gRPC<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/c/" title="c#">c#<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/c-设计模式/" title="c# 设计模式">c# 设计模式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://liuw.tech" target="_blank" title="LiuWen&#39;s Blog">LiuWen&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m LiuWen in Netease. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/https://github.com/sysuleo" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:liuw256@mail2.sysu.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="Liu Wen">Liu Wen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

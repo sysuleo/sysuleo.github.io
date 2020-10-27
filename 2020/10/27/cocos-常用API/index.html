@@ -4,24 +4,24 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>[游戏编程模式]2.1设计模式之命令模式 | LiuWen&#39;s Blogs</title>
+    <title>[Cocos]常用API | LiuWen&#39;s Blogs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Liu Wen">
     
 
     
-    <meta name="description" content="命令模式命令就是面向对象化的回调。 示例代码 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465#include &lt;iostream&gt;#include &lt;vector&gt;#include">
+    <meta name="description" content="cocosApi学习这篇博客记录一下工作中遇到的Cocos相关api。 EventListenerTouchOneByOne::create()单点触摸监听在python中为 1listener &#x3D; cc.EventListenerTouchOneByOne.create()  cc.fadeTo修改 透明度到指定值 容器动作顺序动作 cc.sequence顺序动作可以让一系列子动作按顺">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[游戏编程模式]2.1设计模式之命令模式">
-<meta property="og:url" content="http://yoursite.com/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:title" content="[Cocos]常用API">
+<meta property="og:url" content="http://yoursite.com/2020/10/27/cocos-%E5%B8%B8%E7%94%A8API/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="命令模式命令就是面向对象化的回调。 示例代码 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465#include &lt;iostream&gt;#include &lt;vector&gt;#include">
+<meta property="og:description" content="cocosApi学习这篇博客记录一下工作中遇到的Cocos相关api。 EventListenerTouchOneByOne::create()单点触摸监听在python中为 1listener &#x3D; cc.EventListenerTouchOneByOne.create()  cc.fadeTo修改 透明度到指定值 容器动作顺序动作 cc.sequence顺序动作可以让一系列子动作按顺">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-08-10T12:23:04.000Z">
-<meta property="article:modified_time" content="2020-08-13T04:09:00.967Z">
+<meta property="article:published_time" content="2020-10-27T02:13:41.000Z">
+<meta property="article:modified_time" content="2020-10-27T02:17:36.482Z">
 <meta property="article:author" content="Liu Wen">
-<meta property="article:tag" content="游戏编程模式">
+<meta property="article:tag" content="Cocos">
 <meta name="twitter:card" content="summary">
 
     
@@ -36,8 +36,6 @@
     
     
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/%02.css">
-<link rel="stylesheet" href="/.css">
 
 <meta name="generator" content="Hexo 5.0.0"></head>
 
@@ -86,14 +84,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2020/08/10/游戏编程模式-2-1设计模式之命令模式/" title="[游戏编程模式]2.1设计模式之命令模式" itemprop="url">[游戏编程模式]2.1设计模式之命令模式</a>
+      <a href="/2020/10/27/cocos-常用API/" title="[Cocos]常用API" itemprop="url">[Cocos]常用API</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Liu Wen" target="_blank" itemprop="author">Liu Wen</a>
 		
   <p class="article-time">
-    <time datetime="2020-08-10T12:23:04.000Z" itemprop="datePublished"> Published 2020-08-10</time>
+    <time datetime="2020-10-27T02:13:41.000Z" itemprop="datePublished"> Published 2020-10-27</time>
     
   </p>
 </header>
@@ -102,15 +100,27 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">命令模式</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cocosApi%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">cocosApi学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#EventListenerTouchOneByOne-create"><span class="toc-number">1.1.</span> <span class="toc-text">EventListenerTouchOneByOne::create()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cc-fadeTo"><span class="toc-number">1.2.</span> <span class="toc-text">cc.fadeTo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%8A%A8%E4%BD%9C"><span class="toc-number">1.3.</span> <span class="toc-text">容器动作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E5%8A%A8%E4%BD%9C-cc-sequence"><span class="toc-number">1.3.1.</span> <span class="toc-text">顺序动作 cc.sequence</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%8A%A8%E4%BD%9C-cc-spawn"><span class="toc-number">1.3.2.</span> <span class="toc-text">同步动作 cc.spawn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%A4%8D%E5%8A%A8%E4%BD%9C-cc-repeat"><span class="toc-number">1.3.3.</span> <span class="toc-text">重复动作 cc.repeat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ccc-CallFunc-create-func"><span class="toc-number">1.4.</span> <span class="toc-text">ccc.CallFunc.create(func)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cc-DelayTime-create-float-delaytime"><span class="toc-number">1.5.</span> <span class="toc-text">cc.DelayTime.create(float delaytime)</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p><strong>命令就是面向对象化的回调。</strong></p>
-<p>示例代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;基类</span><br><span class="line">class Command</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void execute() &#x3D; 0;</span><br><span class="line">    virtual ~Command()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class ConcreteCommand1 : public Command</span><br><span class="line">&#123;</span><br><span class="line">    string arg;</span><br><span class="line">public:</span><br><span class="line">    ConcreteCommand1(const string &amp; a) : arg(a) &#123;&#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        cout&lt;&lt; &quot;#1 process...&quot;&lt;&lt;arg&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class ConcreteCommand2 : public Command</span><br><span class="line">&#123;</span><br><span class="line">    string arg;</span><br><span class="line">public:</span><br><span class="line">    ConcreteCommand2(const string &amp; a) : arg(a) &#123;&#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        cout&lt;&lt; &quot;#2 process...&quot;&lt;&lt;arg&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">class MacroCommand : public Command</span><br><span class="line">&#123;</span><br><span class="line">    vector&lt;Command*&gt; commands;</span><br><span class="line">public:</span><br><span class="line">    void addCommand(Command *c) &#123; commands.push_back(c); &#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        for (auto &amp;c : commands)</span><br><span class="line">        &#123;</span><br><span class="line">            c-&gt;execute();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    ConcreteCommand1 command1(receiver, &quot;Arg ###&quot;);</span><br><span class="line">    ConcreteCommand2 command2(receiver, &quot;Arg $$$&quot;);</span><br><span class="line"></span><br><span class="line">    MacroCommand macro;</span><br><span class="line">    macro.addCommand(&amp;command1);</span><br><span class="line">    macro.addCommand(&amp;command2);</span><br><span class="line">    </span><br><span class="line">    macro.execute();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+		<h1 id="cocosApi学习"><a href="#cocosApi学习" class="headerlink" title="cocosApi学习"></a>cocosApi学习</h1><p>这篇博客记录一下工作中遇到的Cocos相关api。</p>
+<h2 id="EventListenerTouchOneByOne-create"><a href="#EventListenerTouchOneByOne-create" class="headerlink" title="EventListenerTouchOneByOne::create()"></a>EventListenerTouchOneByOne::create()</h2><p><strong>单点触摸</strong>监听<br>在python中为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listener &#x3D; cc.EventListenerTouchOneByOne.create()</span><br></pre></td></tr></table></figure>
 
-<p><strong>命令模式很容易实现撤销和重做</strong></p>
+<h2 id="cc-fadeTo"><a href="#cc-fadeTo" class="headerlink" title="cc.fadeTo"></a>cc.fadeTo</h2><p>修改 <strong>透明度</strong>到指定值</p>
+<h2 id="容器动作"><a href="#容器动作" class="headerlink" title="容器动作"></a>容器动作</h2><h3 id="顺序动作-cc-sequence"><a href="#顺序动作-cc-sequence" class="headerlink" title="顺序动作 cc.sequence"></a>顺序动作 cc.sequence</h3><p>顺序动作可以让一系列子动作按顺序一个个执行<br> // 让节点左右来回移动<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var seq &#x3D; cc.sequence(cc.moveBy(0.5, 200, 0), cc.moveBy(0.5, -200, 0));</span><br><span class="line">node.runAction(seq);</span><br></pre></td></tr></table></figure></p>
+<h3 id="同步动作-cc-spawn"><a href="#同步动作-cc-spawn" class="headerlink" title="同步动作 cc.spawn"></a>同步动作 cc.spawn</h3><p>同步动作可以同步执行对一系列子动作，子动作的执行结果会叠加起来修改节点的属性。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 让节点在向上移动的同时缩放</span><br><span class="line">var spawn &#x3D; cc.spawn(cc.moveBy(0.5, 0, 50), cc.scaleTo(0.5, 0.8, 1.4));</span><br><span class="line">node.runAction(spawn);</span><br></pre></td></tr></table></figure>
+
+<h3 id="重复动作-cc-repeat"><a href="#重复动作-cc-repeat" class="headerlink" title="重复动作 cc.repeat"></a>重复动作 cc.repeat</h3><p>重复动作用来多次重复一个动作。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 让节点左右来回移动，并重复 5 次</span><br><span class="line">var seq &#x3D; cc.repeat(</span><br><span class="line">            cc.sequence(</span><br><span class="line">                cc.moveBy(2, 200, 0),</span><br><span class="line">                cc.moveBy(2, -200, 0)</span><br><span class="line">            ), 5);</span><br><span class="line">node.runAction(seq);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="ccc-CallFunc-create-func"><a href="#ccc-CallFunc-create-func" class="headerlink" title="ccc.CallFunc.create(func)"></a>ccc.CallFunc.create(func)</h2><p>调用当前不带参数的函数</p>
+<h2 id="cc-DelayTime-create-float-delaytime"><a href="#cc-DelayTime-create-float-delaytime" class="headerlink" title="cc.DelayTime.create(float delaytime)"></a>cc.DelayTime.create(float delaytime)</h2><p>延迟当前的action</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">node.runAction(cc.Sequence.create([cc.DelayTime.create(1), cc.CallFunc.create(callback)]))</span><br><span class="line"></span><br><span class="line">def callback():</span><br><span class="line">    print &quot;just test&quot;</span><br></pre></td></tr></table></figure>
+
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -119,7 +129,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/游戏编程模式/">游戏编程模式</a>
+  <span></span> <a href="/tags/Cocos/">Cocos</a>
   </div>
 
 </div>
@@ -128,7 +138,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://yoursite.com/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" data-title="[游戏编程模式]2.1设计模式之命令模式 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
+	  <div data-url="http://yoursite.com/2020/10/27/cocos-%E5%B8%B8%E7%94%A8API/" data-title="[Cocos]常用API | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -141,19 +151,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2020/08/11/游戏编程模式-2-2设计模式之享元模式/" title="[游戏编程模式]2.2设计模式之享元模式">
-  <strong>上一篇：</strong><br/>
-  <span>
-  [游戏编程模式]2.2设计模式之享元模式</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2020/08/10/游戏编程模式-1-架构、性能和游戏/"  title="[游戏编程模式]1.架构、性能和游戏">
+<a href="/2020/10/22/python-常用函数记录/"  title="[python]常用API记录">
  <strong>下一篇：</strong><br/> 
- <span>[游戏编程模式]1.架构、性能和游戏
+ <span>[python]常用API记录
 </span>
 </a>
 </div>
@@ -170,7 +172,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">命令模式</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cocosApi%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">cocosApi学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#EventListenerTouchOneByOne-create"><span class="toc-number">1.1.</span> <span class="toc-text">EventListenerTouchOneByOne::create()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cc-fadeTo"><span class="toc-number">1.2.</span> <span class="toc-text">cc.fadeTo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%8A%A8%E4%BD%9C"><span class="toc-number">1.3.</span> <span class="toc-text">容器动作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E5%8A%A8%E4%BD%9C-cc-sequence"><span class="toc-number">1.3.1.</span> <span class="toc-text">顺序动作 cc.sequence</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%8A%A8%E4%BD%9C-cc-spawn"><span class="toc-number">1.3.2.</span> <span class="toc-text">同步动作 cc.spawn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%A4%8D%E5%8A%A8%E4%BD%9C-cc-repeat"><span class="toc-number">1.3.3.</span> <span class="toc-text">重复动作 cc.repeat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ccc-CallFunc-create-func"><span class="toc-number">1.4.</span> <span class="toc-text">ccc.CallFunc.create(func)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cc-DelayTime-create-float-delaytime"><span class="toc-number">1.5.</span> <span class="toc-text">cc.DelayTime.create(float delaytime)</span></a></li></ol></li></ol>
  
   </div>
 

@@ -97,11 +97,13 @@
     <div class="article-content">
         
         <h1 id="cocosApi学习"><a href="#cocosApi学习" class="headerlink" title="cocosApi学习"></a>cocosApi学习</h1><p>这篇博客记录一下工作中遇到的Cocos相关api。</p>
-<h2 id="EventListenerTouchOneByOne-create"><a href="#EventListenerTouchOneByOne-create" class="headerlink" title="EventListenerTouchOneByOne::create()"></a>EventListenerTouchOneByOne::create()</h2><p><strong>单点触摸</strong>监听<br>在python中为</p>
+<h2 id="EventListenerTouchOneByOne-create"><a href="#EventListenerTouchOneByOne-create" class="headerlink" title="EventListenerTouchOneByOne::create()"></a>EventListenerTouchOneByOne::create()</h2><p><strong>单点触摸</strong>监听</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listener &#x3D; cc.EventListenerTouchOneByOne.create()</span><br></pre></td></tr></table></figure>
 
 <h2 id="cc-fadeTo"><a href="#cc-fadeTo" class="headerlink" title="cc.fadeTo"></a>cc.fadeTo</h2><p>修改 <strong>透明度</strong>到指定值</p>
-<h2 id="容器动作"><a href="#容器动作" class="headerlink" title="容器动作"></a>容器动作</h2><h3 id="顺序动作-cc-sequence"><a href="#顺序动作-cc-sequence" class="headerlink" title="顺序动作 cc.sequence"></a>顺序动作 cc.sequence</h3><p>顺序动作可以让一系列子动作按顺序一个个执行<br> // 让节点左右来回移动<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var seq &#x3D; cc.sequence(cc.moveBy(0.5, 200, 0), cc.moveBy(0.5, -200, 0));</span><br><span class="line">node.runAction(seq);</span><br></pre></td></tr></table></figure></p>
+<h2 id="容器动作"><a href="#容器动作" class="headerlink" title="容器动作"></a>容器动作</h2><h3 id="顺序动作-cc-sequence"><a href="#顺序动作-cc-sequence" class="headerlink" title="顺序动作 cc.sequence"></a>顺序动作 cc.sequence</h3><p>顺序动作可以让一系列子动作按顺序一个个执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 让节点左右来回移动</span><br><span class="line">var seq &#x3D; cc.sequence(cc.moveBy(0.5, 200, 0), cc.moveBy(0.5, -200, 0));</span><br><span class="line">node.runAction(seq);</span><br></pre></td></tr></table></figure>
+
 <h3 id="同步动作-cc-spawn"><a href="#同步动作-cc-spawn" class="headerlink" title="同步动作 cc.spawn"></a>同步动作 cc.spawn</h3><p>同步动作可以同步执行对一系列子动作，子动作的执行结果会叠加起来修改节点的属性。示例：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 让节点在向上移动的同时缩放</span><br><span class="line">var spawn &#x3D; cc.spawn(cc.moveBy(0.5, 0, 50), cc.scaleTo(0.5, 0.8, 1.4));</span><br><span class="line">node.runAction(spawn);</span><br></pre></td></tr></table></figure>
 
@@ -112,6 +114,17 @@
 <h2 id="ccc-CallFunc-create-func"><a href="#ccc-CallFunc-create-func" class="headerlink" title="ccc.CallFunc.create(func)"></a>ccc.CallFunc.create(func)</h2><p>调用当前不带参数的函数</p>
 <h2 id="cc-DelayTime-create-float-delaytime"><a href="#cc-DelayTime-create-float-delaytime" class="headerlink" title="cc.DelayTime.create(float delaytime)"></a>cc.DelayTime.create(float delaytime)</h2><p>延迟当前的action</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">node.runAction(cc.Sequence.create([cc.DelayTime.create(1), cc.CallFunc.create(callback)]))</span><br><span class="line"></span><br><span class="line">def callback():</span><br><span class="line">    print &quot;just test&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="ccui"><a href="#ccui" class="headerlink" title="ccui"></a>ccui</h1><h3 id="ccui-TOUCH-EVENT-MOVED当前为触屏移动状态"><a href="#ccui-TOUCH-EVENT-MOVED当前为触屏移动状态" class="headerlink" title="ccui.TOUCH_EVENT_MOVED当前为触屏移动状态"></a>ccui.TOUCH_EVENT_MOVED当前为触屏移动状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if ccui.TOUCH_EVENT_MOVED &#x3D;&#x3D; evtType:</span><br><span class="line">    pass</span><br></pre></td></tr></table></figure>
+
+<h3 id="ccui-TOUCH-EVENT-ENDED-当前为触屏抬起状态"><a href="#ccui-TOUCH-EVENT-ENDED-当前为触屏抬起状态" class="headerlink" title="ccui.TOUCH_EVENT_ENDED 当前为触屏抬起状态"></a>ccui.TOUCH_EVENT_ENDED 当前为触屏抬起状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if evtType &#x3D;&#x3D; ccui.TOUCH_EVENT_ENDED:</span><br><span class="line">    pass</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="button按钮"><a href="#button按钮" class="headerlink" title="button按钮"></a>button按钮</h2><h3 id="button图片设置"><a href="#button图片设置" class="headerlink" title="button图片设置"></a>button图片设置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">btn.loadTextureNormal(&quot;....png&quot;)  # 正常状态</span><br><span class="line">btn.loadTexturePressed(&quot;....png&quot;)  # 按下状态</span><br></pre></td></tr></table></figure>
+
+
 
 
         

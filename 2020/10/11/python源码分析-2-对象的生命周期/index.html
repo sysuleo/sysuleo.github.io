@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>[python源码分析]2.对象的生命周期 | LiuWen&#39;s Blogs</title>
+    <title>[python源码分析] 2.对象的生命周期 | LiuWen&#39;s Blogs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Liu Wen">
@@ -13,7 +13,7 @@
     
     <meta name="description" content="C API开始讨论对象创建前，先介绍 Python 提供的 C API 。Python 是用 C 写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python 内部也大量使用这些 API ，为了更好研读源码，先系统了解 API 组成结构很有必要。 C API 分为两类： 泛型 API 以及 特型 API。 泛型 API泛型 API 与类型无关，属于 抽象对象层 ( Abstr">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[python源码分析]2.对象的生命周期">
+<meta property="og:title" content="[python源码分析] 2.对象的生命周期">
 <meta property="og:url" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
 <meta property="og:description" content="C API开始讨论对象创建前，先介绍 Python 提供的 C API 。Python 是用 C 写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python 内部也大量使用这些 API ，为了更好研读源码，先系统了解 API 组成结构很有必要。 C API 分为两类： 泛型 API 以及 特型 API。 泛型 API泛型 API 与类型无关，属于 抽象对象层 ( Abstr">
@@ -21,7 +21,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F1.png">
 <meta property="og:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F2.png">
 <meta property="article:published_time" content="2020-10-11T06:13:31.000Z">
-<meta property="article:modified_time" content="2020-10-22T02:48:53.420Z">
+<meta property="article:modified_time" content="2020-11-12T06:52:17.163Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python源码分析">
 <meta name="twitter:card" content="summary">
@@ -89,7 +89,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2020/10/11/python源码分析-2-对象的生命周期/" title="[python源码分析]2.对象的生命周期" itemprop="url">[python源码分析]2.对象的生命周期</a>
+      <a href="/2020/10/11/python源码分析-2-对象的生命周期/" title="[python源码分析] 2.对象的生命周期" itemprop="url">[python源码分析] 2.对象的生命周期</a>
   </h1>
   <p class="article-author">By
        
@@ -224,7 +224,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" data-title="[python源码分析]2.对象的生命周期 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
+	  <div data-url="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" data-title="[python源码分析] 2.对象的生命周期 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -295,11 +295,11 @@
 			
 		
 			
-				<li><a href="/tags/shader/" title="shader">shader<sup>2</sup></a></li>
+				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>2</sup></a></li>
+				<li><a href="/tags/shader/" title="shader">shader<sup>2</sup></a></li>
 			
 		
 			
@@ -320,6 +320,10 @@
 		
 			
 				<li><a href="/tags/Cocos/" title="Cocos">Cocos<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
 			
 		
 		</ul>

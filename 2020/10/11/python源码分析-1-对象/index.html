@@ -1,17 +1,30 @@
-
- <!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  
-    <title>[python源码分析] 1.对象 | LiuWen&#39;s Blogs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Liu Wen">
-    
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
 
-    
-    <meta name="description" content="面向对象理论中 “ 类 ”和“ 对象 ” 这两个重要概念，在 Python 内部均 以对象的形式存在。 “类”是一种对象，称为 类型对象 ；“类”实例化生成的“对象”也是对象，称为 实例对象 。 根据对象不同特点还可进一步分类：    类别 特点    可变对象 对象创建后可以修改   不可变对象 对象创建后不能修改   定长对象 对象大小固定   变长对象 对象大小不固定   那么，对象在 Py">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//unpkg.com/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="面向对象理论中 “ 类 ”和“ 对象 ” 这两个重要概念，在 Python 内部均 以对象的形式存在。 “类”是一种对象，称为 类型对象 ；“类”实例化生成的“对象”也是对象，称为 实例对象 。 根据对象不同特点还可进一步分类：    类别 特点    可变对象 对象创建后可以修改   不可变对象 对象创建后不能修改   定长对象 对象大小固定   变长对象 对象大小不固定   那么，对象在 Py">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[python源码分析] 1.对象">
 <meta property="og:url" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/index.html">
@@ -30,89 +43,225 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A11.png">
 
-    
-    <link rel="alternative" href="/atom.xml" title="LiuWen&#39;s Blogs" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/favicon.ico">
-    
-    
-    <link rel="apple-touch-icon" href="/img/jacman.jpg">
-    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
-    
-    
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/%02.css">
-<link rel="stylesheet" href="/.css">
 
-<meta name="generator" content="Hexo 5.0.0"></head>
+<link rel="canonical" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/">
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="imglogo">
-				<a href="/"><img src="/img/logo.png" alt="LiuWen&#39;s Blogs" title="LiuWen&#39;s Blogs"/></a>
-			</div>
-			
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="LiuWen&#39;s Blogs">LiuWen&#39;s Blogs</a></h1>
-				<h2 class="blog-motto"></h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
-						<input type="hidden" name="q" value="site:yoursite.com">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
-</div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 1.对象 | LiuWen's Blogs</title>
   
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PyObject%EF%BC%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="nav-number">1.</span> <span class="nav-text">PyObject，对象的基石</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PyTypeObject%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="nav-number"></span> <span class="nav-text">PyTypeObject，类型的基石</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PyType-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number"></span> <span class="nav-text">PyType_Type，类型的类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PyBaseObject-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E4%B9%8B%E5%9F%BA"><span class="nav-number"></span> <span class="nav-text">PyBaseObject_Type，类型之基</span></a></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
     
-      <a href="/2020/10/11/python源码分析-1-对象/" title="[python源码分析] 1.对象" itemprop="url">[python源码分析] 1.对象</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Liu Wen" target="_blank" itemprop="author">Liu Wen</a>
-		
-  <p class="article-time">
-    <time datetime="2020-10-11T06:03:26.000Z" itemprop="datePublished"> Published 2020-10-11</time>
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 1.对象
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-10-11 14:03:26" itemprop="dateCreated datePublished" datetime="2020-10-11T14:03:26+08:00">2020-10-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-16 09:25:42" itemprop="dateModified" datetime="2020-11-16T09:25:42+08:00">2020-11-16</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
     
-  </p>
-</header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">Contents</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PyObject%EF%BC%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number">1.</span> <span class="toc-text">PyObject，对象的基石</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyTypeObject%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number"></span> <span class="toc-text">PyTypeObject，类型的基石</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyType-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number"></span> <span class="toc-text">PyType_Type，类型的类型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyBaseObject-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E4%B9%8B%E5%9F%BA"><span class="toc-number"></span> <span class="toc-text">PyBaseObject_Type，类型之基</span></a>
-		
-		</div>
-		
-		<p>面向对象理论中 <strong>“ 类 ”和“ 对象 ”</strong> 这两个重要概念，在 Python 内部均 <strong>以对象的形式存在</strong>。 <strong>“类”是一种对象</strong>，称为 <strong>类型对象</strong> ；“类”实例化生成的“对象”也是对象，称为 <strong>实例对象</strong> 。</p>
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>面向对象理论中 <strong>“ 类 ”和“ 对象 ”</strong> 这两个重要概念，在 Python 内部均 <strong>以对象的形式存在</strong>。 <strong>“类”是一种对象</strong>，称为 <strong>类型对象</strong> ；“类”实例化生成的“对象”也是对象，称为 <strong>实例对象</strong> 。</p>
 <p>根据对象不同特点还可进一步分类：</p>
 <table>
 <thead>
@@ -230,404 +379,142 @@
 <li><p>Python相比较于其他语言的好处是 <strong>其doc文档就在程序之中</strong>, 通过<strong>PyTypeObject结构体中的doc属性</strong>可以看到。</p>
 </li>
 </ol>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python源码分析/">python源码分析</a>
-  </div>
-
-</div>
-
-
-
-	<div class="article-share" id="share">
-	
-	  <div data-url="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/" data-title="[python源码分析] 1.对象 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
-	  </div>
-	
-	</div>
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2020/10/11/python源码分析-2-对象的生命周期/" title="[python源码分析] 2.对象的生命周期">
-  <strong>上一篇：</strong><br/>
-  <span>
-  [python源码分析] 2.对象的生命周期</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2020/08/18/unity-shader-2-GPU渲染管线/"  title="[unity shader] 2.GPU渲染管线">
- <strong>下一篇：</strong><br/> 
- <span>[unity shader] 2.GPU渲染管线
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">Contents</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PyObject%EF%BC%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number">1.</span> <span class="toc-text">PyObject，对象的基石</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyTypeObject%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number"></span> <span class="toc-text">PyTypeObject，类型的基石</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyType-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number"></span> <span class="toc-text">PyType_Type，类型的类型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PyBaseObject-Type%EF%BC%8C%E7%B1%BB%E5%9E%8B%E4%B9%8B%E5%9F%BA"><span class="toc-number"></span> <span class="toc-text">PyBaseObject_Type，类型之基</span></a>
- 
-  </div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
-<aside class="clearfix">
-
-  
-<div class="github-card">
-<p class="asidetitle">Github Card</p>
-<div class="github-card" data-github="https://github.com/sysuleo" data-theme="medium"></div>
-<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
-</div>
-
-
-
-  
-
-  
-<div class="tagslist">
-	<p class="asidetitle">Tags</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/游戏编程模式/" title="游戏编程模式">游戏编程模式<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shader/" title="shader">shader<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Protobuf-gRPC/" title="Protobuf&amp;gRPC">Protobuf&amp;gRPC<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/c/" title="c#">c#<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/c-设计模式/" title="c# 设计模式">c# 设计模式<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Cocos/" title="Cocos">Cocos<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/TCP-IP卷一/" title="TCP/IP卷一">TCP/IP卷一<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/svn/" title="svn">svn<sup>1</sup></a></li>
-			
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">Links</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://liuw.tech" target="_blank" title="LiuWen&#39;s Blog">LiuWen&#39;s Blog</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-  
-
-
-  <div class="rsspart">
-	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
-</div>
-
-  <div class="weiboshow">
-  <p class="asidetitle">Weibo</p>
-    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=&dpc=1"></iframe>
-</div>
-
-
-</aside>
-</div>
     </div>
-    <footer><div id="footer" >
-	
-	<div class="line">
-		<span></span>
-		<div class="author"></div>
-	</div>
-	
-	
-	<section class="info">
-		<p> Hello ,I&#39;m LiuWen in Netease. <br/>
-			This is my blog,believe it or not.</p>
-	</section>
-	 
-	<div class="social-font" class="clearfix">
-		
-		
-		<a href="https://github.com/https://github.com/sysuleo" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		<a href="mailto:liuw256@mail2.sysu.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
-		
-	</div>
-			
-		
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
-		
-		<a href="/about" target="_blank" title="Liu Wen">Liu Wen</a>
-		
-		
-		</p>
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Liu Wen WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Liu Wen Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
         
-    }
-  });
-});
-</script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/" rel="prev" title="[unity shader] 2.GPU渲染管线">
+                  <i class="fa fa-chevron-left"></i> [unity shader] 2.GPU渲染管线
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="next" title="[python源码分析] 2.对象的生命周期">
+                  [python源码分析] 2.对象的生命周期 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
 
 
 
 
 
 
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
-    });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
-</script>
-
-
-
-<!-- Analytics Begin -->
-
-
+      
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
 </script>
 
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
 
 
-<!-- Analytics End -->
-
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
 
 
-<!-- MathJax End -->
 
-<!-- Tiny_search Begin -->
 
-<!-- Tiny_search End -->
 
-  </body>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
 </html>

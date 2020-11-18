@@ -1,17 +1,30 @@
-
- <!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  
-    <title>[unity shader] 2.GPU渲染管线 | LiuWen&#39;s Blogs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Liu Wen">
-    
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
 
-    
-    <meta name="description" content="GPU渲染管线当GPU从CPU得到渲染命令后，就会进行一系列流水线操作，最终把图元渲染到屏幕上。 对于几何阶段和光栅化阶段，开发者无法拥有绝对的控制权，其实现的载体是GPU。GPU通过实现流水线化，大大加快了渲染速度。 几何阶段和光栅化阶段可以分成若干更小的流水线阶段，这些流水线阶段由GPU实现，每个阶段GPU提供了不同的可配置性或可编程性。   从图中可以看出，GPU的渲染流水线接收顶点数据作为">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//unpkg.com/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="GPU渲染管线当GPU从CPU得到渲染命令后，就会进行一系列流水线操作，最终把图元渲染到屏幕上。 对于几何阶段和光栅化阶段，开发者无法拥有绝对的控制权，其实现的载体是GPU。GPU通过实现流水线化，大大加快了渲染速度。 几何阶段和光栅化阶段可以分成若干更小的流水线阶段，这些流水线阶段由GPU实现，每个阶段GPU提供了不同的可配置性或可编程性。   从图中可以看出，GPU的渲染流水线接收顶点数据作为">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[unity shader] 2.GPU渲染管线">
 <meta property="og:url" content="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/index.html">
@@ -26,89 +39,225 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.png">
 
-    
-    <link rel="alternative" href="/atom.xml" title="LiuWen&#39;s Blogs" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/favicon.ico">
-    
-    
-    <link rel="apple-touch-icon" href="/img/jacman.jpg">
-    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
-    
-    
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/%02.css">
-<link rel="stylesheet" href="/.css">
 
-<meta name="generator" content="Hexo 5.0.0"></head>
+<link rel="canonical" href="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/">
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="imglogo">
-				<a href="/"><img src="/img/logo.png" alt="LiuWen&#39;s Blogs" title="LiuWen&#39;s Blogs"/></a>
-			</div>
-			
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="LiuWen&#39;s Blogs">LiuWen&#39;s Blogs</a></h1>
-				<h2 class="blog-motto"></h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
-						<input type="hidden" name="q" value="site:yoursite.com">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
-</div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[unity shader] 2.GPU渲染管线 | LiuWen's Blogs</title>
   
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF"><span class="nav-number">1.</span> <span class="nav-text">GPU渲染管线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%A1%B6%E7%82%B9%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Vertex-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.顶点着色器（Vertex Shader）：完全可编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A3%81%E5%89%AA%EF%BC%88Clipping%EF%BC%89%EF%BC%9A%E5%8F%AF%E9%85%8D%E7%BD%AE"><span class="nav-number">1.0.2.</span> <span class="nav-text">2.裁剪（Clipping）：可配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B1%8F%E5%B9%95%E6%98%A0%E5%B0%84%EF%BC%88Screen-Mapping%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E9%85%8D%E7%BD%AE%E5%92%8C%E7%BC%96%E7%A8%8B%E7%9A%84"><span class="nav-number">1.0.3.</span> <span class="nav-text">3.屏幕映射（Screen Mapping）：不可配置和编程的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%89%E8%A7%92%E5%BD%A2%E8%AE%BE%E7%BD%AE%EF%BC%88Triangle-Setup%EF%BC%89%E5%92%8C%E4%B8%89%E8%A7%92%E5%BD%A2%E5%8F%98%E9%87%8F%EF%BC%88Triangle-Traversal%EF%BC%89%E9%98%B6%E6%AE%B5%E9%83%BD%E6%98%AF%E5%9B%BA%E5%AE%9A%E5%87%BD%E6%95%B0%EF%BC%88Fixed-Function%EF%BC%89%E7%9A%84%E9%98%B6%E6%AE%B5"><span class="nav-number">1.0.4.</span> <span class="nav-text">4.三角形设置（Triangle Setup）和三角形变量（Triangle Traversal）阶段都是固定函数（Fixed-Function）的阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%89%87%E6%AE%B5%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Fragment-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="nav-number">1.0.5.</span> <span class="nav-text">5.片段着色器（Fragment Shader）：完全可编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%80%90%E7%89%87%E5%85%83%E6%93%8D%E4%BD%9C%EF%BC%88Per-Fragment-Operations%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BD%86%E5%85%B7%E6%9C%89%E5%BE%88%E9%AB%98%E7%9A%84%E5%8F%AF%E9%85%8D%E7%BD%AE%E6%80%A7"><span class="nav-number">1.0.6.</span> <span class="nav-text">6.逐片元操作（Per-Fragment Operations）：不可编程，但具有很高的可配置性</span></a></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
     
-      <a href="/2020/08/18/unity-shader-2-GPU渲染管线/" title="[unity shader] 2.GPU渲染管线" itemprop="url">[unity shader] 2.GPU渲染管线</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Liu Wen" target="_blank" itemprop="author">Liu Wen</a>
-		
-  <p class="article-time">
-    <time datetime="2020-08-18T10:35:10.000Z" itemprop="datePublished"> Published 2020-08-18</time>
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [unity shader] 2.GPU渲染管线
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-08-18 18:35:10" itemprop="dateCreated datePublished" datetime="2020-08-18T18:35:10+08:00">2020-08-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
     
-  </p>
-</header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">Contents</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF"><span class="toc-number">1.</span> <span class="toc-text">GPU渲染管线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A1%B6%E7%82%B9%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Vertex-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="toc-number">1.0.1.</span> <span class="toc-text">1.顶点着色器（Vertex Shader）：完全可编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%A3%81%E5%89%AA%EF%BC%88Clipping%EF%BC%89%EF%BC%9A%E5%8F%AF%E9%85%8D%E7%BD%AE"><span class="toc-number">1.0.2.</span> <span class="toc-text">2.裁剪（Clipping）：可配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B1%8F%E5%B9%95%E6%98%A0%E5%B0%84%EF%BC%88Screen-Mapping%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E9%85%8D%E7%BD%AE%E5%92%8C%E7%BC%96%E7%A8%8B%E7%9A%84"><span class="toc-number">1.0.3.</span> <span class="toc-text">3.屏幕映射（Screen Mapping）：不可配置和编程的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%B8%89%E8%A7%92%E5%BD%A2%E8%AE%BE%E7%BD%AE%EF%BC%88Triangle-Setup%EF%BC%89%E5%92%8C%E4%B8%89%E8%A7%92%E5%BD%A2%E5%8F%98%E9%87%8F%EF%BC%88Triangle-Traversal%EF%BC%89%E9%98%B6%E6%AE%B5%E9%83%BD%E6%98%AF%E5%9B%BA%E5%AE%9A%E5%87%BD%E6%95%B0%EF%BC%88Fixed-Function%EF%BC%89%E7%9A%84%E9%98%B6%E6%AE%B5"><span class="toc-number">1.0.4.</span> <span class="toc-text">4.三角形设置（Triangle Setup）和三角形变量（Triangle Traversal）阶段都是固定函数（Fixed-Function）的阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%89%87%E6%AE%B5%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Fragment-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="toc-number">1.0.5.</span> <span class="toc-text">5.片段着色器（Fragment Shader）：完全可编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E9%80%90%E7%89%87%E5%85%83%E6%93%8D%E4%BD%9C%EF%BC%88Per-Fragment-Operations%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BD%86%E5%85%B7%E6%9C%89%E5%BE%88%E9%AB%98%E7%9A%84%E5%8F%AF%E9%85%8D%E7%BD%AE%E6%80%A7"><span class="toc-number">1.0.6.</span> <span class="toc-text">6.逐片元操作（Per-Fragment Operations）：不可编程，但具有很高的可配置性</span></a></li></ol></li></ol></li></ol>
-		
-		</div>
-		
-		<h1 id="GPU渲染管线"><a href="#GPU渲染管线" class="headerlink" title="GPU渲染管线"></a>GPU渲染管线</h1><p>当GPU从CPU得到渲染命令后，就会进行一系列流水线操作，最终把图元渲染到屏幕上。</p>
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="GPU渲染管线"><a href="#GPU渲染管线" class="headerlink" title="GPU渲染管线"></a>GPU渲染管线</h1><p>当GPU从CPU得到渲染命令后，就会进行一系列流水线操作，最终把图元渲染到屏幕上。</p>
 <p>对于<strong>几何阶段和光栅化阶段</strong>，开发者无法拥有绝对的控制权，其实现的载体是GPU。GPU通过<strong>实现流水线化，大大加快了渲染速度</strong>。</p>
 <p>几何阶段和光栅化阶段<strong>可以分成若干更小的流水线阶段</strong>，这些流水线阶段由GPU实现，每个阶段GPU提供了不同的可配置性或可编程性。</p>
 <div style="width:100%;margin:auto"><img src="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.png" class="" title="GPU渲染管线图"></div>
@@ -138,404 +287,142 @@
 <p>这一阶段有几个重要的任务：</p>
 <p>（1） 决定每个片元的可见性：这涉及了很多测试工作，例如：深度测试、模板测试</p>
 <p>（2） 如果一个片元通过了所有的测试，就需要把这个片元的颜色值和已经储存在颜色缓冲区中的颜色进行合并，混合</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/shader/">shader</a>
-  </div>
-
-</div>
-
-
-
-	<div class="article-share" id="share">
-	
-	  <div data-url="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/" data-title="[unity shader] 2.GPU渲染管线 | LiuWen&#39;s Blogs" data-tsina="" class="share clearfix">
-	  </div>
-	
-	</div>
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2020/10/11/python源码分析-1-对象/" title="[python源码分析] 1.对象">
-  <strong>上一篇：</strong><br/>
-  <span>
-  [python源码分析] 1.对象</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2020/08/18/unity-shader-graph-1-概述/"  title="[unity shader] 1.概述">
- <strong>下一篇：</strong><br/> 
- <span>[unity shader] 1.概述
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">Contents</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF"><span class="toc-number">1.</span> <span class="toc-text">GPU渲染管线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A1%B6%E7%82%B9%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Vertex-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="toc-number">1.0.1.</span> <span class="toc-text">1.顶点着色器（Vertex Shader）：完全可编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%A3%81%E5%89%AA%EF%BC%88Clipping%EF%BC%89%EF%BC%9A%E5%8F%AF%E9%85%8D%E7%BD%AE"><span class="toc-number">1.0.2.</span> <span class="toc-text">2.裁剪（Clipping）：可配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B1%8F%E5%B9%95%E6%98%A0%E5%B0%84%EF%BC%88Screen-Mapping%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E9%85%8D%E7%BD%AE%E5%92%8C%E7%BC%96%E7%A8%8B%E7%9A%84"><span class="toc-number">1.0.3.</span> <span class="toc-text">3.屏幕映射（Screen Mapping）：不可配置和编程的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%B8%89%E8%A7%92%E5%BD%A2%E8%AE%BE%E7%BD%AE%EF%BC%88Triangle-Setup%EF%BC%89%E5%92%8C%E4%B8%89%E8%A7%92%E5%BD%A2%E5%8F%98%E9%87%8F%EF%BC%88Triangle-Traversal%EF%BC%89%E9%98%B6%E6%AE%B5%E9%83%BD%E6%98%AF%E5%9B%BA%E5%AE%9A%E5%87%BD%E6%95%B0%EF%BC%88Fixed-Function%EF%BC%89%E7%9A%84%E9%98%B6%E6%AE%B5"><span class="toc-number">1.0.4.</span> <span class="toc-text">4.三角形设置（Triangle Setup）和三角形变量（Triangle Traversal）阶段都是固定函数（Fixed-Function）的阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%89%87%E6%AE%B5%E7%9D%80%E8%89%B2%E5%99%A8%EF%BC%88Fragment-Shader%EF%BC%89%EF%BC%9A%E5%AE%8C%E5%85%A8%E5%8F%AF%E7%BC%96%E7%A8%8B"><span class="toc-number">1.0.5.</span> <span class="toc-text">5.片段着色器（Fragment Shader）：完全可编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E9%80%90%E7%89%87%E5%85%83%E6%93%8D%E4%BD%9C%EF%BC%88Per-Fragment-Operations%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%8F%AF%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BD%86%E5%85%B7%E6%9C%89%E5%BE%88%E9%AB%98%E7%9A%84%E5%8F%AF%E9%85%8D%E7%BD%AE%E6%80%A7"><span class="toc-number">1.0.6.</span> <span class="toc-text">6.逐片元操作（Per-Fragment Operations）：不可编程，但具有很高的可配置性</span></a></li></ol></li></ol></li></ol>
- 
-  </div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
-<aside class="clearfix">
-
-  
-<div class="github-card">
-<p class="asidetitle">Github Card</p>
-<div class="github-card" data-github="https://github.com/sysuleo" data-theme="medium"></div>
-<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
-</div>
-
-
-
-  
-
-  
-<div class="tagslist">
-	<p class="asidetitle">Tags</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/游戏编程模式/" title="游戏编程模式">游戏编程模式<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shader/" title="shader">shader<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Protobuf-gRPC/" title="Protobuf&amp;gRPC">Protobuf&amp;gRPC<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/c/" title="c#">c#<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/c-设计模式/" title="c# 设计模式">c# 设计模式<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Cocos/" title="Cocos">Cocos<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/TCP-IP卷一/" title="TCP/IP卷一">TCP/IP卷一<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/svn/" title="svn">svn<sup>1</sup></a></li>
-			
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">Links</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://liuw.tech" target="_blank" title="LiuWen&#39;s Blog">LiuWen&#39;s Blog</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-  
-
-
-  <div class="rsspart">
-	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
-</div>
-
-  <div class="weiboshow">
-  <p class="asidetitle">Weibo</p>
-    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=&dpc=1"></iframe>
-</div>
-
-
-</aside>
-</div>
     </div>
-    <footer><div id="footer" >
-	
-	<div class="line">
-		<span></span>
-		<div class="author"></div>
-	</div>
-	
-	
-	<section class="info">
-		<p> Hello ,I&#39;m LiuWen in Netease. <br/>
-			This is my blog,believe it or not.</p>
-	</section>
-	 
-	<div class="social-font" class="clearfix">
-		
-		
-		<a href="https://github.com/https://github.com/sysuleo" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		<a href="mailto:liuw256@mail2.sysu.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
-		
-	</div>
-			
-		
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
-		
-		<a href="/about" target="_blank" title="Liu Wen">Liu Wen</a>
-		
-		
-		</p>
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Liu Wen WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Liu Wen Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
+          <div class="post-tags">
+              <a href="/tags/shader/" rel="tag"># shader</a>
+          </div>
+
         
-    }
-  });
-});
-</script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/" rel="prev" title="[unity shader] 1.概述">
+                  <i class="fa fa-chevron-left"></i> [unity shader] 1.概述
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/" rel="next" title="[python源码分析] 1.对象">
+                  [python源码分析] 1.对象 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
 
 
 
 
 
 
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
-    });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
-</script>
-
-
-
-<!-- Analytics Begin -->
-
-
+      
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
 </script>
 
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
 
 
-<!-- Analytics End -->
-
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
 
 
-<!-- MathJax End -->
 
-<!-- Tiny_search Begin -->
 
-<!-- Tiny_search End -->
 
-  </body>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
 </html>

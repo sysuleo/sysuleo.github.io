@@ -19,8 +19,10 @@
 <meta property="og:description" content="内部结构float 实例对象在 Include&#x2F;floatobject.h 中定义如下： 1234typedef struct &amp;#123;    PyObject_HEAD   &#x2F;&#x2F;定长对象共用的头部    double ob_fval;  &#x2F;&#x2F;额外字段,存储对象所承载的浮点值&amp;#125; PyFloatObject;  下面是浮点实例对象内部结构图：">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_create.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_delete.jpg">
 <meta property="article:published_time" content="2020-11-10T14:26:12.000Z">
-<meta property="article:modified_time" content="2020-11-12T06:52:17.164Z">
+<meta property="article:modified_time" content="2020-11-16T01:25:42.785Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python源码分析">
 <meta name="twitter:card" content="summary">
@@ -104,7 +106,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">内部结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#float-%E7%B1%BB%E5%9E%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.1.</span> <span class="toc-text">float 类型对象</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">对象的创建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%94%80%E6%AF%81"><span class="toc-number">3.</span> <span class="toc-text">对象的销毁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98%E6%B1%A0"><span class="toc-number">4.</span> <span class="toc-text">空闲对象缓存池</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">内部结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#float-%E7%B1%BB%E5%9E%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.1.</span> <span class="toc-text">float 类型对象</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">对象的创建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%94%80%E6%AF%81"><span class="toc-number">3.</span> <span class="toc-text">对象的销毁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98%E6%B1%A0"><span class="toc-number">4.</span> <span class="toc-text">空闲对象缓存池</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-number">5.</span> <span class="toc-text">对象的行为</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%80%BC%E6%93%8D%E4%BD%9C%E9%9B%86"><span class="toc-number">5.1.</span> <span class="toc-text">数值操作集</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#reference"><span class="toc-number">6.</span> <span class="toc-text">reference</span></a></li></ol>
 		
 		</div>
 		
@@ -120,7 +122,7 @@
 <p>PyFloat_Type 中保存了很多关于浮点对象的 <strong>元信息</strong></p>
 <p>PyFloat_Type 很重要，作为浮点 <strong>类型对象</strong> ，它决定了<strong>浮点 实例对象 的 生死和行为</strong> 。 </p>
 <h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><p>调用<strong>类型对象 float 创建实例对象</strong>: Python 执行的是 type 类型对象中的 <strong>tp_call</strong> 函数。 tp_call 函数进而调用 <strong>float 类型对象的 tp_new 函数创建实例对象</strong>， 再调用 <strong>tp_init 函数对其进行初始化</strong>：</p>
-<div style="width:95%;margin:auto"></div>
+<div style="width:95%;margin:auto"><img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_create.jpg" class="" title="Float对象创建图"></div>
 
 
 <p>除了通用的流程， Python 为内置对象实现了对象创建 API ，简化调用，提高效率：</p>
@@ -132,6 +134,9 @@
 <p>上面用到的宏 PyObject_INIT 在头文件 Include/objimpl.h 中定义为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_INIT(op, typeobj) \</span><br><span class="line">    ( Py_TYPE(op) &#x3D; (typeobj), _Py_NewReference((PyObject *)(op)), (op) )  &#x2F;&#x2F;前半部分调用  Py_TYPE(op) 初始化 对象类型 字段 ob_type，后面语句初始化 引用计数 字段 ob_refcnt</span><br></pre></td></tr></table></figure>
 
+<p>上面提到的宏定义 <strong>Py_TYPE</strong>，位于 Include/object.h 头文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define Py_TYPE(ob) (((PyObject*)(ob))&amp;ob_type)</span><br></pre></td></tr></table></figure>
+<p>它的作用是：将 <strong>给定对象的类型对象取出, 返回对象的ob_type字段</strong>。</p>
 <p>宏 _Py_NewReference，在 Include/Object.h 中定义：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#define _Py_NewReference(op) (                          \</span><br><span class="line">    _Py_INC_TPALLOCS(op) _Py_COUNT_ALLOCS_COMMA         \</span><br><span class="line">    _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA               \</span><br><span class="line">    Py_REFCNT(op) &#x3D; 1)   &#x2F;*将对象引用计数初始化为 1*&#x2F;</span><br></pre></td></tr></table></figure>
 
@@ -141,17 +146,49 @@
 <p>因此，实际调用的函数是 float_dealloc (代码在下一小节 空闲对象缓存池 中解析)：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static void</span><br><span class="line">float_dealloc(PyFloatObject *op)</span><br><span class="line">&#123;</span><br><span class="line">    if (PyFloat_CheckExact(op)) &#123;</span><br><span class="line">        &#x2F;*空闲对象缓存池满了，直接销毁*&#x2F;</span><br><span class="line">        if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;</span><br><span class="line">            PyObject_FREE(op);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        numfree++;</span><br><span class="line">        Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;</span><br><span class="line">        free_list &#x3D; op;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">        Py_TYPE(op)-&gt;tp_free((PyObject *)op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>总结起来，对象从创建到销毁整个生命周期所涉及的 <strong>关键函数、宏及调用关系</strong> 如下：</p>
-<div style="width:95%;margin:auto"></div>
+<div style="width:95%;margin:auto"><img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_delete.jpg" class="" title="Float对象生命周期图"></div>
+
 
 <hr>
-<h1 id="空闲对象缓存池"><a href="#空闲对象缓存池" class="headerlink" title="空闲对象缓存池"></a>空闲对象缓存池</h1><p>浮点运算背后涉及 大量临时对象创建以及销毁 ，以计算圆周率为例：</p>
+<h1 id="空闲对象缓存池"><a href="#空闲对象缓存池" class="headerlink" title="空闲对象缓存池"></a>空闲对象缓存池</h1><p>浮点运算背后涉及 大量临时对象创建以及销毁 ，以下面计算为例：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; area &#x3D; pi * r ** 2</span><br></pre></td></tr></table></figure>
-<p>这个语句首先计算半径 r ** 2，中间结果由一个<strong>临时对象</strong>来保存，假设是 t ； 然后计算圆周率 <strong>pi 与 t 的乘积</strong>，得到最终结果并赋值给变量 area ； 最后，销毁<strong>临时对象 t</strong> 。 这么简单的语句，背后居然都隐藏着一个临时对象的创建以及销毁操作！</p>
+<p>这个语句首先计算半径 r ** 2，中间结果由一个<strong>临时对象</strong>来保存，假设是 t ； 然后计算圆周率 <strong>pi 与 t 的乘积</strong>，得到最终结果并赋值给变量 area ； 最后，销毁<strong>临时对象 t</strong> 。 这么简单的语句，背后居然都隐藏着一个 <strong>临时对象的创建以及销毁</strong>操作！</p>
 <p>创建对象时需要分配内存，销毁对象时又需要回收内存。 大量临时对象创建销毁 ，意味着 大量内存分配回收操作 ，这显然是是不可接受的。</p>
 <p>因此 <strong>Python 在浮点对象销毁后，并不急于回收内存</strong>，而是<strong>将对象放入一个 空闲链表</strong> 。 后续需要创建浮点对象时，先到空闲链表中取，省去分配内存的开销。</p>
 <p>浮点对象的空闲链表同样在 Objects/floatobject.c 中定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifndef PyFloat_MAXFREELIST</span><br><span class="line">#define PyFloat_MAXFREELIST    100</span><br><span class="line">#endif</span><br><span class="line">static int numfree &#x3D; 0;</span><br><span class="line">static PyFloatObject *free_list &#x3D; NULL;</span><br></pre></td></tr></table></figure>
-<p>free_list 变量，指向空闲链表 头节点 的指针；<br>numfree 变量，维护空闲链表 当前长度 ；<br>PyFloat_MAXFREELIST 宏，限制空闲链表的 最大长度 ，避免占用过多内存；<br>为了保持简洁， Python 把 ob_type 字段当作 next 指针来用，将空闲对象串成链表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifndef PyFloat_MAXFREELIST</span><br><span class="line">#define PyFloat_MAXFREELIST    100           &#x2F;*该宏  限制空闲链表的 最大长度 ，避免占用过多内存*&#x2F;</span><br><span class="line">#endif</span><br><span class="line">static int numfree &#x3D; 0;                     &#x2F;*维护空闲链表 当前长度*&#x2F;</span><br><span class="line">static PyFloatObject *free_list &#x3D; NULL;    &#x2F;*指向空闲链表 头节点 的指针*&#x2F;</span><br></pre></td></tr></table></figure>
+<p>为了保持简洁， Python 把 <strong>ob_type 字段当作 next 指针来用</strong>，将 <strong>空闲对象串成链表</strong>：</p>
+<div style="width:95%;margin:auto"></div>
+
+<p>因此创建浮点对象时，可以从 <strong>链表中取出空闲对象</strong>，省去 <strong>申请内存的开销</strong>！ 以 PyFloat_FromDouble 为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PyFloatObject *op &#x3D; free_list;                  &#x2F;*op指向第一个 空闲对象*&#x2F;</span><br><span class="line">if (op !&#x3D; NULL) &#123;</span><br><span class="line">    free_list &#x3D; (PyFloatObject *) Py_TYPE(op);  &#x2F;*free_list指向第一个 空闲对象(op)的ob_type所指向的 下一个空闲对象(相当于链表的头部删除)*&#x2F;</span><br><span class="line">    numfree--;                                  &#x2F;*更新空闲链表维护的数量*&#x2F;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    op &#x3D; (PyFloatObject*) PyObject_MALLOC(sizeof(PyFloatObject));    &#x2F;*free_list为空时，重新分配内存*&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对象销毁时， Python 将其缓存在空闲链表中，以备后用。考察 float_dealloc 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;   &#x2F;*销毁时，判断free_list是否达到最大容量*&#x2F;</span><br><span class="line">    PyObject_FREE(op);                   &#x2F;*回收对象内*&#x2F;</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br><span class="line">numfree++;                                      </span><br><span class="line">Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;  &#x2F;*op的ob_type指向当前 第一个空闲对象*&#x2F;</span><br><span class="line">free_list &#x3D; op;                                 &#x2F;* free_list指向op(相当于链表的头部插入)*&#x2F;</span><br></pre></td></tr></table></figure>
+<p>空闲对象缓存池在 <strong>提高对象分配效率</strong> 方面发挥着至关重要的作用。</p>
+<h1 id="对象的行为"><a href="#对象的行为" class="headerlink" title="对象的行为"></a>对象的行为</h1><p>PyFloat_Type 中定义了很多函数指针，包括 tp_repr 、 tp_str 、 tp_hash 等。 这些函数指针将一起决定 float 对象的行为，例如 tp_hash 函数决定浮点哈希值的计算：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; pi &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; hash(pi)</span><br><span class="line">322818021289917443</span><br></pre></td></tr></table></figure>
+<p>tp_hash 函数指针指向 <strong>float_hash 函数</strong>，实现了 <strong>针对浮点对象的哈希值算法</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static Py_hash_t</span><br><span class="line">float_hash(PyFloatObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    return _Py_HashDouble(v-&gt;ob_fval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数值操作集"><a href="#数值操作集" class="headerlink" title="数值操作集"></a>数值操作集</h2><p>由于加减乘除等数值操作很常见， Python 将其抽象成数值操作集 <strong>PyNumberMethods</strong> 。 数值操作集 PyNumberMethods 在头文件 <strong>Include/object.h</strong> 中定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    &#x2F;* Number implementations must check *both*</span><br><span class="line">    arguments for proper type and implement the necessary conversions</span><br><span class="line">    in the slot functions themselves. *&#x2F;</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_add;</span><br><span class="line">    binaryfunc nb_subtract;</span><br><span class="line">    binaryfunc nb_multiply;</span><br><span class="line">    binaryfunc nb_remainder;</span><br><span class="line">    binaryfunc nb_divmod;</span><br><span class="line">    ternaryfunc nb_power;</span><br><span class="line">    unaryfunc nb_negative;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_inplace_add;</span><br><span class="line">    binaryfunc nb_inplace_subtract;</span><br><span class="line">    binaryfunc nb_inplace_multiply;</span><br><span class="line">    binaryfunc nb_inplace_remainder;</span><br><span class="line">    ternaryfunc nb_inplace_power;</span><br><span class="line">    &#x2F;&#x2F;...</span><br><span class="line">&#125; PyNumberMethods;</span><br></pre></td></tr></table></figure>
+<p>PyNumberMethods 定义了各种数学算子的处理函数，数值计算最终由这些函数执行。 处理函数根据参数个数可以分为： **一元函数 ( unaryfunc )、 二元函数 ( binaryfunc )**等。</p>
+<ul>
+<li>一元函数 ( unaryfunc ): 需要传入一个参数的函数。</li>
+<li>二元函数 ( binaryfunc): 需要传入两个参数的函数。</li>
+</ul>
+<p>回到 Objects/floatobject.c 观察浮点对象数值操作集 float_as_number 是如何初始化的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods float_as_number &#x3D; &#123;</span><br><span class="line">    float_add,          &#x2F;* nb_add *&#x2F;</span><br><span class="line">    float_sub,          &#x2F;* nb_subtract *&#x2F;</span><br><span class="line">    float_mul,          &#x2F;* nb_multiply *&#x2F;</span><br><span class="line">    float_rem,          &#x2F;* nb_remainder *&#x2F;</span><br><span class="line">    float_divmod,       &#x2F;* nb_divmod *&#x2F;</span><br><span class="line">    float_pow,          &#x2F;* nb_power *&#x2F;</span><br><span class="line">    (unaryfunc)float_neg, &#x2F;* nb_negative *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    0,                  &#x2F;* nb_inplace_add *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_subtract *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_multiply *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_remainder *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_power *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以加法为例，以下语句在 Python 内部最终由 float_add 函数执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; 1.5</span><br><span class="line">&gt;&gt;&gt; b &#x3D; 1.1</span><br><span class="line">&gt;&gt;&gt; a + b</span><br><span class="line">2.6</span><br></pre></td></tr></table></figure>
+<p>float_add 是一个 二元函数 ，位于 Objects/floatobject.h 中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">float_add(PyObject *v, PyObject *w)</span><br><span class="line">&#123;</span><br><span class="line">    double a,b;</span><br><span class="line">    &#x2F;&#x2F;将两个参数对象转化成浮点值，CONVERT_TO_DOUBLE是一个宏，将PyFloatObject里面的ob_fval抽出来给double变量</span><br><span class="line">    CONVERT_TO_DOUBLE(v, a);</span><br><span class="line">    CONVERT_TO_DOUBLE(w, b);</span><br><span class="line">    PyFPE_START_PROTECT(&quot;add&quot;, return 0)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;对两个浮点值求和</span><br><span class="line">    a &#x3D; a + b;</span><br><span class="line">    PyFPE_END_PROTECT(a)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;创建一个新浮点对象保存计算结果并返回</span><br><span class="line">    return PyFloat_FromDouble(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>浮点数计算一般都遵循 <strong>IEEE-754</strong>标准，如果计算时出现了错误，那么需要 <strong>将IEEE-754异常转换成Python中的异常</strong>，而 <strong>PyFPE_START_PROTECT和PyFPE_END_PROTECT</strong>这两个宏就是用来干这件事情的。 它们的定义在Include/pyfpe.h中，并且Python3.9的时候会被删除掉。</p>
+<p>所以如果是 <strong>C中的两个浮点数相加，直接a + b就可以了，编译之后就是一条简单的机器指令</strong>，然而 <strong>Python则需要额外做很多其它工作</strong>。从一个简单的加法上面就可以看出来Python为什么会比C慢几十倍了。</p>
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1902" title="小试牛刀，解剖浮点对象 float">小试牛刀，解剖浮点对象 float</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/u/4355012/blog/4464067" title="浮点数的底层实现">浮点数的底层实现</a></li>
+</ol>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -211,7 +248,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">内部结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#float-%E7%B1%BB%E5%9E%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.1.</span> <span class="toc-text">float 类型对象</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">对象的创建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%94%80%E6%AF%81"><span class="toc-number">3.</span> <span class="toc-text">对象的销毁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98%E6%B1%A0"><span class="toc-number">4.</span> <span class="toc-text">空闲对象缓存池</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">内部结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#float-%E7%B1%BB%E5%9E%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.1.</span> <span class="toc-text">float 类型对象</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">对象的创建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%94%80%E6%AF%81"><span class="toc-number">3.</span> <span class="toc-text">对象的销毁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98%E6%B1%A0"><span class="toc-number">4.</span> <span class="toc-text">空闲对象缓存池</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-number">5.</span> <span class="toc-text">对象的行为</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%80%BC%E6%93%8D%E4%BD%9C%E9%9B%86"><span class="toc-number">5.1.</span> <span class="toc-text">数值操作集</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#reference"><span class="toc-number">6.</span> <span class="toc-text">reference</span></a></li></ol>
  
   </div>
 
@@ -240,7 +277,7 @@
 			
 		
 			
-				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>3</sup></a></li>
+				<li><a href="/tags/python源码分析/" title="python源码分析">python源码分析<sup>4</sup></a></li>
 			
 		
 			
@@ -252,6 +289,10 @@
 			
 		
 			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/c/" title="c#">c#<sup>1</sup></a></li>
 			
 		
@@ -260,15 +301,19 @@
 			
 		
 			
-				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Cocos/" title="Cocos">Cocos<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP-IP卷一/" title="TCP/IP卷一">TCP/IP卷一<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/svn/" title="svn">svn<sup>1</sup></a></li>
 			
 		
 		</ul>

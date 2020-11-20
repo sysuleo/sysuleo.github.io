@@ -16,12 +16,12 @@
 
 
 
-<link rel="stylesheet" href="//unpkg.com/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
-  <link rel="stylesheet" href="//unpkg.com/animate.css@3.1.1/animate.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
   <meta property="og:type" content="website">
@@ -99,6 +99,9 @@
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
 
@@ -119,6 +122,20 @@
 
 
 
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
 
 
 
@@ -158,8 +175,9 @@
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives">
-          <span class="site-state-item-count">21</span>
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -169,6 +187,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
 
 
 
@@ -187,6 +213,8 @@
     <span>0%</span>
   </div>
 
+  <a href="https://github.com/sysuleo" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
@@ -196,6 +224,113 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/" class="post-title-link" itemprop="url">[python源码分析] 装饰器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2020-11-19 12:58:11 / Modified: 14:06:34" itemprop="dateCreated datePublished" datetime="2020-11-19T12:58:11+08:00">2020-11-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>要了解装饰器，首先我们来看看嵌套函数</p>
+<h2 id="嵌套函数"><a href="#嵌套函数" class="headerlink" title="嵌套函数"></a>嵌套函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def adder(n):</span><br><span class="line">    def handler(x):</span><br><span class="line">        return n+x</span><br><span class="line">    return handler    #返回的是一个函数的引用</span><br></pre></td></tr></table></figure>
+<p>像 adder 函数和 handler 这样，在一个函数的函数体内定义另一个函数，就构成了 嵌套函数 。adder-handler 这段简单的代码包含了 3 个不同的作用域：</p>
+<div style="width:80%;margin:auto"><img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/wrapper_func.jpg" class="" title="wrapper_func图"></div>
+
+<p>作用域是一个 <strong>静态概念</strong>，由 Python 代码语法决定，与编译后产生的 代码对象 一一对应。作用域规定了能够被某个代码块访问的变量有哪些，但对变量具体的值则一概不关心。</p>
+<p>一旦 Python 程序开始运行，<strong>虚拟机</strong>需要为 <strong>作用域中的变量</strong> 分配一定的 <strong>存储空间</strong>，这就是 <strong>名字空间</strong> 。名字空间依照作用域规则实现，它 <strong>决定了某个变量在运行时的取值</strong>，可以看做是 <strong>作用域在运行时的动态表现</strong>方式。</p>
+<p>当 <strong>adder 函数执行</strong>时，作用域 A 在虚拟机中表现为 全局 名字空间，作用域 B 表现为 局部 名字空间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">globals: adder</span><br><span class="line">locals: n, handler</span><br></pre></td></tr></table></figure>
+<p>当 <strong>handler 函数执行</strong>时，例如调用 adder(10) 时，作用域 A 在虚拟机中表现为 <strong>全局 名字空间</strong>，作用域 B 表现为 <strong>闭包 名字空间</strong>：作用域 C 表现为 <strong>局部 名字空间</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">globals: adder</span><br><span class="line">locals: x</span><br><span class="line">enclosure: n</span><br></pre></td></tr></table></figure>
+
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><h4 id="什么是闭包呢？"><a href="#什么是闭包呢？" class="headerlink" title="什么是闭包呢？"></a>什么是闭包呢？</h4><p><strong>闭包 ( closure )</strong> 是 <strong>词法闭包 ( Lexical Closure )</strong> 的简称，指 <strong>延伸了作用域的函数</strong>，其中包含函数定义体中引用、但是不在定义体中定义的非全局变量。简单来说就是 <strong>嵌套函数引用了外层函数的变量</strong>。这些被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。</p>
+<p>首先我们来看看adder(10)示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; add10 &#x3D; adder(10)</span><br><span class="line">&gt;&gt;&gt; add10(10)</span><br><span class="line">20</span><br><span class="line">&gt;&gt;&gt; add10(15)</span><br><span class="line">25</span><br></pre></td></tr></table></figure>
+<p>观察上面的例子，当函数 adder 返回，<strong>局部变量 n 应该就被回收了</strong>，为什么 <strong>handler 函数还能访问到它呢</strong>？这正是由于 <strong>闭包空间</strong>的存在。</p>
+<p>以 adder(10) 为例，它是一个 handler 函数对象，闭包变量 n 值总是 10 。那么，内层函数是如何访问闭包作用域的呢？我们对函数代码对象进行反汇编，从中可以看出端倪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; add10 &#x3D; adder(10)</span><br><span class="line">&gt;&gt;&gt; add10</span><br><span class="line">&lt;function adder.&lt;locals&gt;.handler at 0x10dc2b6a8&gt;</span><br><span class="line">&gt;&gt;&gt; add10.__code__</span><br><span class="line">&lt;code object handler at 0x10dbe5150, file &quot;&lt;stdin&gt;&quot;, line 2&gt;</span><br><span class="line">&gt;&gt;&gt; dis.dis(add10.__code__)</span><br><span class="line">  3           0 LOAD_DEREF               0 (n)      # 执行了闭包变量(藏于 PyFrameObject)查找工作</span><br><span class="line">              2 LOAD_FAST                0 (x)      # 局部变量(栈帧对象中)查找</span><br><span class="line">              4 BINARY_ADD</span><br><span class="line">              6 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+
+<p>PyFrameObject 结构体最后部分是不固定的，依次存放着 <strong>静态局部名字空间、闭包名字空间以及临时栈</strong>。以 add10(1) 为例，函数运行时 PyFrameObject 状态如下如下：</p>
+<div style="width:80%;margin:auto"><img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/add10%E5%AE%9E%E4%BE%8B.jpg" class="" title="add10实例图"></div>
+
+<p>由于函数 <strong>局部变量、闭包变量个数</strong> 在 <strong>编译阶段</strong> 就能 <strong>确定</strong>，<strong>运行时并不会增减</strong>，因此 <strong>无须用 dict 对象来保存</strong>。相反，将这些变量依次排列 <strong>保存在数组</strong>中，然后通过数组下标来访问即可。这就是所谓的 <strong>静态名字空间</strong>。</p>
+<p>对于局部变量 n ，数组对应的槽位保存着整数对象 1 的地址，表示 n 与 1 绑定。而闭包变量 x 则略有差别，槽位 <strong>不直接保存整数对象</strong> 10 ，而是通过一个 <strong>PyCellObject 间接</strong>与整数对象 10 绑定。</p>
+<h4 id="闭包变量如何初始化"><a href="#闭包变量如何初始化" class="headerlink" title="闭包变量如何初始化"></a>闭包变量如何初始化</h4><p>函数对象 <strong>PyFunctionObject</strong> 中有一个字段 <strong>func_closure</strong> ，保存着函数 <strong>所有闭包变量</strong>。我们可以通过名字 <strong><strong>closure</strong></strong> 可以 <strong>访问</strong> 到这个底层结构体字段：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>add10.<strong>closure</strong><br>(&lt;cell at 0x10dc09e28: int object at 0x10da161a0&gt;,)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>这是一个由 *<strong>PyCellObject</strong> 组成的 <strong>元组</strong>，PyCellObject 则 <strong>保存着闭包变量的值</strong>。当函数调用发生时，Python 虚拟机创建 <strong>PyFrameObject 对象</strong>，并从 <strong>函数对象取出该元组，依次填充相关静态槽位</strong>。</p>
+<div style="width:80%;margin:auto"><img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/%E9%97%AD%E5%8C%85%E4%B8%8E%E8%BF%90%E8%A1%8C%E5%B8%A7.jpg" class="" title="闭包与运行帧图"></div>
+
+<h4 id="为什么闭包变量要通过-PyCellObject-间接引用"><a href="#为什么闭包变量要通过-PyCellObject-间接引用" class="headerlink" title="为什么闭包变量要通过 PyCellObject 间接引用?"></a>为什么闭包变量要通过 PyCellObject 间接引用?</h4><p>最新的 Python(3.7+) 提供了 <strong>nonlocal</strong> 关键字，支持 <strong>修改闭包变量</strong>。如果没有 PyCellObject ，函数在运行时 <strong>直接修改 PyFrameObject</strong> ，<strong>函数返回就被回收了</strong>。借助 PyCellObject ，<strong>函数在运行时修改的是 ob_ref</strong> 。这样一来，<strong>就算函数返回，修改还是随函数而存在</strong>。</p>
+<h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><p>前面我们了解了 <strong>嵌套函数和闭包</strong>，我们可以 <strong>让函数具备搭积木的魔法</strong>，例如：打印函数的执行时间。</p>
+<p>事不宜迟，我们来实践一下，实现 timer 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def timer(func):</span><br><span class="line">    def wrapper(*args, **kwargs):</span><br><span class="line">        start &#x3D; time.time()</span><br><span class="line">        func(*args, **kwargs) #此处拿到了被装饰的函数func</span><br><span class="line">        time.sleep(2)#模拟耗时操作</span><br><span class="line">        long &#x3D; time.time() - start</span><br><span class="line">        print(f&#39;共耗时&#123;long&#125;秒。&#39;)</span><br><span class="line">    return wrapper          #返回内层函数的引用</span><br><span class="line"></span><br><span class="line">@timer</span><br><span class="line">def add(a, b):</span><br><span class="line">    print(a+b)</span><br><span class="line"></span><br><span class="line">add(1, 2) #正常调用add</span><br></pre></td></tr></table></figure>
+<p>timer被我们改造成了 <strong>装饰器</strong>，它接受被装饰函数为入参，返回内部 <strong>嵌套函数的引用</strong>（注意：<strong>此处并未执行函数</strong>），内部嵌套函数 <strong>wrapper持有被装饰函数的引用即func</strong>。</p>
+<p>“@”是Python的语法糖，它的作用类似于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add &#x3D; timer(add) #此处返回的是timer.&lt;locals&gt;.wrapper函数引用</span><br><span class="line">add(1, 2)</span><br></pre></td></tr></table></figure>
+
+<div style="width:80%;margin:auto"><img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/timer%E5%87%BD%E6%95%B0.jpg" class="" title="timer函数图"></div>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -677,7 +812,7 @@ NameError: name &#39;ref_s&#39; is not defined
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-11-13 10:32:01" itemprop="dateModified" datetime="2020-11-13T10:32:01+08:00">2020-11-13</time>
+        <time title="Modified: 2020-11-19 18:09:28" itemprop="dateModified" datetime="2020-11-19T18:09:28+08:00">2020-11-19</time>
       </span>
 
   
@@ -769,6 +904,12 @@ NameError: name &#39;ref_s&#39; is not defined
 
 <h3 id="查看当前路径"><a href="#查看当前路径" class="headerlink" title="查看当前路径"></a>查看当前路径</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
 
+<h3 id="重命名文件-mv"><a href="#重命名文件-mv" class="headerlink" title="重命名文件 mv"></a>重命名文件 mv</h3><p>例子：将目录A重命名为B</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv A B</span><br></pre></td></tr></table></figure>
+<p>例子：将/a目录移动到/b下，并重命名为c</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv &#x2F;a &#x2F;b&#x2F;c</span><br></pre></td></tr></table></figure>
+
+<h3 id="搜索文件-find"><a href="#搜索文件-find" class="headerlink" title="搜索文件 find"></a>搜索文件 find</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">find &#x2F; -mtime 0   #0代表当前时间，即从现在到24小时前，有改动过内容的文件都会被列出来</span><br><span class="line"></span><br><span class="line">find &#x2F;etc -newer &#x2F;etc&#x2F;passwd #寻找&#x2F;etc下面的文件，如果文件日期比&#x2F;etc&#x2F;passwd新就列出</span><br><span class="line"></span><br><span class="line">find &#x2F; -name file  #&#x2F;代表全文搜索</span><br><span class="line"></span><br><span class="line">find &#x2F;home -user Anmy  #查找&#x2F;home下属于Anmy的文件</span><br><span class="line"></span><br><span class="line">find &#x2F; -nouser #查找系统中不属于任何人的文件，可以轻易找出那些不太正常的文件</span><br><span class="line"></span><br><span class="line">find &#x2F; -name passed #查找文件名为passed的文件</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1066,10 +1207,16 @@ NameError: name &#39;ref_s&#39; is not defined
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2020-10-22 10:58:05 / Modified: 10:59:07" itemprop="dateCreated datePublished" datetime="2020-10-22T10:58:05+08:00">2020-10-22</time>
+      <time title="Created: 2020-10-22 10:58:05" itemprop="dateCreated datePublished" datetime="2020-10-22T10:58:05+08:00">2020-10-22</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-19 09:59:14" itemprop="dateModified" datetime="2020-11-19T09:59:14+08:00">2020-11-19</time>
+      </span>
 
   
 </div>
@@ -1117,7 +1264,7 @@ NameError: name &#39;ref_s&#39; is not defined
 <p>[注意]<br>[1] 由于在args变量前有<em>前缀 ，所有多余的函数参数都会作为一个元组存储在args中 。如果使用的是<strong>前缀 ，多余的参数则会被认为是一个字典的健/值对 。<br>[2] 对于def func(<em>args):，</em>args表示把传进来的位置参数存储在 **tuple（元组）args里面</strong>。例如，调用func(1, 2, 3) ，args就表示(1, 2, 3)这个元组 。<br>[3] 对于 def func(<strong>args):，</strong>args表示把参数 <strong>作为字典的健-值对存储在dict（字典）args里面</strong>。例如，调用func(a=’I’, b=’am’, c=’wcdj’) ，args就表示{‘a’:’I’, ‘b’:’am’, ‘c’:’wcdj’}这个字典 。<br>[4] 注意普通参数与</em>和*<em>参数公用的情况，一般将</em>和**参数放在参数列表最后。</p>
 <h2 id="globals"><a href="#globals" class="headerlink" title="globals()"></a>globals()</h2><p>以字典类型返回<strong>当前位置的全部全局变量</strong></p>
 <h2 id="locals-函数"><a href="#locals-函数" class="headerlink" title="locals() 函数"></a>locals() 函数</h2><p>locals() 函数会 <strong>以字典类型返回当前位置的全部局部变量</strong>。<br>对于函数, 方法, lambda 函式, 类, 以及实现了 <strong>call</strong> 方法的类实例, 它都返回 True。 </p>
-<h3 id="lambad函数用法"><a href="#lambad函数用法" class="headerlink" title="lambad函数用法"></a>lambad函数用法</h3><p>####（1）直接赋给一个变量，然后再像一般函数那样调用</p>
+<h2 id="lambad函数用法"><a href="#lambad函数用法" class="headerlink" title="lambad函数用法"></a>lambad函数用法</h2><p>####（1）直接赋给一个变量，然后再像一般函数那样调用</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">c&#x3D;lambda x,y,z:x*y*z</span><br><span class="line">c(2,3,4)</span><br><span class="line"></span><br><span class="line">24</span><br></pre></td></tr></table></figure>
 <p>当然，也可以在函数后面直接传递实参</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(lambda x:x**2)(3)</span><br><span class="line">9</span><br></pre></td></tr></table></figure>
@@ -1144,6 +1291,12 @@ NameError: name &#39;ref_s&#39; is not defined
 <p>####（8）求字符串每个单词的长度</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sentence &#x3D; &quot;Welcome To Beijing!&quot;</span><br><span class="line">words &#x3D; sentence.split()</span><br><span class="line">lengths  &#x3D; map(lambda x:len(x),words)</span><br><span class="line">print(list(lengths))</span><br><span class="line">[7,2,8]</span><br></pre></td></tr></table></figure>
 
+<h2 id="for-else结构"><a href="#for-else结构" class="headerlink" title="for else结构"></a>for else结构</h2><p>for else 结构还是第一次见，于是记录一下。如果for循环 <strong>正常结束，else中语句执行</strong>。如果是 <strong>break</strong>的，则 <strong>不执行</strong>。</p>
+<p>简单使用场景:寻找100以内的素数之和 (这个应该是较暴力算法，这里不讨论算法问题)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sum&#x3D;0</span><br><span class="line">for n in range(2,100):</span><br><span class="line">    for i in range(2,n):</span><br><span class="line">        if n%i&#x3D;&#x3D;0:          # 不是素数</span><br><span class="line">            break</span><br><span class="line">    else:</span><br><span class="line">        sum+&#x3D;n              # 加上素数</span><br><span class="line">print(sum)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="善用三目运算"><a href="#善用三目运算" class="headerlink" title="善用三目运算"></a>善用三目运算</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num &#x3D; 3 if res &gt; 3 else 1</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1328,169 +1481,6 @@ NameError: name &#39;ref_s&#39; is not defined
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">[Protobuf&gRPC] 1.protobuf简介</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-10-17 21:21:34" itemprop="dateCreated datePublished" datetime="2020-10-17T21:21:34+08:00">2020-10-17</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="Protobuf是什么"><a href="#Protobuf是什么" class="headerlink" title="Protobuf是什么"></a>Protobuf是什么</h2><p>Protobuf全称是Google Protocol Buffer，是一种高效轻便的<strong>结构化数据存储方式</strong>，可用于网络通信、数据存储等。</p>
-<p>其具有以下优点：</p>
-<ul>
-<li>平台无关、语言无关</li>
-<li>支持Java, C++, Python等多种语言，支持多平台。</li>
-<li>轻便高效，比XML更小（3~10倍），更快（20 ~ 100倍），更为简单。</li>
-<li>扩展性，兼容性好</li>
-<li>序列化数据结构的协议，可以更新数据结构，而不影响和破坏原有的旧程序。</li>
-</ul>
-<div style="width:90%;margin:auto"><img src="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/protobuf%E7%AE%80%E4%BB%8B.png" class="" title="protobuf简介图"></div>
-
-<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>将数据结构或对象转换成能够被存储和传输（例如网络传输）的格式（网络传输传输的是<strong>二进制数据</strong>），同时应当要保证这个序列化结果在之后（可能是另一个计算环境中）能够<strong>被重建回原来的数据结构或对象</strong>。</p>
-<h2 id="protobuf语法介绍"><a href="#protobuf语法介绍" class="headerlink" title="protobuf语法介绍"></a>protobuf语法介绍</h2><p>目前有Protobuf2和Protobuf3。</p>
-<h3 id="protobuf2语法简介"><a href="#protobuf2语法简介" class="headerlink" title="protobuf2语法简介"></a>protobuf2语法简介</h3><p>.proto文件中数据类型可以分为两大类:<br>复合数据类型包括：<strong>枚举和message类型</strong><br>标准数据类型包含：<strong>整型，浮点，字符串</strong>等</p>
-<p>数据类型前面修饰词：</p>
-<ul>
-<li><p>①required: 必须赋值，不能为空，否则该条message会被认为是“uninitialized”。除此之外，“required”字段跟“optional”字段并无差别。</p>
-</li>
-<li><p>②optional:字段可以赋值，也可以不赋值。假如没有赋值的话，会被赋上默认值。</p>
-</li>
-<li><p>③repeated: 该字段可以重复任意次数，包括0次。重复数据的顺序将会保存在protocol buffer中，将这个字段想象成一个可以自动设置size的数组就可以了。</p>
-</li>
-</ul>
-<p>注：<strong>每个字段要给数字</strong><br><strong>该Number是用来标记该字段在序列化后的二进制数据中所在的field</strong>，每个字段的<strong>Number在message内部都是独一无二的</strong>。也<strong>不能进行改变</strong>，否则数据就不能正确的解包</p>
-<p>关于 proto2 定义 message 消息的更多语法细节，例如具有支持哪些类型，字段编号分配、import<br>导入定义，reserved 保留字段等知识请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6f68fb2c7d19" title="ProtoBuf 官方文档（二）- 语法指引（proto2）">ProtoBuf 官方文档（二）- 语法指引（proto2）</a></p>
-<p>关于定义时的一些规范请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8c55fb0a09b5" title="[翻译] ProtoBuf 官方文档（四）- 规范指引">[翻译] ProtoBuf 官方文档（四）- 规范指引</a></p>
-<h3 id="protobuf3语法介绍"><a href="#protobuf3语法介绍" class="headerlink" title="protobuf3语法介绍"></a>protobuf3语法介绍</h3><ul>
-<li><p>字段前取消了required和optional两个关键字，目前可用的只有repeated关键字。</p>
-</li>
-<li><p>不可以现设置默认值了。</p>
-<ol>
-<li>string默认为空串</li>
-<li>枚举默认为第一个枚举定义的第一个值。并且必须是0,必须有有一个0值，我们可以用这个0值作为默认值。这个零值必须为第一个元素，为了兼容proto2语义，枚举类的第一个值总是默认值。</li>
-<li>bytes默认为空bytes</li>
-<li>bool默认为false</li>
-<li>数字类型默认为0</li>
-</ol>
-</li>
-<li><p>protoType类型如下：<br>double、float、int32、int64、uint32、uint64、sint32、sint64、fixed32、fixed64、sfixed32、sfixed64、bool、string、bytes</p>
-</li>
-<li><p>分配标识号<br>正如你所见，在消息定义中，每个字段都有唯一的一个数字标识符。这些标识符是用来在消息的二进制格式中识别各个字段的，一旦开始使用就不能够再改变。注：[1,15]之内的标识号在编码的时候会占用一个字节。[16,2047]之内的标识号则占用2个字节。所以应该为那些频繁出现的消息元素保留 [1,15]之内的标识号。切记：要为将来有可能添加的、频繁出现的标识号预留一些标识号。</p>
-</li>
-<li><p>最小的标识号可以从1开始，最大到2^29 - 1, or 536,870,911。不可以使用其中的[19000－19999]（ (从FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber)）的标识号， Protobuf协议实现中对这些进行了预留。如果非要在.proto文件中使用这些预留标识号，编译时就会报警。同样你也不能使用早期保留的标识号。</p>
-</li>
-<li><p>指定字段规则<br>所指定的消息字段修饰符必须是如下之一：</p>
-</li>
-</ul>
-<p><strong>singular</strong>：一个格式良好的消息应该有0个或者1个这种字段（但是不能超过1个）。<br><strong>repeated</strong>：在一个格式良好的消息中，这种字段可以重复任意多次（包括0次）。重复的值的顺序会被保留。<br>在proto3中，repeated的标量域默认情况下使用packed。</p>
-<p>##安装<br>使用Python的话简便的安装方法如下（linux）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install protobuf    # 安装protobuf库</span><br><span class="line">sudo apt-get install protobuf-compiler  # 安装protobuf编译器</span><br></pre></td></tr></table></figure>
-
-<h2 id="如何使用protobuf"><a href="#如何使用protobuf" class="headerlink" title="如何使用protobuf"></a>如何使用protobuf</h2><p>目前有Protobuf2和Protobuf3，本文以Protobuf3为例。</p>
-<h3 id="第一步，创建-proto文件，定义数据结构"><a href="#第一步，创建-proto文件，定义数据结构" class="headerlink" title="第一步，创建.proto文件，定义数据结构"></a>第一步，创建.proto文件，定义数据结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;指定正在使用proto3语法：如果没有指定这个，编译器会使用proto2</span><br><span class="line">&#x2F;&#x2F;这个指定语法行必须是文件的非空非注释的第一个行</span><br><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="第二步，protoc-编译-proto-文件生成读写接口"><a href="#第二步，protoc-编译-proto-文件生成读写接口" class="headerlink" title="第二步，protoc 编译 .proto 文件生成读写接口"></a>第二步，protoc 编译 .proto 文件生成读写接口</h3><p>我们在 .proto 文件中定义了数据结构，这些数据结构是<strong>面向开发者和业务程序的</strong>，并不面向存储和传输。</p>
-<p>当需要把这些数据进行存储或传输时，就需要<strong>将这些结构数据进行序列化、反序列化以及读写</strong>。那么如何实现呢？答案就是通过 <strong>protoc</strong> 这个编译器。</p>
-<p>利用protoc.exe编译proto文件，cmd切换到当前目录，执行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; $SRC_DIR: .proto 所在的源目录</span><br><span class="line">&#x2F;&#x2F; --python_out: 生成 python 代码</span><br><span class="line">&#x2F;&#x2F; $DST_DIR: 生成代码的目标目录</span><br><span class="line">&#x2F;&#x2F; xxx.proto: 要针对哪个 proto 文件生成接口代码</span><br><span class="line">protoc -I&#x3D;$SRC_DIR --python_out&#x3D;$DST_DIR xxx.proto</span><br></pre></td></tr></table></figure>
-<p>这里我们使用如下编译语句</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I&#x3D;. --python_out&#x3D;.&#x2F; addressbook.proto</span><br></pre></td></tr></table></figure>
-
-<p>编译好之后你就会在目标目录里面看到输出的结果文件，如下：addressbook_pb2.py</p>
-<h3 id="第三步，编译-py文件，进行序列化和凡序列化"><a href="#第三步，编译-py文件，进行序列化和凡序列化" class="headerlink" title="第三步，编译.py文件，进行序列化和凡序列化"></a>第三步，编译.py文件，进行序列化和凡序列化</h3><p>add_person.py</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for key in person.maps.mapfield:</span><br><span class="line">    print(key,person.maps.mapfield[key])</span><br></pre></td></tr></table></figure>
-<p>编译该py文件，输出结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">b&#39;\n6\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line"></span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">1 1</span><br><span class="line">2 2</span><br></pre></td></tr></table></figure>
-<p>我们就看到了序列化和反序列化的结果</p>
-<p>这篇简介就介绍到这，后期会继续</p>
-<h2 id="进阶使用"><a href="#进阶使用" class="headerlink" title="进阶使用"></a>进阶使用</h2><p>addressbook.proto内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line">&#x2F;&#x2F;引入外部proto</span><br><span class="line">import &quot;emu.proto&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  &#x2F;&#x2F;外部引用map</span><br><span class="line">  repeated MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;内部嵌套message</span><br><span class="line">  repeated Hobby hobby &#x3D; 8;</span><br><span class="line">  message Hobby&#123;</span><br><span class="line">    string interest &#x3D; 1;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们将addressbook.proto中的repeated MyMessage maps = 7;进行了外部引用，<br>emu.proto如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后首先对emu.proto进行编译，<br>protoc ./emu.proto –python_out=./</p>
-<p>然后会addressbook.proto进行编译<br>protoc ./addressbook.proto –python_out=./<br>然后会默认生成上述截图中的emu_pb2.py、addressbook_pb2.py文件</p>
-<p>我们接下来看看add_person.py代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line"></span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps.add()</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">hobby &#x3D; person.hobby.add()</span><br><span class="line">hobby.interest &#x3D; &quot;python&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line">  print(person.phones[0].number)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for map in person.maps:</span><br><span class="line">    for key in map.mapfield:</span><br><span class="line">      print(key,&#39;-------&#39;,map.mapfield[key])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for hobby in person.hobby:</span><br><span class="line">    print(hobby.interest)</span><br></pre></td></tr></table></figure>
-<p>最后输出结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;Users&#x2F;zhiliao&#x2F;miniconda3&#x2F;bin&#x2F;python &#x2F;Users&#x2F;zhiliao&#x2F;zhiliao&#x2F;untitled1&#x2F;tutorial&#x2F;add_person.py</span><br><span class="line">b&#39;\n@\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02B\x08\n\x06python&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">123456</span><br><span class="line">2 ------- 2</span><br><span class="line">1 ------- 1</span><br><span class="line">python</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-<p>参考文章：</p>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013210620/article/details/81317731" title="python基础--protobuf的使用(一)">python基础–protobuf的使用(一)</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2265f56805fa" title="Protobuf学习">Protobuf学习</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/31a6b4b2c3ab" title="Protobuf Python 示例">Protobuf Python 示例</a></li>
-</ol>
-<p>拓展阅读：</p>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/73c9ed3a4877" title="深入 ProtoBuf - 编码">深入 ProtoBuf - 编码</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/62f0238beec8" title="深入 ProtoBuf - 序列化源码解析">深入 ProtoBuf - 序列化源码解析</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ddc1aaca3691" title="深入 ProtoBuf - 反射原理解析">深入 ProtoBuf - 反射原理解析</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1541,17 +1531,44 @@ NameError: name &#39;ref_s&#39; is not defined
   </span>
   <span class="author" itemprop="copyrightHolder">Liu Wen</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
   </div>
 
     </div>
   </footer>
 
   
-  <script src="//unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
 
 
 
@@ -1571,6 +1588,7 @@ NameError: name &#39;ref_s&#39; is not defined
 
 
   
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 

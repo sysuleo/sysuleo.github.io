@@ -177,7 +177,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -232,6 +232,86 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/24/linux-2-curl%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/24/linux-2-curl%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">[linux] 2.curl命令行工具</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2020-11-24 16:12:31 / Modified: 16:57:39" itemprop="dateCreated datePublished" datetime="2020-11-24T16:12:31+08:00">2020-11-24</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>curl 是常用的命令行工具(其实并非linux下的,windows cmd也有，只是我在linux下使用),用来请求 Web 服务器。它的名字就是客户端（client）的 URL 工具的意思。</p>
+<p>不带有任何参数时，curl 就是发出 GET 请求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl https:&#x2F;&#x2F;www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="d"><a href="#d" class="headerlink" title="-d"></a>-d</h2><p>-d参数用于发送 POST 请求的数据体。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -d&#39;login&#x3D;2333＆password&#x3D;2333&#39;-X POST https:&#x2F;&#x2F;google.com&#x2F;login</span><br></pre></td></tr></table></figure>
+
+<h2 id="X"><a href="#X" class="headerlink" title="-X"></a>-X</h2><p>-X参数 <strong>指定 HTTP 请求</strong>的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -X POST https:&#x2F;&#x2F;google.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="H"><a href="#H" class="headerlink" title="-H"></a>-H</h2><p>-H参数添加 HTTP 请求的标头。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -H &#39;Accept-Language: en-US&#39; https:&#x2F;&#x2F;google.com</span><br></pre></td></tr></table></figure>
+<p>上面命令添加 HTTP 标头Accept-Language: en-US。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -H &#39;Accept-Language: en-US&#39; -H &#39;Secret-Message: xyzzy&#39; https:&#x2F;&#x2F;google.com</span><br></pre></td></tr></table></figure>
+<p>上面命令添加两个 HTTP 标头。</p>
+<p>$ curl -d ‘{“login”: “emma”, “pass”: “123”}’ -H ‘Content-Type: application/json’ <a target="_blank" rel="noopener" href="https://google.com/login">https://google.com/login</a><br>上面命令添加 HTTP 请求的标头是Content-Type: application/json，然后用-d参数发送 JSON 数据。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -255,10 +335,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2020-11-19 12:58:11 / Modified: 14:06:34" itemprop="dateCreated datePublished" datetime="2020-11-19T12:58:11+08:00">2020-11-19</time>
+      <time title="Created: 2020-11-19 12:58:11" itemprop="dateCreated datePublished" datetime="2020-11-19T12:58:11+08:00">2020-11-19</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-12-02 12:51:45" itemprop="dateModified" datetime="2020-12-02T12:51:45+08:00">2020-12-02</time>
+      </span>
 
   
 </div>
@@ -794,7 +880,7 @@ NameError: name &#39;ref_s&#39; is not defined
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">[linux]1.常用指令</a>
+          <a href="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 1.常用指令</a>
         </h2>
 
         <div class="post-meta-container">
@@ -812,7 +898,7 @@ NameError: name &#39;ref_s&#39; is not defined
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-11-19 18:09:28" itemprop="dateModified" datetime="2020-11-19T18:09:28+08:00">2020-11-19</time>
+        <time title="Modified: 2020-11-24 16:14:12" itemprop="dateModified" datetime="2020-11-24T16:14:12+08:00">2020-11-24</time>
       </span>
 
   
@@ -1215,7 +1301,7 @@ NameError: name &#39;ref_s&#39; is not defined
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-11-19 09:59:14" itemprop="dateModified" datetime="2020-11-19T09:59:14+08:00">2020-11-19</time>
+        <time title="Modified: 2020-11-24 12:11:47" itemprop="dateModified" datetime="2020-11-24T12:11:47+08:00">2020-11-24</time>
       </span>
 
   
@@ -1297,173 +1383,10 @@ NameError: name &#39;ref_s&#39; is not defined
 
 
 <h2 id="善用三目运算"><a href="#善用三目运算" class="headerlink" title="善用三目运算"></a>善用三目运算</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num &#x3D; 3 if res &gt; 3 else 1</span><br></pre></td></tr></table></figure>
-      
-    </div>
 
-    
-    
-    
+<h2 id="接受动态参数sys-argv"><a href="#接受动态参数sys-argv" class="headerlink" title="接受动态参数sys.argv"></a>接受动态参数sys.argv</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># test.py</span><br><span class="line"></span><br><span class="line">import sys</span><br><span class="line">def main(argv)</span><br><span class="line">    print(argv)</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main(sys.argv)</span><br></pre></td></tr></table></figure>
 
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">[Protobuf&gRPC] 2.gRPC简介</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-10-18 15:49:34" itemprop="dateCreated datePublished" datetime="2020-10-18T15:49:34+08:00">2020-10-18</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="RPC-框架原理"><a href="#RPC-框架原理" class="headerlink" title="RPC 框架原理"></a>RPC 框架原理</h2><p>RPC 框架的目标就是让远程服务调用更加简单、透明，RPC 框架负责<strong>屏蔽底层的传输方式（TCP 或者 UDP）、序列化方式（XML/Json/ 二进制）和通信细节</strong>。服务<strong>调用者可以像调用本地接口一样调用远程的服务提供者</strong>，而不需要关心底层通信细节和调用过程。</p>
-<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/rpc%E7%AE%80%E4%BB%8B.png" class="" title="rpc简介图"></div>
-
-<p>业界主流的 RPC 框架整体上分为三类：</p>
-<ul>
-<li>支持多语言的 RPC 框架，比较成熟的有 <strong>Google 的 gRPC、Apache（Facebook）的 Thrift</strong>；</li>
-<li>只支持<strong>特定语言的 RPC 框架</strong>，例如新浪微博的 <strong>Motan</strong>；</li>
-<li>支持<strong>服务治理等服务化特性的分布式服务框架</strong>，其底层内核仍然是 RPC 框架, 例如阿里的 Dubbo。</li>
-</ul>
-<h2 id="gRPC-简介"><a href="#gRPC-简介" class="headerlink" title="gRPC 简介"></a>gRPC 简介</h2><p>gRPC 是一个高性能、开源和通用的 RPC 框架，面向服务端和移动端，基于 HTTP/2 设计。</p>
-<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/grpc%E7%AE%80%E4%BB%8B.png" class="" title="grpc简介图"></div>
-
-<p>gRPC 客户端和服务端<strong>可以在多种环境中运行和交互</strong> - 从 google 内部的服务器到你自己的笔记本，并且可以用任何 gRPC 支持的语言来编写。所以，你可以很容易地用 Java 创建一个 gRPC 服务端，用 Go、Python、Ruby 来创建客户端。此外，<strong>Google 最新 API 将有 gRPC 版本的接口</strong>，使你很容易地将 Google 的功能集成到你的应用里。</p>
-<p>gRPC 特点</p>
-<ul>
-<li>语言中立，支持多种语言；</li>
-<li>基于 IDL 文件定义服务，通过 proto3 工具生成指定语言的数据结构、服务端接口以及客户端 Stub；</li>
-<li>通信协议基于标准的 HTTP/2 设计，支持双向流、消息头压缩、单 TCP 的多路复用、服务端推送等特性，这些特性使得 gRPC 在移动端设备上更加省电和节省网络流量；</li>
-<li>序列化支持 PB（Protocol Buffer）和 JSON，PB 是一种语言无关的高性能序列化框架，基于 HTTP/2 + PB, 保障了 RPC 调用的高性能。</li>
-</ul>
-<h2 id="gRPC有什么好处以及在什么场景下需要用gRPC"><a href="#gRPC有什么好处以及在什么场景下需要用gRPC" class="headerlink" title="gRPC有什么好处以及在什么场景下需要用gRPC"></a>gRPC有什么好处以及在什么场景下需要用gRPC</h2><p>gRPC vs. Restful API<br>gRPC和restful API都提供了一套通信机制，用于server/client模型通信，而且它们都使用http作为底层的传输协议(严格地说, gRPC使用的http2.0，而restful api则不一定)。不过gRPC还是有些特有的优势，如下：</p>
-<ul>
-<li>gRPC可以通过protobuf来定义接口，从而可以有更加严格的接口约束条件。</li>
-<li>通过protobuf可以将数据<strong>序列化为二进制编码</strong>，这会<strong>大幅减少需要传输的数据量，从而大幅提高性能</strong>。</li>
-<li>gRPC可以方便地<strong>支持流式通信</strong>(理论上通过http2.0就可以使用streaming模式, 但是通常web服务的restful api似乎很少这么用，通常的流式数据应用如视频流，一般都会使用专门的协议如HLS，RTMP等，这些就不是我们通常web服务了，而是有专门的服务器应用。）</li>
-<li>proto文件生成目标代码，简单易用</li>
-<li>序列化反序列化直接对应程序中的数据类，不需要解析后在进行映射(XML,JSON都是这种方式)</li>
-<li>支持向前兼容（新加字段采用默认值）和向后兼容（忽略新加字段），简化升级</li>
-<li>Netty等一些框架集成</li>
-</ul>
-<p>缺点：</p>
-<ul>
-<li>1、GRPC尚未提供连接池，需要自行实现</li>
-<li>2、尚未提供“服务发现”、“负载均衡”机制</li>
-<li>3、因为基于HTTP2，绝大部多数HTTP Server、Nginx都尚不支持，即Nginx不能将GRPC请求作为HTTP请求来负载均衡，而是作为普通的TCP请求。（nginx1.9版本已支持）</li>
-<li>4、Protobuf二进制可读性差（貌似提供了Text_Fromat功能）</li>
-<li>5、默认不具备动态特性（可以通过动态定义生成消息类型或者动态编译支持）</li>
-</ul>
-<h3 id="使用-protocol-buffers"><a href="#使用-protocol-buffers" class="headerlink" title="使用 protocol buffers"></a>使用 protocol buffers</h3><p>gRPC 默认使用 protocol buffers（protobuf），这是 Google 开源的一套成熟的结构数据序列化机制（当然也可以使用其他数据格式如 JSON）。正如你将在下方例子里所看到的，你用 proto files 创建 gRPC 服务，用 protobuf 消息类型来定义方法参数和返回类型。protobuf相关可以看 <a target="_blank" rel="noopener" href="http://liuw.tech/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/" title="[Protobuf&amp;gRPC] 1.protobuf简介">protobuf简介</a></p>
-<h3 id="基于HTTP-2-0标准设计"><a href="#基于HTTP-2-0标准设计" class="headerlink" title="基于HTTP 2.0标准设计"></a>基于HTTP 2.0标准设计</h3><p>由于gRPC<strong>基于HTTP 2.0</strong>标准设计，带来了更多强大功能，如<strong>多路复用、二进制帧、头部压缩、推送机制</strong>。这些功能给设备带来重大益处，如<strong>节省带宽、降低TCP连接次数、节省CPU使用</strong>等。gRPC既能够在客户端应用，也能够在服务器端应用，从而<strong>以透明的方式实现两端的通信和简化通信系统的构建</strong>。</p>
-<p>HTTP 版本分为HTTP 1.X、 HTTP 2.0，其中HTTP 1.X是当前使用最广泛的HTTP协议，<strong>HTTP 2.0称为超文本传输协议第二代</strong>。HTTP 1.X定义了四种与服务器交互的方式，分别为：<strong>GET、POST、PUT、DELETE</strong>，这些在HTTP 2.0中均保留。我们再来看看HTTP 2.0的新特性：</p>
-<h4 id="1-双向流、多路复用"><a href="#1-双向流、多路复用" class="headerlink" title="1.双向流、多路复用"></a>1.双向流、多路复用</h4><p>在HTTP 1.X协议中，客户端在同一时间访问同一域名的请求数量是有限制的，当超过阈值时请求会被阻断，但是这种情况在HTTP 2.0中将被忽略。由于HTTP 1.X传输的是纯文本数据，传输体积较大，而HTTP 2.0传输的基本单元为帧，每个帧都包含消息，并且由于HTTP 2.0允许同时通过一条连接发起多个“请求-响应”消息，无需建立多个TCP链接的同时实现多条流并行，提高吞吐性能，并且在一个连接内对多个消息进行优先级的管理和流控。</p>
-<h4 id="2-二进制帧"><a href="#2-二进制帧" class="headerlink" title="2.二进制帧"></a>2.二进制帧</h4><p>相对于<strong>HTTP 1.X的纯文本传输</strong>，HTTP 2.0传输的是<strong>二进制数据</strong>，与Protocol Buffers相辅相成。使得<strong>传输数据体积小、负载低</strong>，保持<strong>更加紧凑和高效</strong>。</p>
-<h4 id="3-头部压缩"><a href="#3-头部压缩" class="headerlink" title="3.头部压缩"></a>3.头部压缩</h4><p>因为HTTP是<strong>无状态协议</strong>，对于业务的处理没有记忆能力，每一次请求都需要携带设备的所有细节，特别是<strong>在头部都会包含大量的重复数据</strong>，对于设备来说就是在不断地做无意义的重复性工作。HTTP 2.0中<strong>使用“头表”来跟踪之前发送的数据</strong>，对于<strong>相同的数据将不再使用重复请求和发送</strong>，进而<strong>减少数据的体积</strong>。</p>
-<hr>
-<h2 id="gRPC有四种通信方式"><a href="#gRPC有四种通信方式" class="headerlink" title="gRPC有四种通信方式:"></a>gRPC有四种通信方式:</h2><h3 id="1、-Simple-RPC"><a href="#1、-Simple-RPC" class="headerlink" title="1、 Simple RPC"></a>1、 Simple RPC</h3><p>简单rpc<br>这就是一般的rpc调用，一个请求对象对应一个返回对象<br>proto语法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc simpleHello(Person) returns (Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="2、-Server-side-streaming-RPC"><a href="#2、-Server-side-streaming-RPC" class="headerlink" title="2、 Server-side streaming RPC"></a>2、 Server-side streaming RPC</h3><p>服务端流式rpc<br>一个请求对象，服务端可以传回多个结果对象<br>proto语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc serverStreamHello(Person) returns (stream Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3、-Client-side-streaming-RPC"><a href="#3、-Client-side-streaming-RPC" class="headerlink" title="3、 Client-side streaming RPC"></a>3、 Client-side streaming RPC</h3><p>客户端流式rpc<br>客户端传入多个请求对象，服务端返回一个响应结果<br>proto语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc clientStreamHello(stream Person) returns (Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4、-Bidirectional-streaming-RPC"><a href="#4、-Bidirectional-streaming-RPC" class="headerlink" title="4、 Bidirectional streaming RPC"></a>4、 Bidirectional streaming RPC</h3><p>双向流式rpc<br>结合客户端流式rpc和服务端流式rpc，可以传入多个对象，返回多个响应对象<br>proto语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc biStreamHello(stream Person) returns (stream Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="服务端创建流程"><a href="#服务端创建流程" class="headerlink" title="服务端创建流程"></a>服务端创建流程</h2><p>gRPC 服务端创建采用 <strong>Build 模式</strong>，对<strong>底层服务绑定、transportServer 和 NettyServer 的创建和实例化</strong>做了<strong>封装和屏蔽</strong>，让服务调用者不用关心 RPC 调用细节，整体上分为三个过程：</p>
-<ul>
-<li>创建 Netty HTTP/2 服务端；</li>
-<li>将需要调用的服务端接口实现类注册到内部的 Registry 中，RPC 调用时，可以根据 RPC 请求消息中的服务定义信息查询到服务接口实现类；</li>
-<li>创建 gRPC Server，它是 gRPC 服务端的抽象，聚合了各种 Listener，用于 RPC 消息的统一调度和处理。</li>
-</ul>
-<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/grpc%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%88%9B%E5%BB%BA.png" class="" title="grpc服务端创建图"></div>
-
-<h2 id="gRPC-服务端创建关键流程分析："><a href="#gRPC-服务端创建关键流程分析：" class="headerlink" title="gRPC 服务端创建关键流程分析："></a>gRPC 服务端创建关键流程分析：</h2><ul>
-<li>NettyServer 实例创建：gRPC 服务端创建，首先需要<strong>初始化 NettyServer</strong>，它是 gRPC 基于 <strong>Netty 4.1 HTTP/2 协议栈之上封装的 HTTP/2 服务端</strong>。NettyServer 实例<strong>由 NettyServerBuilder 的 buildTransportServer 方法构建</strong>，NettyServer 构建完成之后，<strong>监听指定的 Socket 地址，即可实现基于 HTTP/2 协议的请求消息接入</strong>。</li>
-<li>绑定 IDL 定义的服务接口实现类：gRPC 与其它一些 RPC 框架的差异点是<strong>服务接口实现类的调用并不是通过动态代理和反射机制</strong>，而是通过 <strong>proto 工具生成代码，在服务端启动时，将服务接口实现类实例注册到 gRPC 内部的服务注册中心上</strong>。请求消息接入之后，可以<strong>根据服务名和方法名，直接调用启动时注册的服务实例</strong>，而不需要通过反射的方式进行调用，性能更优。</li>
-<li>gRPC 服务实例（ServerImpl）构建：<strong>ServerImpl 负责整个 gRPC 服务端消息的调度和处理</strong>，创建 ServerImpl 实例过程中，会<strong>对服务端依赖的对象进行初始化</strong>，例如 <strong>Netty 的线程池资源、gRPC 的线程池、内部的服务注册类（InternalHandlerRegistry）</strong>等，ServerImpl 初始化完成之后，就可以<strong>调用 NettyServer 的 start 方法启动 HTTP/2 服务端</strong>，接收 gRPC 客户端的服务调用请求</li>
-</ul>
-<h2 id="gRPC-HelloWorld实例详解"><a href="#gRPC-HelloWorld实例详解" class="headerlink" title="gRPC HelloWorld实例详解"></a>gRPC HelloWorld实例详解</h2><p>gRPC的使用通常包括如下几个步骤：</p>
-<ol>
-<li>通过protobuf来定义接口和数据类型</li>
-<li>使用gRPC protobuf生成工具生成对应语言的库函数</li>
-<li>编写gRPC server端代码</li>
-<li>编写gRPC client端代码<br>下面来通过一个实例来详细讲解上述的三步。<br>下边的hello world实例完成之后，其目录结果如下：</li>
-</ol>
-<h3 id="1-定义接口和数据类型"><a href="#1-定义接口和数据类型" class="headerlink" title="1. 定义接口和数据类型"></a>1. 定义接口和数据类型</h3><p>通过protobuf定义接口和数据类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">package rpc_package;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 客户端发送rpc方法，response &#x3D; stub.SayHello(HelloRequest(name&#x3D;&#39;eric&#39;))</span><br><span class="line">&#x2F;&#x2F; 服务端返回response，是HelloReply类型</span><br><span class="line"></span><br><span class="line">service HelloWorldService &#123;</span><br><span class="line">    &#x2F;&#x2F; define the interface and data type</span><br><span class="line">    rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; define the data type of request</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">    string name &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; define the data type of response</span><br><span class="line">message HelloReply &#123;</span><br><span class="line">    string message &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-使用gRPC-protobuf生成工具生成对应语言的库函数"><a href="#2-使用gRPC-protobuf生成工具生成对应语言的库函数" class="headerlink" title="2.使用gRPC protobuf生成工具生成对应语言的库函数"></a>2.使用gRPC protobuf生成工具生成对应语言的库函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m grpc_tools.protoc -I&#x3D;.&#x2F;protos --python_out&#x3D;.&#x2F;rpc_package --grpc_python_out&#x3D;.&#x2F;rpc_package</span><br></pre></td></tr></table></figure>
-<p>这个指令会自动生成rpc_package文件夹中的<strong>helloworld_pb2.py和helloworld_pb2_grpc.py</strong>，但是不会自动生成<strong>init</strong>.py文件，需要我们手动添加</p>
-<h3 id="3-编写gRPC-server端代码"><a href="#3-编写gRPC-server端代码" class="headerlink" title="3. 编写gRPC server端代码"></a>3. 编写gRPC server端代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*-coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from concurrent import futures</span><br><span class="line">import grpc</span><br><span class="line">import logging</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">from rpc_package.helloworld_pb2_grpc import add_HelloWorldServiceServicer_to_server, \ </span><br><span class="line">    HelloWorldServiceServicer</span><br><span class="line">from rpc_package.helloworld_pb2 import HelloRequest, HelloReply</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Hello(HelloWorldServiceServicer):</span><br><span class="line"></span><br><span class="line">    # 这里实现我们定义的接口</span><br><span class="line">    def SayHello(self, request, context):</span><br><span class="line">        return HelloReply(message&#x3D;&#39;Hello, %s!&#39; % request.name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def serve():</span><br><span class="line">    # 这里通过thread pool来并发处理server的任务</span><br><span class="line">    server &#x3D; grpc.server(futures.ThreadPoolExecutor(max_workers&#x3D;10))</span><br><span class="line"></span><br><span class="line">    # 将对应的任务处理函数添加到rpc server中</span><br><span class="line">    add_HelloWorldServiceServicer_to_server(Hello(), server)</span><br><span class="line"></span><br><span class="line">    # 这里使用的非安全接口，世界gRPC支持TLS&#x2F;SSL安全连接，以及各种鉴权机制</span><br><span class="line">    server.add_insecure_port(&#39;[::]:50000&#39;)</span><br><span class="line">    server.start()</span><br><span class="line">    try:</span><br><span class="line">        while True:</span><br><span class="line">            time.sleep(60 * 60 * 24)</span><br><span class="line">    except KeyboardInterrupt:</span><br><span class="line">        server.stop(0)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    logging.basicConfig()</span><br><span class="line">    serve()</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="4-gRPC-client端代码"><a href="#4-gRPC-client端代码" class="headerlink" title="4.gRPC client端代码"></a>4.gRPC client端代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from __future__ import print_function</span><br><span class="line">import logging</span><br><span class="line"></span><br><span class="line">import grpc</span><br><span class="line">from rpc_package.helloworld_pb2 import HelloRequest, HelloReply</span><br><span class="line">from rpc_package.helloworld_pb2_grpc import HelloWorldServiceStub</span><br><span class="line"></span><br><span class="line">def run():</span><br><span class="line">    # 使用with语法保证channel自动close</span><br><span class="line">    with grpc.insecure_channel(&#39;localhost:50000&#39;) as channel:</span><br><span class="line">        # 客户端通过stub来实现rpc通信</span><br><span class="line">        # 传入通信channel</span><br><span class="line">        stub &#x3D; HelloWorldServiceStub(channel)</span><br><span class="line"></span><br><span class="line">        # 客户端必须使用定义好的类型，这里是HelloRequest类型</span><br><span class="line">        # 客户端发&#x2F;请求</span><br><span class="line">        response &#x3D; stub.SayHello(HelloRequest(name&#x3D;&#39;eric&#39;))</span><br><span class="line">    print (&quot;hello client received: &quot; + response.message)</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    logging.basicConfig()</span><br><span class="line">    run()</span><br></pre></td></tr></table></figure>
-
-<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h3><p>运行server端代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python hello_server.py</span><br></pre></td></tr></table></figure>
-<p>接着执行client端代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  grpc_test python hello_client.py</span><br><span class="line">hello client received: Hello, eric!</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://grpc.io/" title="gRPC官网">gRPC官网</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9e57da13b737" title="grpc原理">grpc原理</a></li>
-<li><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1633335936037018920&wfr=spider&for=pc" title="grpc特性分析">grpc特性分析</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/linuxarmsummary/article/details/79467412" title="gRPC 官方文档中文版">gRPC 官方文档中文版</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7392406e2450" title="grpc应用详解与实例剖析">grpc应用详解与实例剖析</a></li>
-</ol>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py 1 2 3 4 5</span><br></pre></td></tr></table></figure>
       
     </div>
 

@@ -24,15 +24,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="浏览器的GET和POST这里特指浏览器中 非Ajax的HTTP请求，即从 HTML和浏览器诞生就一直使用的HTTP协议中的GET&#x2F;POST。浏览器用 GET请求来获取一个html页面&#x2F;图片&#x2F;css&#x2F;js等资源；用 POST来提交一个表单，并 得到一个结果的网页。 GET“读取“一个资源。比如Get到一个html文件。 反复读取不应该对访问的数据有副作用。比如”GET一下，用户就下单了，返回订单已受">
+  <meta name="description" content="浏览器的GET和POST这里特指浏览器中 非Ajax的HTTP请求，即从 HTML和浏览器诞生就一直使用的HTTP协议中的GET&#x2F;POST。浏览器用 GET请求来获取一个html页面&#x2F;图片&#x2F;css&#x2F;js等资源；用 POST来提交一个&lt; form&gt;表单，并 得到一个结果的网页。 GET“读取“一个资源。比如Get到一个html文件。 反复读取不应该对访问的数据有副作用。比如”GET一下，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[计网]http之GET和POST区别">
 <meta property="og:url" content="http://yoursite.com/2020/12/02/%E8%AE%A1%E7%BD%91-http%E4%B9%8BGET%E5%92%8CPOST%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="浏览器的GET和POST这里特指浏览器中 非Ajax的HTTP请求，即从 HTML和浏览器诞生就一直使用的HTTP协议中的GET&#x2F;POST。浏览器用 GET请求来获取一个html页面&#x2F;图片&#x2F;css&#x2F;js等资源；用 POST来提交一个表单，并 得到一个结果的网页。 GET“读取“一个资源。比如Get到一个html文件。 反复读取不应该对访问的数据有副作用。比如”GET一下，用户就下单了，返回订单已受">
+<meta property="og:description" content="浏览器的GET和POST这里特指浏览器中 非Ajax的HTTP请求，即从 HTML和浏览器诞生就一直使用的HTTP协议中的GET&#x2F;POST。浏览器用 GET请求来获取一个html页面&#x2F;图片&#x2F;css&#x2F;js等资源；用 POST来提交一个&lt; form&gt;表单，并 得到一个结果的网页。 GET“读取“一个资源。比如Get到一个html文件。 反复读取不应该对访问的数据有副作用。比如”GET一下，">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-12-02T12:24:34.000Z">
-<meta property="article:modified_time" content="2020-12-02T12:48:42.235Z">
+<meta property="article:modified_time" content="2020-12-03T11:23:10.955Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="计网">
 <meta name="twitter:card" content="summary">
@@ -169,7 +169,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84GET%E5%92%8CPOST"><span class="nav-number">1.</span> <span class="nav-text">浏览器的GET和POST</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GET"><span class="nav-number">1.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POST"><span class="nav-number">1.2.</span> <span class="nav-text">POST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0GET%E5%92%8CPOST"><span class="nav-number">1.3.</span> <span class="nav-text">改造GET和POST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GET%E5%92%8CPOST%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%BA%E5%88%AB"><span class="nav-number">1.4.</span> <span class="nav-text">GET和POST数据的格式区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#json%E7%9B%B8%E5%AF%B9%E4%BA%8Ex-www-form-urlencoded%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">1.4.1.</span> <span class="nav-text">json相对于x-www-form-urlencoded的优势:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">安全性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84GET%E5%92%8CPOST"><span class="nav-number">1.</span> <span class="nav-text">浏览器的GET和POST</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GET"><span class="nav-number">1.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POST"><span class="nav-number">1.2.</span> <span class="nav-text">POST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0GET%E5%92%8CPOST"><span class="nav-number">1.3.</span> <span class="nav-text">改造GET和POST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GET%E5%92%8CPOST%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%BA%E5%88%AB"><span class="nav-number">1.4.</span> <span class="nav-text">GET和POST数据的格式区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET%E5%92%8CPOST%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%87%8D%E5%A4%A7%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="nav-number">1.4.1.</span> <span class="nav-text">GET和POST还有一个重大区别：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#json%E7%9B%B8%E5%AF%B9%E4%BA%8Ex-www-form-urlencoded%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">1.4.2.</span> <span class="nav-text">json相对于x-www-form-urlencoded的优势:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">安全性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -262,10 +262,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2020-12-02 20:24:34 / Modified: 20:48:42" itemprop="dateCreated datePublished" datetime="2020-12-02T20:24:34+08:00">2020-12-02</time>
+      <time title="Created: 2020-12-02 20:24:34" itemprop="dateCreated datePublished" datetime="2020-12-02T20:24:34+08:00">2020-12-02</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-12-03 19:23:10" itemprop="dateModified" datetime="2020-12-03T19:23:10+08:00">2020-12-03</time>
+      </span>
 
   
     <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
@@ -284,15 +290,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="浏览器的GET和POST"><a href="#浏览器的GET和POST" class="headerlink" title="浏览器的GET和POST"></a>浏览器的GET和POST</h1><p>这里特指浏览器中 <strong>非Ajax的HTTP请求</strong>，即从 <strong>HTML和浏览器</strong>诞生就一直使用的HTTP协议中的GET/POST。浏览器用 <strong>GET请求来获取一个html页面/图片/css/js等资源</strong>；用 <strong>POST来提交一个<form>表单</strong>，并 <strong>得到一个结果的网页</strong>。</p>
+        <h1 id="浏览器的GET和POST"><a href="#浏览器的GET和POST" class="headerlink" title="浏览器的GET和POST"></a>浏览器的GET和POST</h1><p>这里特指浏览器中 <strong>非Ajax的HTTP请求</strong>，即从 <strong>HTML和浏览器</strong>诞生就一直使用的HTTP协议中的GET/POST。浏览器用 <strong>GET请求来获取一个html页面/图片/css/js等资源</strong>；用 <strong>POST来提交一个&lt; form&gt;表单</strong>，并 <strong>得到一个结果的网页</strong>。</p>
 <h2 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h2><p><strong>“读取“一个资源</strong>。比如Get到一个html文件。 <strong>反复读取不应该对访问的数据有副作用</strong>。比如”GET一下，用户就下单了，返回订单已受理“，这是不可接受的。没有副作用被称为 <strong>“幂等“（Idempotent)**。因为 **GET是读取</strong>，就可以 <strong>对GET请求的数据做缓存</strong>。这个缓存可以做到浏览器本身上（彻底 <strong>避免浏览器发请求</strong>），也可以做到代理上（如 <strong>nginx</strong>），或者 <strong>做到server端</strong>（用Etag，至少可以减少带宽消耗）</p>
-<h2 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h2><p>在页面里 <strong><form> 标签</strong>会定义 <strong>一个表单</strong>。点击其中的 <strong>submit元素</strong>会发出一个 <strong>POST请求让服务器做一件事</strong>。这件事往往是 <strong>有副作用的，不幂等的</strong>。不幂等也就意味着 <strong>不能随意多次执行</strong>。因此也就 <strong>不能缓存</strong>。比如通过POST下一个单，服务器创建了新的订单，然后返回订单成功的界面。这个页面不能被缓存。试想一下，如果POST请求被浏览器缓存了，那么下单请求就可以不向服务器发请求，而直接返回本地缓存的“下单成功界面”，却又没有真的在服务器下单。那是一件多么滑稽的事情。因为POST可能有副作用，所以浏览器实现为 <strong>不能把POST请求保存为书签</strong>。想想，如果点一下书签就下一个单，是不是很恐怖？。此外如果尝试重新执行POST请求，浏览器也会弹一个框提示下这个刷新可能会有副作用，询问要不要继续。</p>
+<h2 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h2><p>在页面里 <strong>&lt; form&gt; 标签</strong>会定义 <strong>一个表单</strong>。点击其中的 <strong>submit元素</strong>会发出一个 <strong>POST请求让服务器做一件事</strong>。这件事往往是 <strong>有副作用的，不幂等的</strong>。不幂等也就意味着 <strong>不能随意多次执行</strong>。因此也就 <strong>不能缓存</strong>。比如通过POST下一个单，服务器创建了新的订单，然后返回订单成功的界面。这个页面不能被缓存。试想一下，如果POST请求被浏览器缓存了，那么下单请求就可以不向服务器发请求，而直接返回本地缓存的“下单成功界面”，却又没有真的在服务器下单。那是一件多么滑稽的事情。因为POST可能有副作用，所以浏览器实现为 <strong>不能把POST请求保存为书签</strong>。想想，如果点一下书签就下一个单，是不是很恐怖？。此外如果尝试重新执行POST请求，浏览器也会弹一个框提示下这个刷新可能会有副作用，询问要不要继续。</p>
 <h2 id="改造GET和POST"><a href="#改造GET和POST" class="headerlink" title="改造GET和POST"></a>改造GET和POST</h2><p>当然，服务器的 <strong>开发者完全可以把GET实现为有副作用；把POST实现为没有副作用</strong>。只不过这和浏览器的预期不符。把GET实现为有副作用是个很可怕的事情。 我依稀记得很久之前百度贴吧有一个因为 <strong>使用GET请求可以修改管理员的权限而造成的安全漏洞</strong>。反过来，把没有副作用的请求用POST实现，浏览器该弹框还是会弹框，对用户体验好处改善不大。但是后边可以看到，将HTTP POST作为接口的形式使用时，就没有这种弹框了。于是 <strong>把一个POST请求实现为幂等就有实际的意义</strong>。 <strong>POST幂等能让很多业务的前后端交互更顺畅</strong>，以及避免一些因为前端bug，触控失误等带来的重复提交。将一个有副作用的操作实现为幂等必须得从业务上能定义出怎么就算是“重复”。如提交数据中增加一个dedupKey在一个交易会话中有效，或者 <strong>利用提交的数据里可以天然当dedupKey的字段</strong>。这样万一用户强行重复提交，服务器端可以做一次防护。</p>
-<h2 id="GET和POST数据的格式区别"><a href="#GET和POST数据的格式区别" class="headerlink" title="GET和POST数据的格式区别"></a>GET和POST数据的格式区别</h2><p>GET和POST <strong>携带数据的格式也有区别</strong>。<br>当浏览器发出一个GET请求时，就意味着 <strong>要么是用户自己在浏览器的地址栏输入</strong>，要不就是 <strong>点击了html里a标签的href中的url</strong>。所以其实 <strong>并不是GET只能用url</strong>，而是 <strong>浏览器直接发出的GET只能由一个url触发</strong>。所以没办法，GET上要在url之外 <strong>带一些参数就只能依靠url上附带querystring</strong>。但是HTTP协议本身并没有这个限制。浏览器的POST请求都来自表单提交。每次提交，表单的数据被浏览器用编码到HTTP请求的body里。浏览器发出的POST请求的body主要有有两种格式，一种是 <strong>application/x-www-form-urlencoded用来传输简单的数据</strong>，大概就是”key1=value1&amp;key2=value2”这样的格式。另外一种是 <strong>传文件，会采用multipart/form-data格式</strong>。采用后者是因为application/x-www-form-urlencoded的编码方式对于文件这种二进制的数据非常低效。浏览器在POST一个表单时，<strong>url上也可以带参数</strong>，只要<form action="url" >里的url带querystring就行。只不过表单里面的那些用<input> 等标签经过用户操作产生的数据都在会在body里。因此我们一般会泛泛的说“GET请求没有body，只有url，请求数据放在url的querystring中；POST请求的数据在body中“。但这种情况仅限于浏览器发请求的场景。</p>
+<h2 id="GET和POST数据的格式区别"><a href="#GET和POST数据的格式区别" class="headerlink" title="GET和POST数据的格式区别"></a>GET和POST数据的格式区别</h2><p>GET和POST <strong>携带数据的格式也有区别</strong>。<br>当浏览器发出一个GET请求时，就意味着 <strong>要么是用户自己在浏览器的地址栏输入</strong>，要不就是 <strong>点击了html里a标签的href中的url</strong>。所以其实 <strong>并不是GET只能用url</strong>，而是 <strong>浏览器直接发出的GET只能由一个url触发</strong>。所以没办法，GET上要在url之外 <strong>带一些参数就只能依靠url上附带querystring</strong>。但是HTTP协议本身并没有这个限制。浏览器的POST请求都来自表单提交。每次提交，表单的数据被浏览器用编码到HTTP请求的body里。浏览器发出的POST请求的body主要有有两种格式，一种是 <strong>application/x-www-form-urlencoded用来传输简单的数据</strong>，大概就是”key1=value1&amp;key2=value2”这样的格式。另外一种是 <strong>传文件，会采用multipart/form-data格式</strong>。采用后者是因为application/x-www-form-urlencoded的编码方式对于文件这种二进制的数据非常低效。浏览器在POST一个表单时，<strong>url上也可以带参数</strong>，只要&lt; form action=”url” &gt;里的url带querystring就行。只不过表单里面的那些用&lt; input&gt; 等标签经过用户操作产生的数据都在会在body里。因此我们一般会泛泛的说“GET请求没有body，只有url，请求数据放在url的querystring中；POST请求的数据在body中“。但这种情况仅限于浏览器发请求的场景。</p>
 <p>#接口中的GET和POST<br>这里是指通过浏览器的Ajax api，或者iOS/Android的App的http client，java的commons-httpclient/okhttp或者是curl，postman之类的工具 <strong>发出来的GET和POST请求</strong>。此时GET/POST不光能用在 <strong>前端和后端的交互</strong>中，还能用在 <strong>后端各个子服务的调用</strong>中（即当一种 <strong>RPC协议</strong>使用）。尽管RPC有很多协议，比如thrift，grpc，但是http本身 <strong>已经有大量的现成的支持工具</strong>可以使用，并且对人类很友好，容易debug。HTTP协议在 <strong>微服务中的使用是相当普遍</strong>的。当用 <strong>HTTP实现接口</strong>发送请求时，就 <strong>没有浏览器中那么多限制了，只要是 **符合HTTP格式的就可以发</strong>。HTTP请求的格式，大概是这样的一个字符串：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;METHOD&gt; &lt;URL&gt; HTTP&#x2F;1.1\r\n</span><br><span class="line">&lt;Header1&gt;: &lt;HeaderValue1&gt;\r\n</span><br><span class="line">&lt;Header2&gt;: &lt;HeaderValue2&gt;\r\n</span><br><span class="line">...</span><br><span class="line">&lt;HeaderN&gt;: &lt;HeaderValueN&gt;\r\n</span><br><span class="line">\r\n</span><br><span class="line">&lt;Body Data....&gt;</span><br></pre></td></tr></table></figure>
-<p>其中的“<METHOD>“可以 是 <strong>GET或POST</strong>，或者其他的HTTP Method，如 <strong>PUT、DELETE、OPTION……</strong>。从协议本身看，并 <strong>没有什么限制说GET一定不能没有body</strong>，<strong>POST就一定不能把参放到<URL>的querystring上</strong>。因此其实 <strong>可以更加自由的去利用格式</strong>。比如Elastic Search的_search api就 <strong>用了带body的GET</strong>；也可以自己开发接口 <strong>让POST一半的参数放在url的querystring里</strong>，<strong>另外一半放body里</strong>；你甚至还可以让所有的参数都放Header里——可以做各种各样的定制，只要请求的客户端和服务器端能够约定好。</p>
+<p>其中的“<METHOD>“可以 是 <strong>GET或POST</strong>，或者其他的HTTP Method，如 <strong>PUT、DELETE、OPTION……</strong>。HTTP是 <strong>基于TCP/IP的</strong>关于数据如何在万维网中如何通信的协议。HTTP的底层是TCP/IP。所以GET和POST的底层也是 <strong>TCP/IP</strong>，也就是说，<strong>GET/POST都是TCP链接</strong>。GET和POST能做的事情是一样的。因此从协议本身看，并 <strong>没有什么限制说GET一定不能没有body</strong>，<strong>POST就一定不能把参放到<URL>的querystring上</strong>。因此其实 <strong>可以更加自由的去利用格式</strong>。比如Elastic Search的_search api就 <strong>用了带body的GET</strong>；也可以自己开发接口 <strong>让POST一半的参数放在url的querystring里</strong>，<strong>另外一半放body里</strong>；你甚至还可以让所有的参数都放Header里——可以做各种各样的定制，只要请求的客户端和服务器端能够约定好。</p>
 <p>当然，太自由也带来了另一种麻烦，开发人员不得不每次讨论确定参数是 <strong>放url的path里，querystring里，body里，header里</strong>这种问题。于是就有了 <strong>一些列接口规范/风格</strong>。其中名气最大的当属 <strong>REST</strong>。REST充分运用 <strong>GET、POST、PUT和DELETE，约定了这4个接口分别获取、创建、替换和删除“资源”</strong>，REST最佳实践还推荐在 <strong>请求体使用json格式</strong>。这样仅仅通过看HTTP的method就可以明白接口是什么意思，并且解析格式也得到了统一。</p>
+<h3 id="GET和POST还有一个重大区别："><a href="#GET和POST还有一个重大区别：" class="headerlink" title="GET和POST还有一个重大区别："></a>GET和POST还有一个重大区别：</h3><p><strong>GET产生一个TCP数据包；POST产生两个TCP数据包。</strong></p>
+<p>对于GET方式的请求，浏览器会把 <strong>http header和data一并发送出</strong>去，服务器响应200（返回数据）；</p>
+<p>而对于POST，浏览器 <strong>先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok</strong>（返回数据）。<br><strong>注：</strong></p>
+<ol>
+<li><p>GET与POST都有自己的语义，不能随便混用。</p>
+</li>
+<li><p>据研究，在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。</p>
+</li>
+<li><p>并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次。</p>
+</li>
+</ol>
 <h3 id="json相对于x-www-form-urlencoded的优势"><a href="#json相对于x-www-form-urlencoded的优势" class="headerlink" title="json相对于x-www-form-urlencoded的优势:"></a>json相对于x-www-form-urlencoded的优势:</h3><ol>
 <li>可以有 <strong>嵌套结构</strong></li>
 <li>可以支持 <strong>更丰富的数据类型</strong>。通过一些框架，json可以直接被服务器代码映射为业务实体。用起来十分方便。但是 <strong>如果是写一个接口支持上传文件</strong>，那么还是 <strong>multipart/form-data格式更合适</strong>。</li>

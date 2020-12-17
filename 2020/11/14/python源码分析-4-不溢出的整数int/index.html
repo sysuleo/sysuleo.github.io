@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/11/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-4-%E4%B8%8D%E6%BA%A2%E5%87%BA%E7%9A%84%E6%95%B4%E6%95%B0int/bigInt.jpg">
 <meta property="og:image" content="http://yoursite.com/2020/11/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-4-%E4%B8%8D%E6%BA%A2%E5%87%BA%E7%9A%84%E6%95%B4%E6%95%B0int/IntOp.jpg">
 <meta property="article:published_time" content="2020-11-14T08:05:47.000Z">
-<meta property="article:modified_time" content="2020-11-16T01:25:42.786Z">
+<meta property="article:modified_time" content="2020-12-08T12:03:08.774Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python源码分析">
 <meta name="twitter:card" content="summary">
@@ -138,6 +138,11 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
@@ -187,13 +192,15 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">12</span>
-        <span class="site-state-item-name">tags</span>
+            <a href="/tags">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -274,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-11-16 09:25:42" itemprop="dateModified" datetime="2020-11-16T09:25:42+08:00">2020-11-16</time>
+        <time title="Modified: 2020-12-08 20:03:08" itemprop="dateModified" datetime="2020-12-08T20:03:08+08:00">2020-12-08</time>
       </span>
 
   
@@ -379,8 +386,8 @@
 <h1 id="内置方法"><a href="#内置方法" class="headerlink" title="内置方法"></a>内置方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; longobject.c</span><br><span class="line">long_methods,                               &#x2F;* tp_methods *&#x2F;</span><br></pre></td></tr></table></figure>
 <h1 id="内置属性"><a href="#内置属性" class="headerlink" title="内置属性"></a>内置属性</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; longobject.c</span><br><span class="line">long_getset,                                &#x2F;* tp_getset *&#x2F;</span><br></pre></td></tr></table></figure>
 <h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><ol>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1904" title="小试牛刀，解剖浮点对象 float">小试牛刀，解剖浮点对象 float</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/670422" title="Python源码读后小结">浮点数的底层实现</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1903" title="Python 源码深度剖析/07 int 对象，永不溢出的整数">Python 源码深度剖析/07 int 对象，永不溢出的整数</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1904" title="Python 源码深度剖析/08 int 源码解析：如何实现大整数运算？">Python 源码深度剖析/08 int 源码解析：如何实现大整数运算？</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34174132/article/details/89699621?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" title="Python3源码—整数对象">Python3源码—整数对象</a></li>
 </ol>
 
@@ -515,6 +522,28 @@
 
 
 
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'f47af1d1eda4d807b02bba32be15120b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 
   

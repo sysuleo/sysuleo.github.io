@@ -24,18 +24,23 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="main‘main‘ 是 顶层代码执行的作用域的名称。模块的 name 在通过标准输入、脚本文件或是交互式命令读入的时候会等于 ‘main‘。need to do">
+  <meta name="description" content="import模块import xxx定义test.py 1import _locale  用dis模块编译一下 1234567C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py  1           0 LOAD_CONST               0 (0)              2 LOAD_CONST">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[python源码分析] import模块">
 <meta property="og:url" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="main‘main‘ 是 顶层代码执行的作用域的名称。模块的 name 在通过标准输入、脚本文件或是交互式命令读入的时候会等于 ‘main‘。need to do">
+<meta property="og:description" content="import模块import xxx定义test.py 1import _locale  用dis模块编译一下 1234567C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py  1           0 LOAD_CONST               0 (0)              2 LOAD_CONST">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_procedure1.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_procedure2.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_as.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_from.jpg">
 <meta property="article:published_time" content="2020-12-16T05:37:02.000Z">
-<meta property="article:modified_time" content="2020-12-18T06:14:48.474Z">
+<meta property="article:modified_time" content="2020-12-27T15:16:41.825Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python源码分析">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_procedure1.png">
 
 
 <link rel="canonical" href="http://yoursite.com/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/">
@@ -174,7 +179,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#main"><span class="nav-number">1.</span> <span class="nav-text">main</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#import%E6%A8%A1%E5%9D%97"><span class="nav-number">1.</span> <span class="nav-text">import模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#import-xxx"><span class="nav-number">1.1.</span> <span class="nav-text">import xxx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#import-xxx-as-x"><span class="nav-number">1.2.</span> <span class="nav-text">import xxx as x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#from-import"><span class="nav-number">1.3.</span> <span class="nav-text">from import</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#from-import-as"><span class="nav-number">1.4.</span> <span class="nav-text">from import as</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">2.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -188,14 +193,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -277,7 +282,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-12-18 14:14:48" itemprop="dateModified" datetime="2020-12-18T14:14:48+08:00">2020-12-18</time>
+        <time title="Modified: 2020-12-27 23:16:41" itemprop="dateModified" datetime="2020-12-27T23:16:41+08:00">2020-12-27</time>
       </span>
 
   
@@ -297,7 +302,53 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="main"><a href="#main" class="headerlink" title="main"></a><strong>main</strong></h2><p>‘<strong>main</strong>‘ 是 <strong>顶层代码执行的作用域的名称</strong>。模块的 <strong>name</strong> 在通过标准输入、脚本文件或是交互式命令读入的时候会等于 ‘<strong>main</strong>‘。<br>need to do</p>
+        <h2 id="import模块"><a href="#import模块" class="headerlink" title="import模块"></a>import模块</h2><h3 id="import-xxx"><a href="#import-xxx" class="headerlink" title="import xxx"></a>import xxx</h3><p>定义test.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import _locale</span><br></pre></td></tr></table></figure>
+
+<p>用dis模块编译一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py</span><br><span class="line">  1           0 LOAD_CONST               0 (0)</span><br><span class="line">              2 LOAD_CONST               1 (None)</span><br><span class="line">              4 IMPORT_NAME              0 (_locale)</span><br><span class="line">              6 STORE_NAME               0 (_locale)</span><br><span class="line">              8 LOAD_CONST               1 (None)</span><br><span class="line">             10 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+
+<p>想象一下，当前 <strong>有两个或多个线程</strong>正在导入相同的random模块，<strong>CPython如何处理</strong>这种情况？</p>
+<ol>
+<li>操作码IMPORT_NAME将检查导入的名称是否在sys.module中，如果是，则返回 <strong>sys.module</strong>中的内容</li>
+<li>尝试获取锁 <strong>_imp</strong></li>
+<li>使用模块名称获取_module_locks中的锁对象，如有必要，在position 1中创建</li>
+<li>尝试在第3步（position 2）中获取锁定对象</li>
+<li>释放锁 <strong>_imp</strong>（position 3）</li>
+<li>检查要导入的名称是否在sys.module中，如果是，则释放_module_locks中的锁对象并返回sys.module中的内容（position 4）</li>
+<li>对于 <strong>sys.meta_path</strong>中的 <strong>finder</strong>，如果finder可以加载模块名称，请释放_module_locks中的锁对象并返回已加载的内容</li>
+<li>raise an error<br>在position 1，只有拥有_imp的线程才能<strong>修改_module_locks</strong>，当前线程将检查要导入的模块名称是否在_module_locks中，如果不是，则在_module_locks中插入新的锁定对象</li>
+</ol>
+<p>在position 3，释放_imp锁，如果有其他线程导入其他模块，则它可以获得_imp锁并继续执行该过程，如果有其他线程导入同一模块，即使它成功获取了_imp，也将失败在获取_module_locks中的锁时，因为先前的线程持有该锁</p>
+<div style="width:95%;margin:auto"><img src="/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_procedure1.png" class="" title="import_procedure1图"></div>
+
+<p>在position 4，当前线程再次检查 <strong>sys.modules</strong>中的缓存</p>
+<p>在position 5，它将在每个 <strong>finder</strong>调用之前获取 <strong>_imp</strong>锁。在函数调用之后查找并释放它</p>
+<div style="width:95%;margin:auto"><img src="/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_procedure2.png" class="" title="import_procedure2图"></div>
+
+<h3 id="import-xxx-as-x"><a href="#import-xxx-as-x" class="headerlink" title="import xxx as x"></a>import xxx as x</h3><p>定义test.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import demo as d</span><br></pre></td></tr></table></figure>
+<p>用dis模块编译一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py</span><br><span class="line">  1           0 LOAD_CONST               0 (0)</span><br><span class="line">              2 LOAD_CONST               1 (None)</span><br><span class="line">              4 IMPORT_NAME              0 (demo)</span><br><span class="line">              6 STORE_NAME               1 (d)</span><br><span class="line">              8 LOAD_CONST               1 (None)</span><br><span class="line">             10 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<div style="width:95%;margin:auto"><img src="/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_as.jpg" class="" title="import_as图"></div>
+可以看出，这里仅仅是 将模块的名字变为 **d** 了.因此，这个 import 语句变体其实等价于：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import demo</span><br><span class="line">d &#x3D; demo</span><br><span class="line">del demo</span><br></pre></td></tr></table></figure>
+
+<h3 id="from-import"><a href="#from-import" class="headerlink" title="from import"></a>from import</h3><p>定义test.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from demo import value</span><br></pre></td></tr></table></figure>
+<p>同样用 dis 对语句进行反编译，我们得到以下字节码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py</span><br><span class="line">  1           0 LOAD_CONST               0 (0)</span><br><span class="line">              2 LOAD_CONST               1 ((&#39;value&#39;,))</span><br><span class="line">              4 IMPORT_NAME              0 (demo)</span><br><span class="line">              6 IMPORT_FROM              1 (value)   # 从栈顶模块中取出指定名字，并保存于栈顶</span><br><span class="line">              8 STORE_NAME               1 (value)</span><br><span class="line">             10 POP_TOP</span><br><span class="line">             12 LOAD_CONST               2 (None)</span><br><span class="line">             14 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p><strong>IMPORT_FROM</strong> 指令: 从栈顶模块中取出指定名字，并保存于栈顶。</p>
+<div style="width:95%;margin:auto"><img src="/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/import_from.jpg" class="" title="import_from图"></div>
+
+<p>注意到，value 以 元组 的形式保存于栈顶，IMPORT_NAME 指令如果发现 value 为 demo 模块的子模块，将同时加载 value 子模块。此外，IMPORT_FROM 与 STORE_NAME 这两个指令相互配合，从模块中取出给定名字并保存。</p>
+<p>仅仅加载了模块下的一部分</p>
+<h3 id="from-import-as"><a href="#from-import-as" class="headerlink" title="from import as"></a>from import as</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;from demo import func as f</span><br><span class="line">C:\Users\liuw\Desktop&gt; python.exe -m dis .\test.py</span><br><span class="line">  1           0 LOAD_CONST               0 (0)</span><br><span class="line">              2 LOAD_CONST               1 ((&#39;func&#39;,))</span><br><span class="line">              4 IMPORT_NAME              0 (demo)</span><br><span class="line">              6 IMPORT_FROM              1 (func)</span><br><span class="line">              8 STORE_NAME               2 (f)   # 存储名字的时候存储的是 f</span><br><span class="line">             10 POP_TOP</span><br><span class="line">             12 LOAD_CONST               2 (None)</span><br><span class="line">             14 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/Interpreter/module/module.md" title="module">module-github</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1918" title="Python 源码深度剖析/22 模块动态加载， import 背后哪些事儿">Python 源码深度剖析/22 模块动态加载， import 背后哪些事儿</a></li>
+</ol>
 
     </div>
 
@@ -370,7 +421,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -465,6 +516,52 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
 
   
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

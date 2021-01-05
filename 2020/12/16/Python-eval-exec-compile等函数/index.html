@@ -24,15 +24,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="exec在python中，变量查找遵循LGB原则，即优先在 **局部作用域(local scope)**中对变量进行查找，失败则在 **全局作用域(global scope)**中进行查找,最后尝试再 **内建作用域(build-in scope)**内查找 123exec code in __main__.dict相当于exec code in  globals(), locals() 如果ma">
+  <meta name="description" content="eval函数eval作用是什么计算指定表达式的值。也就是说它要执行的Python代码只能是单个运算表达式（注意eval不支持任意形式的赋值操作），而不能是复杂的代码逻辑，这一点和lambda表达式比较相似。 函数定义：eval(expression, globals&#x3D;None, locals&#x3D;None)参数说明：expression：必选参数，可以是字符串，也可以是一个任意的code对象实例（可以">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Python] eval,exec,compile等函数">
 <meta property="og:url" content="http://yoursite.com/2020/12/16/Python-eval-exec-compile%E7%AD%89%E5%87%BD%E6%95%B0/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="exec在python中，变量查找遵循LGB原则，即优先在 **局部作用域(local scope)**中对变量进行查找，失败则在 **全局作用域(global scope)**中进行查找,最后尝试再 **内建作用域(build-in scope)**内查找 123exec code in __main__.dict相当于exec code in  globals(), locals() 如果ma">
+<meta property="og:description" content="eval函数eval作用是什么计算指定表达式的值。也就是说它要执行的Python代码只能是单个运算表达式（注意eval不支持任意形式的赋值操作），而不能是复杂的代码逻辑，这一点和lambda表达式比较相似。 函数定义：eval(expression, globals&#x3D;None, locals&#x3D;None)参数说明：expression：必选参数，可以是字符串，也可以是一个任意的code对象实例（可以">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-12-16T11:56:25.000Z">
-<meta property="article:modified_time" content="2020-12-16T11:57:50.655Z">
+<meta property="article:modified_time" content="2020-12-20T02:51:40.954Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python">
 <meta name="twitter:card" content="summary">
@@ -174,7 +174,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#exec"><span class="nav-number">1.</span> <span class="nav-text">exec</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#eval%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">eval函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#eval%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">eval作用是什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#exec"><span class="nav-number">2.</span> <span class="nav-text">exec</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -188,14 +188,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -269,10 +269,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2020-12-16 19:56:25 / Modified: 19:57:50" itemprop="dateCreated datePublished" datetime="2020-12-16T19:56:25+08:00">2020-12-16</time>
+      <time title="Created: 2020-12-16 19:56:25" itemprop="dateCreated datePublished" datetime="2020-12-16T19:56:25+08:00">2020-12-16</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-12-20 10:51:40" itemprop="dateModified" datetime="2020-12-20T10:51:40+08:00">2020-12-20</time>
+      </span>
 
   
     <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
@@ -291,7 +297,13 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h2><p>在python中，变量查找遵循LGB原则，即优先在 **局部作用域(local scope)**中对变量进行查找，失败则在 **全局作用域(global scope)**中进行查找,最后尝试再 **内建作用域(build-in scope)**内查找</p>
+        <h2 id="eval函数"><a href="#eval函数" class="headerlink" title="eval函数"></a>eval函数</h2><h3 id="eval作用是什么"><a href="#eval作用是什么" class="headerlink" title="eval作用是什么"></a>eval作用是什么</h3><p><strong>计算</strong>指定表达式的值。也就是说它要执行的Python代码只能是单个运算表达式（注意eval不支持任意形式的赋值操作），而不能是复杂的代码逻辑，这一点和lambda表达式比较相似。</p>
+<p>函数定义：<br>eval(expression, globals=None, locals=None)<br>参数说明：<br>expression：必选参数，可以是字符串，也可以是一个任意的code对象实例（可以通过compile函数创建）。如果它是一个字符串，它会被当作一个（使用globals和locals参数作为全局和本地命名空间的）Python表达式进行分析和解释。<br>globals：可选参数，表示全局命名空间（存放全局变量），如果被提供，则必须是一个字典对象。<br>locals：可选参数，表示当前局部命名空间（存放局部变量），如果被提供，可以是任何映射对象。如果该参数被忽略，那么它将会取与globals相同的值。<br>如果globals与locals都被忽略，那么它们将取eval()函数被调用环境下的全局命名空间和局部命名空间。<br>返回值：<br>如果expression是一个code对象，且创建该code对象时，compile函数的mode参数是’exec’，那么eval()函数的返回值是None；<br>否则，如果expression是一个输出语句，如print()，则eval()返回结果为None；<br>否则，expression表达式的结果就是eval()函数的返回值；<br>实例：<br>x = 10</p>
+<p>def func():<br>    y = 20<br>    a = eval(‘x + y’)<br>    print(‘a: ‘, a)<br>    b = eval(‘x + y’, {‘x’: 1, ‘y’: 2})<br>    print(‘b: ‘, b)<br>    c = eval(‘x + y’, {‘x’: 1, ‘y’: 2}, {‘y’: 3, ‘z’: 4})<br>    print(‘c: ‘, c)<br>    d = eval(‘print(x, y)’)<br>    print(‘d: ‘, d)</p>
+<p>func()<br>输出结果：</p>
+<p>a:  30<br>b:  3<br>c:  4<br>10 20<br>d:  None<br>对输出结果的解释：</p>
+<p>对于变量a，eval函数的globals和locals参数都被忽略了，因此变量x和变量y都取得的是eval函数被调用环境下的作用域中的变量值，即：x = 10, y = 20，a = x + y = 30<br>对于变量b，eval函数只提供了globals参数而忽略了locals参数，因此locals会取globals参数的值，即：x = 1, y = 2，b = x + y = 3<br>对于变量c，eval函数的globals参数和locals都被提供了，那么eval函数会先从全部作用域globals中找到变量x, 从局部作用域locals中找到变量y，即：x = 1, y = 3, c = x + y = 4<br>对于变量d，因为print()函数不是一个计算表达式，没有计算结果，因此返回值为None</p>
+<h2 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h2><p>在python中，变量查找遵循LGB原则，即优先在 **局部作用域(local scope)**中对变量进行查找，失败则在 **全局作用域(global scope)**中进行查找,最后尝试再 **内建作用域(build-in scope)**内查找</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">exec code in __main__.dict</span><br><span class="line">相当于</span><br><span class="line">exec code in  globals(), locals()</span><br></pre></td></tr></table></figure>
 <p>如果<strong>main</strong>.dict中没有相应的key时，exec执行后会设置的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print __main__.__dict__</span><br><span class="line">&#123;&#39;__builtins__&#39;: &lt;module &#39;__builtin__&#39; (built-in)&gt;, &#39;__name__&#39;: &#39;__main__&#39;, &#39;__main__&#39;: &lt;module &#39;__main__&#39; (built-in)&gt;, &#39;__doc__&#39;: None, &#39;__package__&#39;: None&#125;</span><br><span class="line">&gt;&gt;&gt; a &#x3D; 1</span><br><span class="line">&gt;&gt;&gt; exec &quot;print a&quot; in __main__.__dict__</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; print __main__.__dict__</span><br><span class="line"># exec执行后设置了a属性</span><br><span class="line">&#123;&#39;a&#39;: 1, &#39;__builtins__&#39;: &lt;module &#39;__builtin__&#39; (built-in)&gt;, &#39;__package__&#39;: None, &#39;__main__&#39;: &lt;module &#39;__main__&#39; (built-in)&gt;, &#39;__name__&#39;: &#39;__main__&#39;, &#39;__doc__&#39;: None&#125;</span><br></pre></td></tr></table></figure>
@@ -368,7 +380,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -463,6 +475,52 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
 
   
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

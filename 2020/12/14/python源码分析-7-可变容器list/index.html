@@ -37,8 +37,10 @@
 <meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_a.png">
 <meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_d.png">
 <meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_e.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png">
 <meta property="article:published_time" content="2020-12-14T05:05:51.000Z">
-<meta property="article:modified_time" content="2020-12-14T06:12:28.366Z">
+<meta property="article:modified_time" content="2021-01-03T02:34:09.370Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="python源码分析">
 <meta name="twitter:card" content="summary">
@@ -181,7 +183,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">对象操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#append"><span class="nav-number">2.1.</span> <span class="nav-text">append</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">2.2.</span> <span class="nav-text">动态扩容</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">对象操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#append"><span class="nav-number">2.1.</span> <span class="nav-text">append</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9"><span class="nav-number">2.2.</span> <span class="nav-text">动态扩容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pop"><span class="nav-number">2.3.</span> <span class="nav-text">pop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%87%8F%E5%AE%B9"><span class="nav-number">2.4.</span> <span class="nav-text">动态减容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">2.5.</span> <span class="nav-text">reference</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -195,14 +197,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -276,10 +278,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2020-12-14 13:05:51 / Modified: 14:12:28" itemprop="dateCreated datePublished" datetime="2020-12-14T13:05:51+08:00">2020-12-14</time>
+      <time title="Created: 2020-12-14 13:05:51" itemprop="dateCreated datePublished" datetime="2020-12-14T13:05:51+08:00">2020-12-14</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-03 10:34:09" itemprop="dateModified" datetime="2021-01-03T10:34:09+08:00">2021-01-03</time>
+      </span>
 
   
     <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
@@ -330,6 +338,22 @@
 
 <p>如果 list 对象内部数组已用满，再添加元素时则需要进行扩容。 append 等方法在操作时都会对内部数组进行检查，如需扩容则调用 list_resize 函数。在 list_resize 函数， <strong>Python 重新分配一个长度更大的数组并替换旧数组</strong>。 </p>
 <p>由于内部数组扩容时，需要将列表元素 <strong>从旧数组拷贝到新数组</strong>，时间复杂度为 <strong>O(n)</strong> ，开销较大。为此， Python 在为内部数组扩容时，会预留一定余量，一般是  <strong>1/8 左右</strong> 。</p>
+<h2 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;e&#39;</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png" class="" title="pop_e图"></div>
+
+<p>我们可以看到这里只是简单将 元素e 弹出，内存布局并未发生变化。</p>
+<h2 id="动态减容"><a href="#动态减容" class="headerlink" title="动态减容"></a>动态减容</h2><p>实际上，每次pop，都会调用 <strong>resize</strong> 函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* allocated: 8, newsize: 3, 8 &gt;&#x3D; 3 &amp;&amp; (3 &gt;&#x3D; 4?), no *&#x2F;</span><br><span class="line">if (allocated &gt;&#x3D; newsize &amp;&amp; newsize &gt;&#x3D; (allocated &gt;&gt; 1)) &#123;</span><br><span class="line">    &#x2F;* Do not realloc if the newsize deos not fall</span><br><span class="line">       lower than half the allocated size</span><br><span class="line">        不分配内存，仅改变ob_size的值    *&#x2F;</span><br><span class="line">    assert(self-&gt;ob_item !&#x3D; NULL || newsize &#x3D;&#x3D; 0);</span><br><span class="line">    &#x2F;* only change the ob_size field *&#x2F;</span><br><span class="line">    Py_SIZE(self) &#x3D; newsize;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;* newsize小于allocated的一半时，会重新分配内存 *&#x2F;</span><br><span class="line">&#x2F;* 3 + (3 &gt;&gt; 3) + 3 &#x3D; 6 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);</span><br></pre></td></tr></table></figure>
+<p>如果理解了pop 每次都会调用 resize 函数，下面情形就很容易理解了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;d&#39;</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png" class="" title="pop_d图"></div>
+
+
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/list/list.md" title="list">list</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1907" title="Python 源码深度剖析/11 list 对象，容量自适应的数组式容器">Python 源码深度剖析/11 list 对象，容量自适应的数组式容器</a></li>
+</ol>
 
     </div>
 
@@ -402,7 +426,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -497,6 +521,52 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
 
   
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

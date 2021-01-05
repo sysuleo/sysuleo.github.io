@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="why not 哈希索引？ 哈希值是无序的值，既然无序，就 不能进行范围查找，而数据库需要很多大于小于的查找。  如果要进行 排序操作，也不能使用哈希值的哈希索引进行排序(例如不能用uuid做索引，只能做唯一标识，因为也是哈希无序的)。  有些值的 哈希索引是一样的，如果要进行查找，要 逐一比对，相当于全盘扫描。   why not 平衡二叉树？平衡二叉树是采用 二分法思维把数据按规则组装成一个树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[数据库] Mysql为什么用B+树">
+<meta property="og:url" content="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="why not 哈希索引？ 哈希值是无序的值，既然无序，就 不能进行范围查找，而数据库需要很多大于小于的查找。  如果要进行 排序操作，也不能使用哈希值的哈希索引进行排序(例如不能用uuid做索引，只能做唯一标识，因为也是哈希无序的)。  有些值的 哈希索引是一样的，如果要进行查找，要 逐一比对，相当于全盘扫描。   why not 平衡二叉树？平衡二叉树是采用 二分法思维把数据按规则组装成一个树">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/avl.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b_tree.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b+tree.png">
+<meta property="article:published_time" content="2020-12-27T14:37:23.000Z">
+<meta property="article:modified_time" content="2021-01-05T04:54:58.397Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/avl.png">
+
+
+<link rel="canonical" href="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[数据库] Mysql为什么用B+树 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#why-not-%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">why not 哈希索引？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#why-not-%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">why not 平衡二叉树？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#why-not-B%E6%A0%91%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">why not B树？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#why-choose-B-%E6%A0%91%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">why choose B+树？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#B%E6%A0%91%E5%92%8CB-%E6%A0%91"><span class="nav-number">4.1.</span> <span class="nav-text">B树和B+树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/sysuleo" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [数据库] Mysql为什么用B+树
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-27 22:37:23" itemprop="dateCreated datePublished" datetime="2020-12-27T22:37:23+08:00">2020-12-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-05 12:54:58" itemprop="dateModified" datetime="2021-01-05T12:54:58+08:00">2021-01-05</time>
+      </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="why-not-哈希索引？"><a href="#why-not-哈希索引？" class="headerlink" title="why not 哈希索引？"></a>why not 哈希索引？</h2><ol>
+<li><p>哈希值是无序的值，既然无序，就 <strong>不能进行范围查找</strong>，而数据库需要很多大于小于的查找。</p>
+</li>
+<li><p>如果要进行 <strong>排序操作</strong>，也不能使用哈希值的哈希索引进行排序(例如不能用uuid做索引，只能做唯一标识，因为也是哈希无序的)。</p>
+</li>
+<li><p>有些值的 <strong>哈希索引是一样的</strong>，如果要进行查找，要 <strong>逐一比对</strong>，相当于全盘扫描。</p>
+</li>
+</ol>
+<h2 id="why-not-平衡二叉树？"><a href="#why-not-平衡二叉树？" class="headerlink" title="why not 平衡二叉树？"></a>why not 平衡二叉树？</h2><p>平衡二叉树是采用 <strong>二分法</strong>思维把数据按规则组装成一个树形结构的数据，用这个树形结构的数据 <strong>减少无关数据的检索</strong>，大大的提升了数据检索的速度；平衡二叉树的数据结构组装过程有以下特定：</p>
+<ol>
+<li>平衡二叉树是一种 <strong>二叉查找树</strong></li>
+<li>每个结点的左子树的高度减去右子树的 <strong>高度的绝对值不超过1</strong></li>
+<li>空树和左右子树都是平衡二叉树</li>
+<li>相比红黑树，平衡二叉树比较 <strong>适用于没有删除的情况</strong></li>
+</ol>
+<div style="width:95%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/avl.png" class="" title="avl图"></div>
+
+<p>为什么不能用平衡二叉树：</p>
+<ol>
+<li>由于每个子节点最大数量为2，导致 <strong>平衡二叉树高度较高，查找次数相对较多。</strong></li>
+<li>范围查找时，需要 <strong>向上回旋查找</strong>（例如查找&gt;=56的数，先找到56，然后向上回旋，找出65和87）</li>
+</ol>
+<h2 id="why-not-B树？"><a href="#why-not-B树？" class="headerlink" title="why not B树？"></a>why not B树？</h2><p>B 树又叫 <strong>平衡多路查找树</strong>。一棵m阶的B 树 (注：切勿简单的认为一棵m阶的B树是m叉树，虽然存在四叉树，八叉树，KD树，及vp/R树/R*树/R+树/X树/M树/线段树/希尔伯特R树/优先R树等空间划分树，但与B树完全不等同)的特性如下：</p>
+<ol>
+<li>树中每个结点  <strong>最多含有m个孩子（m&gt;=2）</strong>；</li>
+<li>除根结点和叶子结点外，其它每个结点 <strong>至少有[ceil(m / 2)]个孩子</strong>（其中ceil(x)是一个取上限的函数）；</li>
+<li>若 <strong>根结点</strong>不是叶子结点，则 <strong>至少有2个孩子</strong>（特殊情况：没有孩子的根结点，即根结点为叶子结点，整棵树只有一个根节点）；</li>
+<li>所有 <strong>叶子结点都出现在同一层</strong>，叶子结点 <strong>不包含任何关键字信息</strong>(可以看做是 <strong>外部接点或查询失败的接点</strong>，叶子节点只是没有孩子和指向孩子的指针，这些节点也存在，也有元素。）。</li>
+<li>每个非终端结点中包含有n个关键字信息： (n，P0，K1，P1，K2，P2，……，Kn，Pn)。其中：<pre><code>a)   Ki (i=1...n)为关键字，且关键字按顺序升序排序K(i-1)&lt; Ki。 
+b)   Pi为指向子树根的接点，且指针P(i-1)指向子树种所有结点的关键字均小于Ki，但都大于K(i-1)。 
+c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</code></pre>
+</li>
+</ol>
+<div style="width:95%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b_tree.jpg" class="" title="b_tree图"></div>
+
+<p>为什么不能用B树： 查找深度明显比平衡二叉树要低，但是范围查找仍然需要 <strong>向上回旋查找</strong></p>
+<h2 id="why-choose-B-树？"><a href="#why-choose-B-树？" class="headerlink" title="why choose B+树？"></a>why choose B+树？</h2><p>B+树是B树的一个升级版，相对于B树来说B+树更 <strong>充分的利用了节点的空间</strong>，让查询速度更加稳定，其速度 <strong>完全接近于二分法查找</strong>。为什么说B+树查找的效率要比B树更高、更稳定；我们先看看两者的区别</p>
+<h3 id="B树和B-树"><a href="#B树和B-树" class="headerlink" title="B树和B+树"></a>B树和B+树</h3><ol>
+<li>B+跟B树不同，B+树的 <strong>非叶子节点不保存关键字记录的指针</strong>，只进行<strong>数据索引</strong>，这样使得B+树每个非叶子节点所能保存的关键字大大增加；</li>
+<li>B+树 <strong>叶子节点保存了父节点的所有关键字记录的指针</strong>，<strong>所有数据地址必须要到叶子节点才能获取到</strong>。所以 <strong>每次数据查询的次数都一样</strong>；</li>
+<li>B+树叶子节点的关键字 <strong>从小到大有序</strong>排列，左边结尾数据都会保存右边节点开始数据的指针。</li>
+<li>非叶子节点的子节点数=关键字数（来源百度百科）（根据各种资料 这里有两种算法的实现方式，另一种为非叶节点的关键字数=子节点数-1（来源维基百科)，虽然他们数据排列结构不一样，但其原理还是一样的。Mysql 的B+树是用第一种方式实现）;<div style="width:110%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b+tree.png" class="" title="b+tree图"></div>
+
+</li>
+</ol>
+<p>因此，B+树的 <strong>查找次数少</strong>(树的高度低)，<strong>范围查找也快</strong>（叶子节点通过指针连接）</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chai471793/article/details/99563704" title="彻底搞懂系列B-树、B+树、B-树、B*树">彻底搞懂系列B-树、B+树、B-树、B*树</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/17/problems-solution-windows%E4%B8%8B%E7%89%B9%E5%AE%9A%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E6%8E%92%E6%9F%A5/" rel="prev" title="[problems solution] windows下 FATAL Port *** has been used排查">
+                  <i class="fa fa-chevron-left"></i> [problems solution] windows下 FATAL Port *** has been used排查
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/" rel="next" title="[python源码分析] 8.dict,关联式容器">
+                  [python源码分析] 8.dict,关联式容器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'f47af1d1eda4d807b02bba32be15120b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '447b67c30e469c97cd7c58cc7daa128e',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

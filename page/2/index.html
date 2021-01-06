@@ -11,6 +11,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -134,6 +135,11 @@
     <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
 
   </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
@@ -182,14 +188,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">posts</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -231,6 +243,231 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/" class="post-title-link" itemprop="url">[python源码分析] 6.字符串str</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-06 16:29:51" itemprop="dateCreated datePublished" datetime="2020-12-06T16:29:51+08:00">2020-12-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-12-08 20:03:08" itemprop="dateModified" datetime="2020-12-08T20:03:08+08:00">2020-12-08</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Unicode是什么"><a href="#Unicode是什么" class="headerlink" title="Unicode是什么"></a>Unicode是什么</h2><p>计算机存储的基本单位是 <strong>八位字节</strong> ，由 8 个比特位组成，简称 字节 。由于英文只由 26 个字母加若干符号组成，因此英文字符可以直接用 字节 来保存。其他诸如 <strong>中日韩等语言</strong>，由于字符众多，则不得不用多个字节来编码。</p>
+<p>随着计算机技术的传播，非拉丁文字符编码技术蓬勃发展，但存在两个比较大的局限性：</p>
+<ul>
+<li>不支持多语言 ，例如中文的编码方案不能表示日文；</li>
+<li>没有统一标准 ，例如中文有 <strong>GB2312 ，GBK 、 GB18030</strong> 等多种编码标准；<br>由于编码方式不统一，开发人员经常需要在不同编码间来回转化，错误频出。为了彻底解决这些问题， 统一码联盟 提出了 <strong>Unicode</strong> 标准。Unicode <strong>对世界上大部分文字系统进行整理、编码</strong>，让计算机可以用统一的方式处理文本。Unicode 目前已经收录了超过 <strong>13 万</strong>个字符，天然地支持多语言。</li>
+</ul>
+<h2 id="Python中的Unicode"><a href="#Python中的Unicode" class="headerlink" title="Python中的Unicode"></a>Python中的Unicode</h2><p>Python 在 3 之后，str 对象内部改用 Unicode 表示，因而被源码称为 Unicode 对象。这么做好处是显然易见的，程序核心逻辑统一用 Unicode ，只需在输入、输入层进行编码、解码。</p>
+<p>由于 Unicode 收录字符已经超过 13 万个，每个字符 <strong>至少需要 4 个字节</strong>来保存。英文字符用 ASCII 表示仅需 1 个字节，而用 Unicode 表示内存开销却增加 <strong>4</strong> 倍！</p>
+<p>Python 作者们肯定不允许这样的事情发生( getsizeof 获取对象内存大小)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line"># 英文字符还是1字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;ab&#39;) - sys.getsizeof(&#39;a&#39;)</span><br><span class="line">1</span><br><span class="line"># 中文字符需要2字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;中国&#39;) - sys.getsizeof(&#39;中&#39;)</span><br><span class="line">2</span><br><span class="line"># Emoji表情需要4字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;??&#39;) - sys.getsizeof(&#39;?&#39;)</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<p>由此可见，Python 内部对 Unicode 进行优化：根据文本内容，选择 <strong>底层存储单元</strong>。与 str 对象实现相关源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Include&#x2F;unicodeobject.h</span><br><span class="line">Objects&#x2F;unicodectype.c</span><br></pre></td></tr></table></figure>
+<p>在 Include/unicodeobject.h 头文件中，我们发现 str 对象底层存储根据文本字符 Unicode 码位范围分成几类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PyUnicode_1BYTE_KIND ，所有字符码位均在 U+0000 到 U+00FF 之间；</span><br><span class="line">PyUnicode_2BYTE_KIND ，所有字符码位均在 U+0000 到 U+FFFF 之间，且至少一个大于 U+00FF；</span><br><span class="line">PyUnicode_4BYTE_KIND ，所有字符码位均在 U+0000 到 U+10FFFF 之间，且至少一个大于 U+FFFF；</span><br><span class="line">enum PyUnicode_Kind &#123;</span><br><span class="line">&#x2F;* String contains only wstr byte characters.  This is only possible</span><br><span class="line">   when the string was created with a legacy API and _PyUnicode_Ready()</span><br><span class="line">   has not been called yet.  *&#x2F;</span><br><span class="line">    PyUnicode_WCHAR_KIND &#x3D; 0,</span><br><span class="line">&#x2F;* Return values of the PyUnicode_KIND() macro: *&#x2F;</span><br><span class="line">    PyUnicode_1BYTE_KIND &#x3D; 1,</span><br><span class="line">    PyUnicode_2BYTE_KIND &#x3D; 2,</span><br><span class="line">    PyUnicode_4BYTE_KIND &#x3D; 4</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样一来，根据 <strong>文本码位范围</strong>，便可为字符选用 <strong>尽量小的</strong> 存储单元，以最大限度节约内存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">typedef uint32_t Py_UCS4;</span><br><span class="line">typedef uint16_t Py_UCS2;</span><br><span class="line">typedef uint8_t Py_UCS1;</span><br></pre></td></tr></table></figure>
+
+<p>Unicode 内部存储结构因文本类型而异，因此类型 <strong>kind</strong> 必须作为 <strong>Unicode</strong> 对象公共字段保存。Python 内部定义了若干个 <strong>标志位</strong> ，作为 Unicode 公共字段，kind 便是其中之一：</p>
+<ul>
+<li>interned ，是否为 <strong>interned</strong> 机制维护， internel 机制在本节后半部分介绍；</li>
+<li>kind ，类型，用于区分字符 <strong>底层存储单元大小</strong>；</li>
+<li>compact ，内存分配方式，<strong>对象与文本缓冲区是否分离</strong>；</li>
+<li>ascii ，文本是否均为 <strong>纯 ASCII</strong> ；</li>
+</ul>
+<p>Objects/unicodectype.c 源文件中的 PyUnicode_New 函数，根据文本字符数 size 以及最大字符 maxchar 初始化 Unicode 对象。该函数根据 maxchar 为 Unicode 对象选择最紧凑的字符存储单元以及底层结构体：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>maxchar &lt; 128</th>
+<th>maxchar &lt; 256</th>
+<th>maxchar &lt; 65536</th>
+<th>maxchar &lt; MAX_UNICODE</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>kind</td>
+<td>PyUnicode_1BYTE_KIND</td>
+<td>PyUnicode_1BYTE_KIND</td>
+<td>PyUnicode_2BYTE_KIND</td>
+<td>PyUnicode_4BYTE_KIND</td>
+</tr>
+<tr>
+<td>ascii</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>字符存储单元大小</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>底层结构体</td>
+<td>PyASCIIObject</td>
+<td>PyCompactUnicodeObject</td>
+<td>PyCompactUnicodeObject</td>
+<td>PyCompactUnicodeObject</td>
+</tr>
+</tbody></table>
+<h2 id="PyASCIIObject"><a href="#PyASCIIObject" class="headerlink" title="PyASCIIObject"></a>PyASCIIObject</h2><p>如果 str 对象保存的文本均为 ASCII ，即 maxchar&lt;128maxchar&lt;128，则底层由 <strong>PyASCIIObject</strong> 结构存储：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* ASCII-only strings created through PyUnicode_New use the PyASCIIObject</span><br><span class="line">   structure. state.ascii and state.compact are set, and the data</span><br><span class="line">   immediately follow the structure. utf8_length and wstr_length can be found</span><br><span class="line">   in the length field; the utf8 pointer is equal to the data pointer. *&#x2F;</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    Py_ssize_t length;          &#x2F;* Number of code points in the string 文本长度*&#x2F;</span><br><span class="line">    Py_hash_t hash;             &#x2F;* Hash value; -1 if not set  文本哈希值*&#x2F;</span><br><span class="line">    struct &#123;</span><br><span class="line">        unsigned int interned:2;</span><br><span class="line">        unsigned int kind:3;</span><br><span class="line">        unsigned int compact:1;</span><br><span class="line">        unsigned int ascii:1;</span><br><span class="line">        unsigned int ready:1;</span><br><span class="line">        unsigned int :24;</span><br><span class="line">    &#125; state;                      &#x2F;*Unicode 对象标志位，包括 internel 、 kind 、 ascii 、 compact 等*&#x2F;</span><br><span class="line">    wchar_t *wstr;              &#x2F;* wchar_t representation (null-terminated) *&#x2F;</span><br><span class="line">&#125; PyASCIIObject;</span><br></pre></td></tr></table></figure>
+
+
+<p>ASCII 文本则紧接着位于 PyASCIIObject 结构体后面，以字符串对象 ‘abc’ 以及空字符串对象 ‘’ 为例：</p>
+<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/PyASCIIObject_sample.jpg" class="" title="PyASCIIObject_sample图"></div>
+
+<h3 id="state-字段后有一个-4-字节的空洞"><a href="#state-字段后有一个-4-字节的空洞" class="headerlink" title="state 字段后有一个 4 字节的空洞?"></a>state 字段后有一个 4 字节的空洞?</h3><p>这是结构体字段 <strong>内存对齐</strong> 造成的现象。在 64 位机器下，指针大小为 <strong>8</strong> 字节，为优化内存访问效率，wstr 必须 <strong>以 8 字节对齐</strong>；而 <strong>state 字段大小只是 4 字节</strong>，便留下 4 字节的空洞。PyASCIIObject 结构体大小在 64 位机器下为 48 字节，在 32 位机器下为 24 字节。</p>
+<p>与 bytes 对象一样，Python 也在 ASCII 文本末尾，额外添加一个 <strong>\0</strong> 字符，以兼容 C 字符串。</p>
+<p>如此一来，以 Unicode 表示的 <strong>ASCII</strong> 文本，额外内存开销仅为 <strong>PyASCIIObject</strong> 结构体加上末尾的 \0 字节而已。PyASCIIObject 结构体在 64 位机器下，<strong>大小为 48 字节</strong>。因此，长度为 n 的纯 ASCII 字符串对象，需要消耗 n+48+1，即 <strong>n+49</strong> 字节的内存空间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;&#39;)</span><br><span class="line">49</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;abcdef&#39;)</span><br><span class="line">55</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;1&#39; * 10000)</span><br><span class="line">10049</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="PyCompactUnicodeObject"><a href="#PyCompactUnicodeObject" class="headerlink" title="PyCompactUnicodeObject"></a>PyCompactUnicodeObject</h2><p>PyCompactUnicodeObject 在 PyASCIIObject 基础上，增加 3 个字段：</p>
+<ul>
+<li>utf8_length : 文本 UTF8 编码长度；</li>
+<li>utf8 : 文本 UTF8 编码形式，<strong>缓存以避免重复编码运算</strong>；</li>
+<li>wstr_length；</li>
+</ul>
+<p>在 64 位机器，PyCompactUnicodeObject 结构体大小为 <strong>72</strong> 字节；在 32 位机器则是 <strong>36</strong> 字节。</p>
+<p>PyCompactUnicodeObject结构如下图:</p>
+<div style="width:80%;margin:auto"></div>
+
+<p>由于 <strong>ASCII</strong> 本身是 <strong>合法的 UTF8</strong> ，无须保存 UTF8 编码形式，这也是 ASCII 文本底层由 PyASCIIObject 保存的原因。在 64 位机器，PyCompactUnicodeObject 结构体大小为 72 字节；在 32 位机器则是 36 字节。</p>
+<h3 id="空字符串"><a href="#空字符串" class="headerlink" title="空字符串"></a>空字符串</h3><div style="width:80%;margin:auto"></div>
+
+
+
+<h3 id="interned机制"><a href="#interned机制" class="headerlink" title="interned机制"></a>interned机制</h3><p>如果 str 对象 <strong>interned</strong> 标识位为 1 ，Python 虚拟机将为其开启 interned 机制。那么，什么是 interned 机制？</p>
+<p>先考虑以下场景，如果程序中有大量 User 对象，有什么可优化的地方？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class User:</span><br><span class="line">...</span><br><span class="line">...     def __init__(self, name, age):</span><br><span class="line">...         self.name &#x3D; name</span><br><span class="line">...         self.age &#x3D; age</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; user &#x3D; User(name&#x3D;&#39;tom&#39;, age&#x3D;20)</span><br><span class="line">&gt;&gt;&gt; user.__dict__</span><br><span class="line">&#123;&#39;name&#39;: &#39;tom&#39;, &#39;age&#39;: 20&#125;</span><br></pre></td></tr></table></figure>
+<p>由于 <strong>对象的属性由 dict</strong> 保存，这意味着每个 User 对象都需要保存 str 对象 name 。换句话讲，1 亿个 User 对象需要重复保存 1 亿个同样的 str 对象，这将浪费多少内存！</p>
+<p>由于 <strong>str 是不可变对象</strong>，因此 Python 内部将有潜在重复可能的字符串都做成 <strong>单例模式</strong> ，这就是 interned 机制。Python 具体做法是 <strong>在内部维护一个全局 dict 对象</strong>，所有开启 <strong>interned 机制 str 对象</strong> 均保存在这里；后续需要用到相关对象的地方，则 <strong>优先到全局 dict 中取</strong>，避免重复创建。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *interned &#x3D; NULL;</span><br></pre></td></tr></table></figure>
+
+<p>sample 1 :<br>如果删除字符串并初始化一个新的相同字符串，则它们的ID相同，即首次创建时，它会存储在Interned词典中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; del s</span><br><span class="line">&gt;&gt;&gt; s &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; y &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(y)</span><br><span class="line">4314134768</span><br></pre></td></tr></table></figure>
+
+<p>sample 2: 虽然 str 对象 ‘abc’ 由不同的运算产生，但背后却是同一个对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; &#39;abc&#39;</span><br><span class="line">&gt;&gt;&gt; b &#x3D; &#39;ab&#39; + &#39;c&#39;</span><br><span class="line">&gt;&gt;&gt; id(a), id(b), a is b</span><br><span class="line">(4424345224, 4424345224, True)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="kind"><a href="#kind" class="headerlink" title="kind"></a>kind</h3><p>在PyASCIIObject中总共有四个kind域的值，这意味着字符是如何在内部存储在unicode对象中的。</p>
+<ul>
+<li>PyUnicode_WCHAR_KIND</li>
+</ul>
+<p>我还没有找到一种方法来定义python层中 <strong>用PyUnicode_WCHAR_KIND表示的unicode对象</strong>，它可能在 **c / c ++**中使用</p>
+<h4 id="PyUnicode-1BYTE-KIND"><a href="#PyUnicode-1BYTE-KIND" class="headerlink" title="PyUnicode_1BYTE_KIND"></a>PyUnicode_1BYTE_KIND</h4><p>– 8位/字符<br>– ascii标志设置？<br>— ascii标志设置为true：U + 0000-U + 007F<br>— ascii标志设置为false：U + 0080-U + 00FF中至少一个字符<br><strong>utf8_length</strong>字段仍存储以null终止的c样式字符串，除了interned字段为0之外，只有特定范围内的字符才会存储在 <strong>Interned字典</strong>中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s1 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s1)</span><br><span class="line">4472458224</span><br><span class="line">&gt;&gt;&gt; s2 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s2) # bacause &quot;interned&quot; field is 0, the unicode object will not be shared</span><br><span class="line">4472458608</span><br></pre></td></tr></table></figure>
+
+<p>字符存储单元还是 1 字节，跟 ASCII 文本一样。 因此，Python® 对象需要占用 80 字节的内存空间72+1*7+1=72+8=8072+1∗7+1=72+8=80：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;Python®&#39;)</span><br><span class="line">80</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s &#x3D; &quot;\u0088\u0011\u00f1&quot;</span><br><span class="line"></span><br><span class="line">由于第一个字符为U + 0088，ascii标志变为0，并且PyUnicode_UTF8（unicode）不再返回utf8_length字段的地址，而是返回 **char * utf8**字段中的值，即0</span><br></pre></td></tr></table></figure>
+
+<p>如果PyUnicode_UTF8（unicode）为零，则这三个字节位于何处？我们没有在PyUnicodeObject中使用数据字段，让我们找出源码进行print（不感兴趣的可以跳过）:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">unicode_repr(PyObject *unicode)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">        &#x2F;*</span><br><span class="line">        &#x2F;&#x2F; there exists official marco to get the char in exact index,</span><br><span class="line">        &#x2F;&#x2F; I use my own to have a better understanding of how things work internally</span><br><span class="line">        Py_ssize_t isize &#x3D; PyUnicode_GET_LENGTH(unicode);</span><br><span class="line">        Py_ssize_t idata &#x3D; PyUnicode_DATA(unicode);</span><br><span class="line">        int ikind &#x3D; PyUnicode_KIND(unicode);</span><br><span class="line">        &#x2F;&#x2F; no mattner what ikind is, use Py_UCS4(4 bytes) to catch the result</span><br><span class="line">        Py_UCS4 ch &#x3D; PyUnicode_READ(ikind, idata, i);</span><br><span class="line">        *&#x2F;</span><br><span class="line"></span><br><span class="line">        switch (_PyUnicode_STATE(unicode).kind)</span><br><span class="line">        &#123;</span><br><span class="line">            case (PyUnicode_1BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_1BYTE_KIND, &quot;);</span><br><span class="line">                if (PyUnicode_UTF8(unicode) &#x3D;&#x3D; 0)</span><br><span class="line">                &#123;</span><br><span class="line"></span><br><span class="line">                    char *value &#x3D; &amp;(((PyUnicodeObject *)unicode)-&gt;data);</span><br><span class="line">                    printf(&quot;\nPyUnicodeObject-&gt;latin1: &quot;);</span><br><span class="line">                    for (size_t i &#x3D; 0; i &lt; _PyUnicode_LENGTH(unicode); ++i)</span><br><span class="line">                    &#123;</span><br><span class="line">                        printf(&quot;%#hhx &quot;, *(value + i));</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    printf(&quot;\n&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_2BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_2BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_4BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_4BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                printf(&quot;unknown kind: %d, &quot;, _PyUnicode_STATE(unicode).kind);</span><br><span class="line">        &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重新编译上面的代码后，我们可以在repr（）函数中跟踪latin1字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">PyUnicode_1BYTE_KIND,</span><br><span class="line">PyUnicodeObject-&gt;latin1: 0x88 0x11 0xf1</span><br></pre></td></tr></table></figure>
+<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/1byte_kind.png" class="" title="1byte_kind图"></div>
+
+
+<h4 id="PyUnicode-2BYTE-KIND"><a href="#PyUnicode-2BYTE-KIND" class="headerlink" title="PyUnicode_2BYTE_KIND"></a>PyUnicode_2BYTE_KIND</h4><ul>
+<li>16位/字符</li>
+<li>所有字符都在U + 0000-U + FFFF范围内</li>
+<li>至少一个字符在U + 0100-U + FFFF范围内</li>
+</ul>
+<p>我们可以使用相同的代码来跟踪存储在数据字段中的字节，现在字段名称为ucs2（ucs2或latin1具有不同的名称，但是地址相同，它们位于相同的c并集结构中）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; s &#x3D; &quot;\u0011\u0111\u1111&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_2BYTE_KIND,  PyUnicodeObject-&gt;ucs2: 0x11 0x111 0x1111</span><br></pre></td></tr></table></figure>
+
+<p>现在，kind字段是PyUnicode_2BYTE_KIND，需要 <strong>2个字节</strong>来存储每个字符</p>
+<div style="width:80%;margin:auto"></div>
+
+
+<h4 id="PyUnicode-4BYTE-KIND"><a href="#PyUnicode-4BYTE-KIND" class="headerlink" title="PyUnicode_4BYTE_KIND"></a>PyUnicode_4BYTE_KIND</h4><ul>
+<li>32位/字符</li>
+<li>至少一个字符在U+10000-U+10FFFF范围内<br>现在，种类字段变为PyUnicode_4BYTE_KIND<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s &#x3D; &quot;\u00ff\U0010FFFF\U00100111\U0010FFF1&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_4BYTE_KIND, PyUnicodeObject-&gt;ucs4: 00xff 0x10ffff 0x100111 0x10fff1</span><br></pre></td></tr></table></figure>
+<div style="width:80%;margin:auto"></div>
+
+</li>
+</ul>
+<h4 id="Unicode内存使用情况摘要"><a href="#Unicode内存使用情况摘要" class="headerlink" title="Unicode内存使用情况摘要"></a>Unicode内存使用情况摘要</h4><p>我们现在知道存在 <strong>三种存储机制</strong>，CPython存储一个Unicode对象将消耗多少字节 <strong>取决于字符的最大范围</strong>。 unicode对象内的所有字符必须 <strong>具有相同的大小</strong>，如果CPython使用可变大小的表示形式（例如utf-8），则不可能在O（1）时间内进行索引操作</p>
+<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/kind_overview.png" class="" title="kind_overview图"></div>
+
+<h3 id="compact"><a href="#compact" class="headerlink" title="compact"></a>compact</h3><p>如果compact为1，则意味着无论哪种字段，所有字符都存储在 <strong>PyUnicodeObject</strong>中(上面的示例都将compact设置为1)。否则，数据块将不会直接存储在PyUnicodeObject对象内，该数据块将是 <strong>新分配的位置</strong>。compact=0和compact=1之间的差异与Redis字符串编码raw和embstr之间的差异相同。</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/str/str.md" title="str">str</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1906" title="Python 源码深度剖析/10 str 对象，统一的 Unicode 字符串">PPython 源码深度剖析/10 str 对象，统一的 Unicode 字符串</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1422,127 +1659,6 @@ NameError: name &#39;ref_s&#39; is not defined
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34174132/article/details/89699621?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" title="Python3源码—整数对象">Python3源码—整数对象</a></li>
 </ol>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 1.常用指令</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-11-12 14:54:38" itemprop="dateCreated datePublished" datetime="2020-11-12T14:54:38+08:00">2020-11-12</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-01-05 12:54:14" itemprop="dateModified" datetime="2021-01-05T12:54:14+08:00">2021-01-05</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="进程相关指令-ps"><a href="#进程相关指令-ps" class="headerlink" title="进程相关指令  ps"></a>进程相关指令  ps</h2><p>参考自 <a target="_blank" rel="noopener" href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/ps.html" title="ps 进程查看器">ps 进程查看器</a></p>
-<h3 id="进程状态"><a href="#进程状态" class="headerlink" title="进程状态"></a>进程状态</h3><p>ps工具标识进程的5种状态码:</p>
-<ul>
-<li>D 不可中断 uninterruptible sleep (usually IO)</li>
-<li>R 运行 runnable (on run queue)</li>
-<li>S 中断 sleeping</li>
-<li>T 停止 traced or stopped</li>
-<li>Z 僵死 a defunct (”zombie”) process</li>
-</ul>
-<h3 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">a       显示 所有进程（显示状态码）</span><br><span class="line">-a      显示同一终端下的所有程序</span><br><span class="line">-A      所有进程</span><br><span class="line">e       环境变量</span><br><span class="line">c       进程的 真实名称</span><br><span class="line"></span><br><span class="line">r       当前 终端的进程</span><br><span class="line">T       当前 终端的所有程序</span><br><span class="line">u       用户的所有进程</span><br><span class="line">-au     较详细的资讯</span><br><span class="line">-aux    所有包含其他使用者的行程</span><br><span class="line"></span><br><span class="line">-N      反向选择</span><br><span class="line">-e      等于“-A”</span><br><span class="line">f       显示程序间的关系</span><br><span class="line">-H      显示树状结构</span><br><span class="line"></span><br><span class="line">-C&lt;命令&gt;               列出指定命令的状况</span><br><span class="line">–lines&lt;行数&gt;           每页显示的行数</span><br><span class="line">–width&lt;字符数&gt;         每页显示的字符数</span><br><span class="line">–help                  显示帮助信息</span><br><span class="line">–version                显示版本显示</span><br></pre></td></tr></table></figure>
-<h3 id="输出列含义"><a href="#输出列含义" class="headerlink" title="输出列含义"></a>输出列含义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">F           代表这个程序的旗标 (flag)， 4 代表使用者为 super user</span><br><span class="line">S           代表这个程序的状态 (STAT)，关于各 STAT 的意义将在内文介绍</span><br><span class="line">UID         程序被该 UID 所拥有</span><br><span class="line">PID         进程的ID</span><br><span class="line">PPID        则是其 上级父程序的ID</span><br><span class="line">C           CPU 使用的资源百分比</span><br><span class="line">PRI         这个是 Priority (优先执行序) 的缩写，详细后面介绍</span><br><span class="line">NI          这个是 Nice 值，在下一小节我们会持续介绍</span><br><span class="line">ADDR        这个是 kernel function，指出该程序在内存的那个部分。如果是个 running的程序，一般就是 “-“</span><br><span class="line">SZ          使用掉的内存大小</span><br><span class="line">WCHAN       目前这个程序是否正在运作当中，若为 - 表示正在运作</span><br><span class="line">TTY         登入者的终端机位置</span><br><span class="line">TIME        使用掉的 CPU 时间。</span><br><span class="line">CMD         所下达的指令为何</span><br></pre></td></tr></table></figure>
-
-
-<hr>
-<h2 id="vim指令"><a href="#vim指令" class="headerlink" title="vim指令"></a>vim指令</h2><h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>normal模式下按 <strong>/</strong> 即可进入查找模式，<strong>输入要查找的字符串</strong>并 <strong>按下回车</strong>。 Vim会跳转到第一个匹配。 按下 <strong>n 查找下一个</strong>，按下 <strong>N 查找上一个</strong></p>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">i               当前位置前插入</span><br><span class="line">I               当前行首插入</span><br><span class="line"></span><br><span class="line">a               当前位置后插入</span><br><span class="line">A               当前行尾插入</span><br><span class="line"></span><br><span class="line">o               当前行之后插入一行</span><br><span class="line">O               当前行之前插入一行</span><br></pre></td></tr></table></figure>
-
-<h3 id="移动"><a href="#移动" class="headerlink" title="移动"></a>移动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Ctrl + e                        向下滚动一行</span><br><span class="line"></span><br><span class="line">Ctrl + y                        向上滚动一行</span><br><span class="line"></span><br><span class="line">Ctrl + d(down)                  向下滚动半屏</span><br><span class="line"></span><br><span class="line">Ctrl + u(up)                    向上滚动半屏</span><br><span class="line"></span><br><span class="line">Ctrl + f(forward)               向下滚动一屏</span><br><span class="line"></span><br><span class="line">Ctrl + b(back)                  向上滚动一屏</span><br><span class="line"></span><br><span class="line">Shift + g                       切换到最后</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看历史输入"><a href="#查看历史输入" class="headerlink" title="查看历史输入"></a>查看历史输入</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q + (Ctrl + :)</span><br></pre></td></tr></table></figure>
-
-
-<hr>
-<h2 id="其它常用指令"><a href="#其它常用指令" class="headerlink" title="其它常用指令"></a>其它常用指令</h2><h3 id="linux环境中英文切换配置以及乱码问题"><a href="#linux环境中英文切换配置以及乱码问题" class="headerlink" title="linux环境中英文切换配置以及乱码问题"></a>linux环境中英文切换配置以及乱码问题</h3><h4 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h4><p>本质就是修改系统的LANG变量</p>
-<p>LANG是language的简称，稍微有英语基础的用户一看就看出来这个变量是决定系统的默认语言的，即系统的菜单、程序的工具栏语言、输入法默 认语言等。</p>
-<h4 id="查看当前用户的LANG变量"><a href="#查看当前用户的LANG变量" class="headerlink" title="查看当前用户的LANG变量"></a>查看当前用户的LANG变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">liuw@12:~locale</span><br><span class="line"></span><br><span class="line">LANG&#x3D;zh_CN</span><br><span class="line">LANGUAGE&#x3D;</span><br><span class="line">LC_CTYPE&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_NUMERIC&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_TIME&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_COLLATE&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_MONETARY&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_MESSAGES&#x3D;en_US</span><br><span class="line">LC_PAPER&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_NAME&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_ADDRESS&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_TELEPHONE&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_MEASUREMENT&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_IDENTIFICATION&#x3D;&quot;zh_CN&quot;</span><br><span class="line">LC_ALL&#x3D;</span><br></pre></td></tr></table></figure>
-
-<h4 id="配置自己的LANG"><a href="#配置自己的LANG" class="headerlink" title="配置自己的LANG"></a>配置自己的LANG</h4><p>如果你希望修改整个系统的编码和语言信息，可以修改系统的配置文件修改LANG，而如果不希望影响其他用户直接在 <strong>自己的~/.bashrc中配置LANG</strong>即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># use english</span><br><span class="line">export LANG&#x3D;en_US.UTF-8</span><br><span class="line"></span><br><span class="line">LANG&#x3D;en_US.UTF-8</span><br><span class="line">LANGUAGE&#x3D;</span><br><span class="line">LC_CTYPE&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_NUMERIC&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_TIME&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_COLLATE&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_MONETARY&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_MESSAGES&#x3D;en_US</span><br><span class="line">LC_PAPER&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_NAME&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_ADDRESS&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_TELEPHONE&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_MEASUREMENT&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_IDENTIFICATION&#x3D;&quot;en_US.UTF-8&quot;</span><br><span class="line">LC_ALL&#x3D;</span><br></pre></td></tr></table></figure>
-<p>配置后如图：</p>
-<div style="width:90%;margin:auto"><img src="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/locale%E5%90%8E.png" class="" title="locale后图"></div>
-
-
-<h4 id="SVN-Can’t-convert-string-from-‘UTF-8’-to-native-encoding问题"><a href="#SVN-Can’t-convert-string-from-‘UTF-8’-to-native-encoding问题" class="headerlink" title="SVN: Can’t convert string from ‘UTF-8’ to native encoding问题"></a>SVN: Can’t convert string from ‘UTF-8’ to native encoding问题</h4><p>上图可以看到，原本的’LC_ALL’为空，对中文因此出现了这个问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LC_ALL&#x3D;</span><br></pre></td></tr></table></figure>
-<p>解决方案：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export LC_ALL&#x3D;zh_CN.UTF-8     # 配置~&#x2F;.bashrc中 LC_ALL</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="查询linux系统类型"><a href="#查询linux系统类型" class="headerlink" title="查询linux系统类型"></a>查询linux系统类型</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure>
-<p>这个命令适用于所有遵守LSB规范的的linux，包括Redhat、SuSE、Debian、Ubuntu、Centos等发行版</p>
-<h3 id="显示系统核心信息"><a href="#显示系统核心信息" class="headerlink" title="显示系统核心信息"></a>显示系统核心信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">uname</span><br><span class="line"></span><br><span class="line">uname -r</span><br><span class="line"></span><br><span class="line">uname -a</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看当前路径"><a href="#查看当前路径" class="headerlink" title="查看当前路径"></a>查看当前路径</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
-
-<h3 id="重命名文件-mv"><a href="#重命名文件-mv" class="headerlink" title="重命名文件 mv"></a>重命名文件 mv</h3><p>例子：将目录A重命名为B</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv A B</span><br></pre></td></tr></table></figure>
-<p>例子：将/a目录移动到/b下，并重命名为c</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv &#x2F;a &#x2F;b&#x2F;c</span><br></pre></td></tr></table></figure>
-
-<h3 id="搜索文件-find"><a href="#搜索文件-find" class="headerlink" title="搜索文件 find"></a>搜索文件 find</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">find &#x2F; -mtime 0   #0代表当前时间，即从现在到24小时前，有改动过内容的文件都会被列出来</span><br><span class="line"></span><br><span class="line">find &#x2F;etc -newer &#x2F;etc&#x2F;passwd #寻找&#x2F;etc下面的文件，如果文件日期比&#x2F;etc&#x2F;passwd新就列出</span><br><span class="line"></span><br><span class="line">find &#x2F; -name file  #&#x2F;代表全文搜索</span><br><span class="line"></span><br><span class="line">find &#x2F;home -user Anmy  #查找&#x2F;home下属于Anmy的文件</span><br><span class="line"></span><br><span class="line">find &#x2F; -nouser #查找系统中不属于任何人的文件，可以轻易找出那些不太正常的文件</span><br><span class="line"></span><br><span class="line">find &#x2F; -name passed #查找文件名为passed的文件</span><br></pre></td></tr></table></figure>
       
     </div>
 

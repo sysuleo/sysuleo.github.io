@@ -25,15 +25,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="need to do">
+  <meta name="description" content="what is MongoDBMongoDB 是一个 基于分布式文件存储的开源数据库系统。由 C++ 语言编写。旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。 MongoDB 是一个 介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。 在高负载的情况下，添加更多的节点，可以保证服务器性能。 MongoDB 将数据存储为一个 文档，数据结构由 键值(k">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[mongo] 1.brief introdution">
 <meta property="og:url" content="http://yoursite.com/2021/01/06/mongo-1-brief-introdution/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="need to do">
+<meta property="og:description" content="what is MongoDBMongoDB 是一个 基于分布式文件存储的开源数据库系统。由 C++ 语言编写。旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。 MongoDB 是一个 介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。 在高负载的情况下，添加更多的节点，可以保证服务器性能。 MongoDB 将数据存储为一个 文档，数据结构由 键值(k">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-01-06T05:04:57.000Z">
-<meta property="article:modified_time" content="2021-01-06T05:32:54.333Z">
+<meta property="article:modified_time" content="2021-01-19T05:15:58.764Z">
 <meta property="article:author" content="Liu Wen">
 <meta property="article:tag" content="mongo">
 <meta name="twitter:card" content="summary">
@@ -167,7 +167,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -180,6 +180,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#what-is-MongoDB"><span class="nav-number">1.</span> <span class="nav-text">what is MongoDB</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#the-feature-of-MongoDB"><span class="nav-number">2.</span> <span class="nav-text">the feature of MongoDB</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -280,10 +281,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-01-06 13:04:57 / Modified: 13:32:54" itemprop="dateCreated datePublished" datetime="2021-01-06T13:04:57+08:00">2021-01-06</time>
+      <time title="Created: 2021-01-06 13:04:57" itemprop="dateCreated datePublished" datetime="2021-01-06T13:04:57+08:00">2021-01-06</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-19 13:15:58" itemprop="dateModified" datetime="2021-01-19T13:15:58+08:00">2021-01-19</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -311,7 +318,25 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>need to do</p>
+        <h1 id="what-is-MongoDB"><a href="#what-is-MongoDB" class="headerlink" title="what is MongoDB"></a>what is MongoDB</h1><p>MongoDB 是一个 <strong>基于分布式文件存储</strong>的开源数据库系统。由 <strong>C++</strong> 语言编写。旨在为 <strong>WEB</strong> 应用提供可扩展的高性能数据存储解决方案。</p>
+<p>MongoDB 是一个 <strong>介于关系数据库和非关系数据库之间</strong>的产品，是非关系数据库当中功能最丰富，最像关系数据库的。</p>
+<p>在高负载的情况下，添加更多的节点，可以保证服务器性能。</p>
+<p>MongoDB 将数据存储为一个 <strong>文档</strong>，数据结构由 <strong>键值(key=&gt;value)对组成</strong>。MongoDB 文档类似于 <strong>JSON 对象</strong>。字段值 <strong>可以包含其他文档，数组及文档数组</strong>。</p>
+<h1 id="the-feature-of-MongoDB"><a href="#the-feature-of-MongoDB" class="headerlink" title="the feature of MongoDB"></a>the feature of MongoDB</h1><ol>
+<li>MongoDB 是一个<strong>面向文档存储的数据库</strong>，操作起来比较简单和容易。</li>
+<li>你可以在MongoDB记录中<strong>设置任何属性的索引</strong> (如：FirstName=”Sameer”,Address=”8 Gandhi Road”)来<strong>实现更快的排序</strong>。</li>
+<li>你可以通过本地或者网络<strong>创建数据镜像</strong>，这使得MongoDB有<strong>更强的扩展性</strong>。</li>
+<li>如果负载的增加（需要更多的存储空间和更强的处理能力） ，它可以<strong>分布在计算机网络中的其他节点</strong>上这就是所谓的<strong>分片</strong>。</li>
+<li>Mongo支持<strong>丰富的查询表达式</strong>。查询指令使用JSON形式的标记，可轻易查询文档中内嵌的对象及数组。</li>
+<li>MongoDb 使用<strong>update()命令</strong>可以实现<strong>替换完成的文档（数据）</strong>或者一些指定的数据字段 。</li>
+<li>Mongodb中的Map/reduce主要是用来<strong>对数据进行批量处理和聚合操作</strong>。</li>
+<li><strong>Map和Reduce</strong>。Map函数调用emit(key,value)遍历集合中所有的记录，将key与value传给Reduce函数进行处理。</li>
+<li>Map函数和Reduce函数是使用Javascript编写的，并可以<strong>通过db.runCommand或mapreduce命令来执行MapReduce操作</strong>。</li>
+<li><strong>GridFS</strong>是MongoDB中的一个内置功能，可以用于<strong>存放大量小文件</strong>。</li>
+<li><strong>允许在服务端执行脚本</strong>，可以用Javascript编写某个函数，直接在服务端执行，也可以把函数的定义存储在服务端，下次直接调用即可。</li>
+<li>支持 <strong>各种编程语言</strong>:RUBY，PYTHON，JAVA，C++，PHP，C#等多种语言。</li>
+</ol>
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><p>1.<a target="_blank" rel="noopener" href="https://www.runoob.com/mongodb/mongodb-intro.html" title="MongoDB 教程">MongoDB 教程</a><br>2.<a target="_blank" rel="noopener" href="https://docs.mongodb.com/manual/introduction/" title="Introduction to MongoDB">Introduction to MongoDB</a></p>
 
     </div>
 
@@ -455,7 +480,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

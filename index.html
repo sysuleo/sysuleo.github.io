@@ -188,14 +188,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -243,6 +243,197 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/20/linux-6-awk%E6%8C%87%E4%BB%A4-linux%E4%B8%89%E5%89%91%E5%AE%A2boss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/20/linux-6-awk%E6%8C%87%E4%BB%A4-linux%E4%B8%89%E5%89%91%E5%AE%A2boss/" class="post-title-link" itemprop="url">[linux] 6.awk指令--linux三剑客boss</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-01-20 12:47:32" itemprop="dateCreated datePublished" datetime="2021-01-20T12:47:32+08:00">2021-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-22 13:32:38" itemprop="dateModified" datetime="2021-01-22T13:32:38+08:00">2021-01-22</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="江湖传言linux有三剑客-而awk-是三剑客的老大。利剑出鞘-潜龙升天。"><a href="#江湖传言linux有三剑客-而awk-是三剑客的老大。利剑出鞘-潜龙升天。" class="headerlink" title="江湖传言linux有三剑客, 而awk 是三剑客的老大。利剑出鞘,潜龙升天。"></a>江湖传言linux有三剑客, 而awk 是三剑客的老大。利剑出鞘,潜龙升天。</h2><h2 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h2><p>awk属于 <strong>一种编程语言</strong>，可以通过编程实现各种需要的<strong>文本处理需求</strong>。awk在其对 <strong>数据分析</strong>并生成报告时，显得尤为强大。简单来说awk就是把文件 <strong>逐行的读入</strong>，以 <strong>空格为默认分隔符</strong>将每行切片，切开的部分再进行各种分析处理。</p>
+<p>awk有3个不同版本: awk、nawk和gawk，未作特别说明，<strong>一般指gawk</strong>，gawk 是 AWK 的 GNU 版本。</p>
+<h3 id="awk工作流程："><a href="#awk工作流程：" class="headerlink" title="awk工作流程："></a>awk工作流程：</h3><p>读入有 <strong>‘\n’换行符分割的一条记录</strong>，然后将记录按指定的域<strong>分隔符划分域</strong>，填充域，**$0<strong>则表示</strong>所有域(原记录)<strong>,</strong>$1<strong>表示</strong>第一个域**,$n表示第n个域。<strong>默认</strong>域分隔符是 <strong>空白键 或 tab键</strong>。</p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法:"></a>基本用法:</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk [选项参数] &#39;BEGIN&#123;命令 &#125; pattern&#123; 命令 &#125; END&#123; 命令 &#125;&#39;  文件名    # 行匹配语句 awk &#39;&#39; 只能用单引号</span><br></pre></td></tr></table></figure>
+
+<h3 id="pattern模块"><a href="#pattern模块" class="headerlink" title="pattern模块"></a>pattern模块</h3><h4 id="打印某几列"><a href="#打印某几列" class="headerlink" title="打印某几列"></a>打印某几列</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &#39;i am so busy&#39; | awk &#39;&#123;print $1, $2 $3&#125;&#39;</span><br><span class="line">i amso</span><br></pre></td></tr></table></figure>
+
+<h4 id="选项参数"><a href="#选项参数" class="headerlink" title="选项参数"></a>选项参数</h4><p>-F参数：指定分隔符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &#39;192.168.1.1&#39; | awk -F &quot;.&quot; &#39;&#123;print $2&#125;&#39;</span><br><span class="line">168</span><br><span class="line"></span><br><span class="line">$ echo &#39;I am leo。my qq is xxxxxx&#39; |awk -F &#39;[ ,]+&#39; &#39;&#123;print $3&quot; &quot;$7&#125;&#39;    # 多个分隔符</span><br><span class="line">leo xxxxxx</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们将字符串 i am so busy 通过管道传递给awk命令，相当于awk处理一个文件，该文件的内容就是i am so busy,默认通过空格作为分隔符(不管列之间有多少个空格都将当作一个空格处理)i am so busy就分割成四列了。</li>
+<li>另外，我们发现pattern{ 命令 }中”,”输出时为空格” “。</li>
+</ul>
+<h3 id="BEGIN-定义表头"><a href="#BEGIN-定义表头" class="headerlink" title="BEGIN 定义表头"></a>BEGIN 定义表头</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat score.txt</span><br><span class="line">tom 60 60 60</span><br><span class="line">kitty 90 95 87</span><br><span class="line">jack 72 84 99</span><br><span class="line"></span><br><span class="line">$ awk &#39;BEGIN&#123;print &quot;姓名 语文 数学 英语&quot;&#125;&#123;printf &quot;%-8s%-5d%-5d%-5d\n&quot;,$1,$2,$3,$4&#125;&#39; score.txt     # 左对齐的操作(%-8s左对齐，宽8位)</span><br><span class="line"></span><br><span class="line">姓名 语文数学英语</span><br><span class="line">tom 60 60 60</span><br><span class="line">kitty 90 95 87</span><br><span class="line">jack 72 84 99</span><br></pre></td></tr></table></figure>
+
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;BEGIN&#123;print &quot;姓名 语文 数学 英语 总成绩&quot;; \</span><br><span class="line">sum1&#x3D;0;sum2&#x3D;0;sum3&#x3D;0;sumall&#x3D;0&#125; \              # 这里定义了初始值</span><br><span class="line">&#123;printf &quot;%5s%5d%5d%5d%5d\n&quot;,$1,$2,$3,$4,$2+$3+$4;\</span><br><span class="line">sum1+&#x3D;$2;sum2+&#x3D;$3;sum3+&#x3D;$4;sumall+&#x3D;$2+$3+$4&#125;\</span><br><span class="line">END&#123;printf &quot;%5s%5d%5d%5d%5d\n&quot;,&quot;总成绩&quot;,sum1,sum2,sum3,sumall&#125;&#39;\</span><br><span class="line"> score.txt</span><br><span class="line"></span><br><span class="line">姓名 语文 数学 英语 总成绩</span><br><span class="line">  tom 60 60 60 180</span><br><span class="line">kitty 90 95 87 272</span><br><span class="line"> jack 72 84 99 255</span><br><span class="line">总成绩 222 239 246 707</span><br></pre></td></tr></table></figure>
+
+<h2 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>= += -= *= /= %= ^= **=</td>
+<td>赋值</td>
+</tr>
+<tr>
+<td>?:</td>
+<td>C条件表达式</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>&amp;&amp;</td>
+<td>逻辑与</td>
+</tr>
+<tr>
+<td>~ 和 !~</td>
+<td>匹配正则表达式和不匹配正则表达式</td>
+</tr>
+<tr>
+<td>&lt; &lt;= &gt; &gt;= != ==</td>
+<td>关系运算符</td>
+</tr>
+<tr>
+<td>空格</td>
+<td>连接</td>
+</tr>
+<tr>
+<td>+ -</td>
+<td>加，减</td>
+</tr>
+<tr>
+<td>* / %</td>
+<td>乘，除与求余</td>
+</tr>
+<tr>
+<td>+ - !</td>
+<td>一元加，减和逻辑非</td>
+</tr>
+<tr>
+<td>^ ***</td>
+<td>求幂</td>
+</tr>
+<tr>
+<td>++ –</td>
+<td>增加或减少，作为前缀或后缀</td>
+</tr>
+<tr>
+<td>$</td>
+<td>字段引用</td>
+</tr>
+<tr>
+<td>in</td>
+<td>数组成员</td>
+</tr>
+</tbody></table>
+<h5 id="example1-过滤第一列大于2的行"><a href="#example1-过滤第一列大于2的行" class="headerlink" title="example1:过滤第一列大于2的行"></a>example1:过滤第一列大于2的行</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;$1&gt;2&#39; log.txt    #命令</span><br><span class="line">#输出</span><br><span class="line">3 Are you like awk</span><br><span class="line">This&#39;s a test</span><br><span class="line">10 There are orange,apple,mongo</span><br></pre></td></tr></table></figure>
+
+<h4 id="exmple2：输出奇数行"><a href="#exmple2：输出奇数行" class="headerlink" title="exmple2：输出奇数行"></a>exmple2：输出奇数行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ vim demo.txt</span><br><span class="line">root:x:0:0:root:&#x2F;root:&#x2F;usr&#x2F;bin&#x2F;zsh</span><br><span class="line">daemon:x:1:1:daemon:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">bin:x:2:2:bin:&#x2F;bin:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">sys:x:3:3:sys:&#x2F;dev:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">sync:x:4:65534:sync:&#x2F;bin:&#x2F;bin&#x2F;sync</span><br><span class="line"></span><br><span class="line">$ awk -F &#39;:&#39; &#39;NR % 2 &#x3D;&#x3D; 1 &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line">bin</span><br><span class="line">sync</span><br></pre></td></tr></table></figure>
+
+<h4 id="exmple3：输出第一个字段等于指定值的行"><a href="#exmple3：输出第一个字段等于指定值的行" class="headerlink" title="exmple3：输出第一个字段等于指定值的行"></a>exmple3：输出第一个字段等于指定值的行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F &#39;:&#39; &#39;$1 &#x3D;&#x3D; &quot;root&quot; &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line"></span><br><span class="line">$ awk -F &#39;:&#39; &#39;$1 &#x3D;&#x3D; &quot;root&quot; || $1 &#x3D;&#x3D; &quot;bin&quot; &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line">bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h2><h5 id="example1-善用if-else判断语句"><a href="#example1-善用if-else判断语句" class="headerlink" title="example1:善用if else判断语句"></a>example1:善用if else判断语句</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;&#123;if($2&gt;&#x3D;90 )print $0&#125;&#39; score.txt</span><br><span class="line">kitty 90 95 87</span><br><span class="line">$ awk &#39;&#123;if($2&gt;&#x3D;90 )print $1,&quot;优秀&quot;; else print $1,&quot;良好&quot;&#125;&#39; score.txt</span><br><span class="line">tom 良好</span><br><span class="line">kitty 优秀</span><br><span class="line">jack 良好</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a>内置变量</h2><p>常用内置变量：</p>
+<ul>
+<li>FILENAME： 用于保存输入文件名称,<strong>当前文件名</strong>。</li>
+<li>NF： 一条记录的 <strong>字段的数目</strong>。</li>
+<li>NR：已经读出的记录数，就是 <strong>行号</strong>，<strong>从1开始</strong></li>
+<li>OFS：用于设置输出分隔字符字符，默认空格。</li>
+<li>FS：字段分隔符(默认是任何空格)。</li>
+<li>ORS：用于设置输出记录分隔符，默认为新的一行。</li>
+<li>RS：记录分隔符(默认是一个换行符)。</li>
+<li>OFMT：<strong>数字的输出格式</strong>(默认值是%.6g)。</li>
+<li>ENVIRON：读取环境变量。</li>
+</ul>
+<h5 id="example1-只查看test-txt文件第20到第30行"><a href="#example1-只查看test-txt文件第20到第30行" class="headerlink" title="example1:只查看test.txt文件第20到第30行"></a>example1:只查看test.txt文件第20到第30行</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;&#123;if(NR&gt;&#x3D;20 &amp;&amp; NR&lt;&#x3D;30) print $0&#125;&#39; test.txt </span><br></pre></td></tr></table></figure>
+
+<h4 id="example2-保留小数点后两位"><a href="#example2-保留小数点后两位" class="headerlink" title="example2:保留小数点后两位"></a>example2:保留小数点后两位</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;BEGIN&#123;OFMT&#x3D;&quot;%.2f&quot;;print 1.2567,12E-2&#125;&#39;</span><br><span class="line">1.26 0.12</span><br></pre></td></tr></table></figure>
+
+<h4 id="输出倒数第二个字段"><a href="#输出倒数第二个字段" class="headerlink" title="输出倒数第二个字段"></a>输出倒数第二个字段</h4><p>变量 <strong>NF</strong>表示当前行有多少个字段，因此 <strong>$NF</strong>就代表 <strong>最后一个字段</strong>。 <strong>$(NF-1)**代表 **倒数第二个字段</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F &#39;:&#39; &#39;&#123;print $1, $(NF-1)&#125;&#39; demo.txt</span><br><span class="line">root &#x2F;root</span><br><span class="line">daemon &#x2F;usr&#x2F;sbin</span><br><span class="line">bin &#x2F;bin</span><br><span class="line">sys &#x2F;dev</span><br><span class="line">sync &#x2F;bin</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35520021" title="awk 详解">awk 详解</a><br>2.<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70482897" title="Linux三剑客传 | 老大：AWK">ILinux三剑客传 | 老大：AWK</a><br>3.<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/11/awk.html" title="awk 入门教程">awk 入门教程</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1487,124 +1678,6 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/" class="post-title-link" itemprop="url">[python源码分析] 7.可变容器list</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-14 13:05:51" itemprop="dateCreated datePublished" datetime="2020-12-14T13:05:51+08:00">2020-12-14</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-01-03 10:34:09" itemprop="dateModified" datetime="2021-01-03T10:34:09+08:00">2021-01-03</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h1><div style="width:95%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/memory_layout.png" class="" title="list_memory_layout图"></div>
-
-<p>list 对象是一种 <strong>变长对象</strong> ，因此包含变长对象公共头部。 除了公共头部， list 内部维护了一个动态数组，而 <strong>数组则依次保存元素对象的指针</strong>：</p>
-<ul>
-<li>**ob_item ，指向动态数组的指针，动态数组保存元素对象的指针；</li>
-<li>allocated ，动态数组 <strong>长度</strong>，即列表 <strong>容量</strong>；</li>
-<li>ob_size ，动态数组 <strong>当前保存元素个数</strong>，即列表 <strong>长度</strong> 。</li>
-</ul>
-<div style="width:95%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pylistObject.jpg" class="" title="pylistObject图"></div>
-
-<h1 id="对象操作"><a href="#对象操作" class="headerlink" title="对象操作"></a>对象操作</h1><h2 id="append"><a href="#append" class="headerlink" title="append"></a>append</h2><p>python中的list的实现非常像 <strong>C++ 中的Vector</strong> </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l &#x3D; list（） # 初始化一个空列表</span><br></pre></td></tr></table></figure>
-<p>字段 ob_size存储实际大小，其类型为Py_ssize_t，通常为64位，1 &lt;&lt; 64可以表示的数非常大，通常在ob_size字段 <strong>溢出之前会耗尽 RAM</strong></p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/list_empty.png" class="" title="list_empty图"></div>
-
-<p>如果我们append(‘a’) 1个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_a.png" class="" title="append_a图"></div>
-
-<p><strong>ob_size</strong> 变为 1, <strong>ob_item</strong> 指向一个 <strong>大小为4的新内存块</strong></p>
-<p>相继append三个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_d.png" class="" title="append_d图"></div>
-
-<p><strong>ob_size</strong> 变为 4, <strong>内存块满了</strong></p>
-<p>大多数情况下， append 方法性能都足够好，**时间复杂度是 O(1)**。</p>
-<h2 id="动态扩容"><a href="#动态扩容" class="headerlink" title="动态扩容"></a>动态扩容</h2><p>继续append一个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_e.png" class="" title="append_e图"></div>
-
-<p>这是resize相关代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* The growth pattern is:  0, 4, 8, 16, 25, 35, 46, 58, 72, 88, ... *&#x2F;</span><br><span class="line">&#x2F;* currently: new_allocated &#x3D; 5 + (5 &gt;&gt; 3) + 3 &#x3D; 8 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);  # 扩容时，预留一定的余量，(newsize &gt;&gt; 3)表明余量一般是 1&#x2F;8 左右</span><br></pre></td></tr></table></figure>
-
-<p>如果 list 对象内部数组已用满，再添加元素时则需要进行扩容。 append 等方法在操作时都会对内部数组进行检查，如需扩容则调用 list_resize 函数。在 list_resize 函数， <strong>Python 重新分配一个长度更大的数组并替换旧数组</strong>。 </p>
-<p>由于内部数组扩容时，需要将列表元素 <strong>从旧数组拷贝到新数组</strong>，时间复杂度为 <strong>O(n)</strong> ，开销较大。为此， Python 在为内部数组扩容时，会预留一定余量，一般是  <strong>1/8 左右</strong> 。</p>
-<h2 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;e&#39;</span><br></pre></td></tr></table></figure>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png" class="" title="pop_e图"></div>
-
-<p>我们可以看到这里只是简单将 元素e 弹出，内存布局并未发生变化。</p>
-<h2 id="动态减容"><a href="#动态减容" class="headerlink" title="动态减容"></a>动态减容</h2><p>实际上，每次pop，都会调用 <strong>resize</strong> 函数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* allocated: 8, newsize: 3, 8 &gt;&#x3D; 3 &amp;&amp; (3 &gt;&#x3D; 4?), no *&#x2F;</span><br><span class="line">if (allocated &gt;&#x3D; newsize &amp;&amp; newsize &gt;&#x3D; (allocated &gt;&gt; 1)) &#123;</span><br><span class="line">    &#x2F;* Do not realloc if the newsize deos not fall</span><br><span class="line">       lower than half the allocated size</span><br><span class="line">        不分配内存，仅改变ob_size的值    *&#x2F;</span><br><span class="line">    assert(self-&gt;ob_item !&#x3D; NULL || newsize &#x3D;&#x3D; 0);</span><br><span class="line">    &#x2F;* only change the ob_size field *&#x2F;</span><br><span class="line">    Py_SIZE(self) &#x3D; newsize;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;* newsize小于allocated的一半时，会重新分配内存 *&#x2F;</span><br><span class="line">&#x2F;* 3 + (3 &gt;&gt; 3) + 3 &#x3D; 6 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);</span><br></pre></td></tr></table></figure>
-<p>如果理解了pop 每次都会调用 resize 函数，下面情形就很容易理解了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;d&#39;</span><br></pre></td></tr></table></figure>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png" class="" title="pop_d图"></div>
-
-
-
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/list/list.md" title="list">list</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1907" title="Python 源码深度剖析/11 list 对象，容量自适应的数组式容器">Python 源码深度剖析/11 list 对象，容量自适应的数组式容器</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1723,7 +1796,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'a676607444a8bc8b150c9a3aff884e61',
+      id          : 'e506a8adce6c8230b3be7f73c6529cfc',
         language: '',
       distractionFreeMode: true
     });

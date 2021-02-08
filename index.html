@@ -407,7 +407,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-02-08 10:41:10" itemprop="dateModified" datetime="2021-02-08T10:41:10+08:00">2021-02-08</time>
+        <time title="Modified: 2021-02-08 16:21:27" itemprop="dateModified" datetime="2021-02-08T16:21:27+08:00">2021-02-08</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -429,7 +429,42 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>NEED TO DO LATER</p>
+          <p>Linux ln命令是一个非常重要而且常用命令，它用于 <strong>为文件或者目录创建链接</strong>。</p>
+<h2 id="Links-types"><a href="#Links-types" class="headerlink" title="Links types"></a>Links types</h2><p>need to do later</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><h3 id="P-（默认也是）创建-Hard-links"><a href="#P-（默认也是）创建-Hard-links" class="headerlink" title="-P  （默认也是）创建 Hard links"></a>-P  （默认也是）创建 Hard links</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ln -P my_file.txt my_link.txt</span><br><span class="line"></span><br><span class="line">$ ln my_file.txt my_link.txt</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="s-创建-Symlinks-Soft-links"><a href="#s-创建-Symlinks-Soft-links" class="headerlink" title="-s 创建 Symlinks(Soft links)"></a>-s 创建 Symlinks(Soft links)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s [OPTIONS] FILE LINK</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol>
+<li>创建一个软链接 my_link.txt, 指向my_file.txt<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s my_file.txt my_link.txt</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>给文件创建  Symlinks <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s &#x2F;mnt&#x2F;my_drive&#x2F;movies ~&#x2F;my_movies</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="f-–force-强制覆盖"><a href="#f-–force-强制覆盖" class="headerlink" title="-f (–force) 强制覆盖"></a>-f (–force) 强制覆盖</h3><p>如果创建一个已经存在的 Symlinks, 会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s my_file.txt my_link.txt</span><br><span class="line"></span><br><span class="line">ln: failed to create symbolic link &#39;my_link.txt&#39;: File exists</span><br></pre></td></tr></table></figure>
+
+<p>使用 <strong>-f 强制覆盖</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -sf my_file.txt my_link.txt</span><br></pre></td></tr></table></figure>
+
+<h3 id="移除Symlinks"><a href="#移除Symlinks" class="headerlink" title="移除Symlinks"></a>移除Symlinks</h3><ul>
+<li>unlink<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ unlink symlink_to_remove</span><br></pre></td></tr></table></figure></li>
+<li>rm <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ symlink_to_remove</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>注： 不要在文件末尾加上 “/“</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://linuxize.com/post/how-to-create-symbolic-links-in-linux-using-the-ln-command/" title="Ln Command in Linux">Ln Command in Linux</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.linuxrumen.com/cyml/50.html">Linux软链接和硬链接的区别之ln命令详解</a></li>
+</ol>
 
       
     </div>
@@ -1812,7 +1847,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'a676607444a8bc8b150c9a3aff884e61',
+      id          : 'f47af1d1eda4d807b02bba32be15120b',
         language: '',
       distractionFreeMode: true
     });

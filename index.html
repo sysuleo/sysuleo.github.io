@@ -399,9 +399,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-02-04 12:50:15 / Modified: 13:37:53" itemprop="dateCreated datePublished" datetime="2021-02-04T12:50:15+08:00">2021-02-04</time>
+      <time title="Created: 2021-02-04 12:50:15" itemprop="dateCreated datePublished" datetime="2021-02-04T12:50:15+08:00">2021-02-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-02-08 10:41:10" itemprop="dateModified" datetime="2021-02-08T10:41:10+08:00">2021-02-08</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+        </span>
     </span>
 
   
@@ -1455,7 +1470,7 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-12-17 20:41:03" itemprop="dateModified" datetime="2020-12-17T20:41:03+08:00">2020-12-17</time>
+        <time title="Modified: 2021-02-08 10:40:16" itemprop="dateModified" datetime="2021-02-08T10:40:16+08:00">2021-02-08</time>
       </span>
 
   
@@ -1487,6 +1502,13 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 <p>显示 log.game为前缀 文件的 <strong>最后 10 个字符内容信息</strong>。</p>
 <h4 id="‘tail-f’"><a href="#‘tail-f’" class="headerlink" title="‘tail -f’"></a>‘tail -f’</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f log.test*</span><br></pre></td></tr></table></figure>
 <p>当前语句可以将  log.test1, log.test2等以 <strong>log.test 打头</strong>文件的 <strong>初始最后十行</strong> 和 <strong>追加显示</strong>,这个是 <strong>看log神器</strong></p>
+<h4 id="‘tail-a’"><a href="#‘tail-a’" class="headerlink" title="‘tail -a’"></a>‘tail -a’</h4><p>有时使用 grep命令会提示 <strong>“binary file matches **.log”</strong><br>从提示可以看出,该文件是个二进制文本。</p>
+<p>此时使用 <strong>-a</strong>参数接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -a test XXX.log</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-a, --text equivalent to --binary-files&#x3D;text，即让二进制文件等价于文本。</span><br></pre></td></tr></table></figure>
+
+
 <hr>
 <h2 id="读取文件之-grep-命令"><a href="#读取文件之-grep-命令" class="headerlink" title="读取文件之 grep 命令"></a>读取文件之 grep 命令</h2><h4 id="c-显示当前有多少条"><a href="#c-显示当前有多少条" class="headerlink" title="-c 显示当前有多少条"></a>-c 显示当前有多少条</h4><p>这个语句非常 <strong>necessary</strong>, 因为log太多时，查找可能会 <strong>爆内存</strong>，先看看log有多少条（配合tail -n100等语句使用）。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$grep &quot;leo&quot; .&#x2F;log&#x2F;log.ga* -c</span><br><span class="line"></span><br><span class="line">.&#x2F;log&#x2F;log.ga1:0</span><br><span class="line">.&#x2F;log&#x2F;log.ga2:175</span><br></pre></td></tr></table></figure>
@@ -1507,6 +1529,8 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 <h4 id="多个文件"><a href="#多个文件" class="headerlink" title="多个文件"></a>多个文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;Trace&quot; -n file_1 file_2</span><br></pre></td></tr></table></figure>
 <h4 id="打印样式匹配所位于的字符或字节偏移："><a href="#打印样式匹配所位于的字符或字节偏移：" class="headerlink" title="打印样式匹配所位于的字符或字节偏移："></a>打印样式匹配所位于的字符或字节偏移：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo gun is not unix | grep -b -o &quot;not&quot;</span><br><span class="line">7:not</span><br><span class="line">#一行中字符串的字符便宜是从该行的第一个字符开始计算，起始值为0。选项 -b -o 一般总是配合使用。</span><br></pre></td></tr></table></figure>
 <h4 id="搜索多个文件并查找匹配文本在哪些文件中-l："><a href="#搜索多个文件并查找匹配文本在哪些文件中-l：" class="headerlink" title="搜索多个文件并查找匹配文本在哪些文件中 -l："></a>搜索多个文件并查找匹配文本在哪些文件中 -l：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -l &quot;Trace&quot; file1 file2 file3...</span><br></pre></td></tr></table></figure>
+
+
 
 
       
@@ -1788,7 +1812,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

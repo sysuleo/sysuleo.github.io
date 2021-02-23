@@ -188,14 +188,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -243,6 +243,149 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/" class="post-title-link" itemprop="url">[python源码分析] 9.执行过程和字节码</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-02-23 12:54:42 / Modified: 19:15:46" itemprop="dateCreated datePublished" datetime="2021-02-23T12:54:42+08:00">2021-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>.py文件是如何转换为机器指令被CPU执行呢？.pyc文件作用是什么？</p>
+<h2 id="执行原理"><a href="#执行原理" class="headerlink" title="执行原理"></a>执行原理</h2><p>C/C++之类的编译性语言编写的程序，是需要从源文件转换成计算机使用的机器语言，经过 <strong>链接器链接之后形成了二进制的可执行文件</strong>。运行该程序的时候，就可以把 <strong>二进制程序从硬盘载入到内存</strong>中并运行。</p>
+<p>但是对于Python而言，python源码 <strong>不需要编译成二进制代码</strong>，它可以<strong>直接从源代码运行程序</strong>。</p>
+<p>从程序执行时的基本表示是 <strong>实际计算机上的机器语言</strong> 还是 <strong>虚拟机的机器语言</strong>维度，可以将程序设计语言划分为两大类：<strong>编译型语言和解释型语言</strong>。</p>
+<ul>
+<li><p>编译实现的语言，如：C、C++、Fortran、Pascal、Ada。由编译型语言编写的源程序需要经过 <strong>编译,汇编和链接</strong>才能输出目标代码，然后 <strong>由机器执行目标代码</strong>。目标代码是由 <strong>机器指令</strong>组成，不能独立运行，因为源程序中可能使用了一些汇编程序不能解释引用的库函数，而库函数又不在源程序中，此时还需要链接程序完成外部引用和目标模板调用的链接任务，最后才能输出可执行代码。</p>
+</li>
+<li><p>解释型语言，解释器 <strong>不产生目标机器代码</strong>，而是 <strong>产生中间代码</strong>，这种中间代码与机器代码不同，中间代码的解释是 <strong>由软件支持的</strong>，<strong>不能直接使用在硬件上</strong>。该软件解释器通常会 <strong>导致执行效率较低</strong>，用解释型语言编写的程序是由另一个可以理解中间代码的解释程序执行的。和编译的程序不同的是, 解释程序的任务是 <strong>逐一将源代码的语句解释成可执行的机器指令</strong>，不需要将源程序翻译成目标代码再执行。对于解释型语言，需要一个<strong>专门的解释器</strong> 来执行该程序，每条语句只有在执行是才能被翻译，这种解释型语言每执行一次就翻译一次，因而<strong>效率低下</strong>。</p>
+</li>
+<li><p>Java解释器，java很特殊，java是需要编译的，但是没有直接编译成机器语言，而是编译成字节码，然后在Java虚拟机上用解释的方式执行字节码。Python也使用了类似的方式，先将python编译成 <strong>python字节码</strong>，然后由一个专门的python字节码解释器负责解释执行字节码。</p>
+</li>
+<li><p>python是一门解释语言，但是出于效率的考虑，提供了一种<strong>编译的方法</strong>。编译之后就得到<strong>pyc</strong>文件，存储了<strong>字节码</strong>。python这点和java很类似，但是java与python不同的是，python是一个解释型的语言，所以编译字节码<strong>不是一个强制的操作</strong>，事实上，编译是一个自动的过程，一般不会在意它的存在。编译成字节码可以<strong>节省加载模块的时间，提高效率</strong>。除了效率之外，字节码的形式也<strong>增加了反向工程的难度，可以保护源代码</strong>。这个只是一定程度上的保护，反编译还是可以的。</p>
+</li>
+</ul>
+<h2 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h2><p>Python 更像 Shell 脚本这样的解释性语言,实际上执行原理本质同Java一样，都可以归纳为 <strong>虚拟机</strong> 和 <strong>字节码</strong></p>
+<div style="width:100%;margin:auto"><img src="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/python_process.jpg" class="" title="python_process图"></div>
+
+<p>虽然 python 命令也叫做 <strong>Python 解释器 ( Interpreter )**，但跟其他脚本语言解释器</strong>有本质区别<strong>。实际上， Python 解释器包含 **编译器</strong> 以及 <strong>虚拟机</strong> 两部分。当 Python 解释器启动后，主要执行以下两个步骤：</p>
+<ol>
+<li>编译器 将 .py 文件中的 Python 源码 <strong>编译成 字节码</strong></li>
+<li>虚拟机 <strong>逐行执行</strong>编译器生成的 字节码</li>
+</ol>
+<p>因此， <strong>.py</strong> 文件中的 Python 语句 <strong>并没有直接转换成机器指令</strong>，而是转换成 Python 字节码 。</p>
+<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>Python中有一个内置函数 <strong>compile()**，可以将源文件 **编译成codeobject</strong>，首先看这个函数的说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile(source, filename, mode[, flags[, dont_inherit]]) -&gt; code object</span><br></pre></td></tr></table></figure>
+<ul>
+<li>source ，源文件的内容字符串</li>
+<li>filename ，源文件名称</li>
+<li>mode  编译模式 ：<strong>exec</strong>-编译module，<strong>single</strong>-编译一个声明，<strong>eval</strong>-编译一个表达式</li>
+</ul>
+<h3 id="PyCodeObject"><a href="#PyCodeObject" class="headerlink" title="PyCodeObject"></a>PyCodeObject</h3><p>定义 test.py文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PI &#x3D; 3.14</span><br><span class="line"></span><br><span class="line">def circle_area(r):</span><br><span class="line">    return PI * r ** 2</span><br><span class="line"></span><br><span class="line">class Dog(object):</span><br><span class="line">  </span><br><span class="line">    def __init__(self, name):</span><br><span class="line">        self.name &#x3D; name</span><br><span class="line">  </span><br><span class="line">    def yelp(self):</span><br><span class="line">        print(&#39;woof, i am&#39;, self.name)</span><br></pre></td></tr></table></figure>
+<p>调用 compile 函数编译源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; compile(open(&#39;C:\\Users\\liuwen03\\Desktop\\test.py&#39;).read(), &#39;test.py&#39;, &#39;exec&#39;)</span><br><span class="line">&gt;&gt;&gt; result</span><br><span class="line">&lt;code object &lt;module&gt; at 00000000036E27B0, file &quot;test.py&quot;, line 1&gt;</span><br><span class="line">&gt;&gt;&gt; result.__class__</span><br><span class="line">&lt;type &#39;code&#39;&gt;</span><br></pre></td></tr></table></figure>
+<p>看上去我们得到了一个 <strong>code对象</strong> 。 在 Include/code.h 中，可以找到代表代码对象的 C 结构体 <strong>PyCodeObject</strong> 。 PyCodeObject 定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Bytecode object *&#x2F;</span><br><span class="line">struct PyCodeObject &#123;</span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    int co_argcount;            &#x2F;* #arguments, except *args 参数个数*&#x2F;</span><br><span class="line">    int co_posonlyargcount;     &#x2F;* #positional only arguments *&#x2F;</span><br><span class="line">    int co_kwonlyargcount;      &#x2F;* #keyword only arguments 关键字参数个数*&#x2F;</span><br><span class="line">    int co_nlocals;             &#x2F;* #local variables 局部变量个数*&#x2F;</span><br><span class="line">    int co_stacksize;           &#x2F;* #entries needed for evaluation stack     执行代码所需栈空间*&#x2F;</span><br><span class="line">    int co_flags;               &#x2F;* CO_..., see below 标识*&#x2F;</span><br><span class="line">    int co_firstlineno;         &#x2F;* first source line number 代码块首行行号*&#x2F;</span><br><span class="line">    PyObject *co_code;          &#x2F;* instruction opcodes 指令操作码，也就是字节码*&#x2F;</span><br><span class="line">    PyObject *co_consts;        &#x2F;* list (constants used) 常量列表*&#x2F;</span><br><span class="line">    PyObject *co_names;         &#x2F;* list of strings (names used)     名字列表*&#x2F;</span><br><span class="line">    PyObject *co_varnames;      &#x2F;* tuple of strings (local variable names) 局部变量名列表*&#x2F;</span><br><span class="line">    PyObject *co_freevars;      &#x2F;* tuple of strings (free variable names) *&#x2F;</span><br><span class="line">    PyObject *co_cellvars;      &#x2F;* tuple of strings (cell variable names) *&#x2F;</span><br><span class="line">    &#x2F;* The rest aren&#39;t used in either hash or comparisons, except for co_name,</span><br><span class="line">       used in both. This is done to preserve the name and line number</span><br><span class="line">       for tracebacks and debuggers; otherwise, constant de-duplication</span><br><span class="line">       would collapse identical functions&#x2F;lambdas defined on different lines.</span><br><span class="line">    *&#x2F;</span><br><span class="line">    Py_ssize_t *co_cell2arg;    &#x2F;* Maps cell vars which are arguments. *&#x2F;</span><br><span class="line">    PyObject *co_filename;      &#x2F;* unicode (where it was loaded from) *&#x2F;</span><br><span class="line">    PyObject *co_name;          &#x2F;* unicode (name, for reference) *&#x2F;</span><br><span class="line">    PyObject *co_linetable;     &#x2F;* string (encoding addr&lt;-&gt;lineno mapping) See</span><br><span class="line">                                   Objects&#x2F;lnotab_notes.txt for details. *&#x2F;</span><br><span class="line">    void *co_zombieframe;       &#x2F;* for optimization only (see frameobject.c) *&#x2F;</span><br><span class="line">    PyObject *co_weakreflist;   &#x2F;* to support weakrefs to code objects *&#x2F;</span><br><span class="line">    &#x2F;* Scratch space for extra data relating to the code object.</span><br><span class="line">       Type is a void* to keep the format private in codeobject.c to force</span><br><span class="line">       people to go through the proper APIs. *&#x2F;</span><br><span class="line">    void *co_extra;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Per opcodes just-in-time cache</span><br><span class="line">     *</span><br><span class="line">     * To reduce cache size, we use indirect mapping from opcode index to</span><br><span class="line">     * cache object:</span><br><span class="line">     *   cache &#x3D; co_opcache[co_opcache_map[next_instr - first_instr] - 1]</span><br><span class="line">     *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; co_opcache_map is indexed by (next_instr - first_instr).</span><br><span class="line">    &#x2F;&#x2F;  * 0 means there is no cache for this opcode.</span><br><span class="line">    &#x2F;&#x2F;  * n &gt; 0 means there is cache in co_opcache[n-1].</span><br><span class="line">    unsigned char *co_opcache_map;</span><br><span class="line">    _PyOpcache *co_opcache;</span><br><span class="line">    int co_opcache_flag;  &#x2F;&#x2F; used to determine when create a cache.</span><br><span class="line">    unsigned char co_opcache_size;  &#x2F;&#x2F; length of co_opcache.</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>从源码可以看出, 代码对象 <strong>PyCodeObject</strong> 用于<strong>存储编译结果</strong>，包括 <strong>字节码</strong> 以及代码涉及的 <strong>常量</strong> <strong>名字</strong> 等等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_code</span><br><span class="line">&#39;d\x00\x00Z\x00\x00d\x01\x00\x84\x00\x00Z\x01\x00d\x02\x00e\x02\x00f\x01\x00d\x03\x00\x84\x00\x00\x83\x00\x00YZ\x03\x00d\x04\x00S&#39;</span><br></pre></td></tr></table></figure>
+<p>字节码现在看上去如同天书一般。看看代码对象涉及的所有名字 和 常量列表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_names</span><br><span class="line">(&#39;PI&#39;, &#39;circle_area&#39;, &#39;object&#39;, &#39;Dog&#39;)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; result.co_consts</span><br><span class="line">(3.14, &lt;code object circle_area at 00000000036DBEB0, file &quot;test.py&quot;, line 3&gt;, &#39;Dog&#39;, &lt;code object Dog at 00000000036E2A30, file &quot;test.py&quot;, line 6&gt;, None)</span><br></pre></td></tr></table></figure>
+
+<p>常量列表里 <strong>还有两个代码对象</strong>！其中一个是 <strong>circle_area 函数体</strong>，另一个是 <strong>Dog 类定义体</strong>。回忆一下 <strong>Python 作用域</strong> 的划分方式： <strong>每个作用域</strong>对应着一个<strong>代码对象</strong> ！若假设成立， <strong>Dog 代码对象</strong>的常量列表应该<strong>还藏着两个代码对象</strong>，分别代表 <em>init</em> 方法和 yelp 方法的函数体：</p>
+<div style="width:100%;margin:auto"><img src="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/pycodeobject.jpg" class="" title="pycodeobject图"></div>
+
+<p>事实确实如此：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dog_code &#x3D; result.co_consts[3]</span><br><span class="line">&gt;&gt;&gt; dog_code.co_consts</span><br><span class="line">(&lt;code object __init__ at 00000000036D48B0, file &quot;test.py&quot;, line 8&gt;, &lt;code object yelp at 00000000036D49B0, file &quot;test.py&quot;, line 11&gt;)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>因此，我们得到以下结论： Python 源码编译后，<strong>每个作用域</strong>都对应着<strong>一个代码对象</strong>，<strong>子作用域</strong>代码对象位于<strong>父作用域代码对象</strong>的<strong>常量列表</strong>里，层级一一对应。</p>
+<h3 id="反编译"><a href="#反编译" class="headerlink" title="反编译"></a>反编译</h3><p>从上面我们可以看到，字节码是一堆长得跟天书一样的<strong>不可读的字节序列</strong>，跟<strong>二进制机器码</strong>一样。<br>用<strong>dis</strong>反编译字节码，让它变得可读</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import dis</span><br><span class="line">&gt;&gt;&gt; dis.dis(result.co_code)</span><br><span class="line">          0 LOAD_CONST          0 (0)</span><br><span class="line">          3 STORE_NAME          0 (0)</span><br><span class="line">          6 LOAD_CONST          1 (1)</span><br><span class="line">          9 MAKE_FUNCTION       0</span><br><span class="line">         12 STORE_NAME          1 (1)</span><br><span class="line">         15 LOAD_CONST          2 (2)</span><br><span class="line">         18 LOAD_NAME           2 (2)</span><br><span class="line">         21 BUILD_TUPLE         1</span><br><span class="line">         24 LOAD_CONST          3 (3)</span><br><span class="line">         27 MAKE_FUNCTION       0</span><br><span class="line">         30 CALL_FUNCTION       0</span><br><span class="line">         33 BUILD_CLASS</span><br><span class="line">         34 STORE_NAME          3 (3)</span><br><span class="line">         37 LOAD_CONST          4 (4)</span><br><span class="line">         40 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p>第一列是<strong>字节码偏移量</strong> ，第二列是 <strong>指令</strong> ，第三列是  <strong>操作数</strong> 。</p>
+<p>以第一条字节码为例， LOAD_CONST 指令将常量加载进栈，常量下标由操作数给出。而下标为 0 的常量是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_consts[0]</span><br><span class="line">3.14</span><br></pre></td></tr></table></figure>
+<p>因此，第一条字节码就是将常量 3.14 加载到栈。</p>
+<p>由于代码对象 保存了 <strong>常量、名字</strong>等上下文信息，因此直接对代码对象进行反编译可以得到更为清晰的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dis.dis(result)</span><br><span class="line">  1           0 LOAD_CONST               0 (3.14)</span><br><span class="line">              3 STORE_NAME               0 (PI)</span><br><span class="line"></span><br><span class="line">  3           6 LOAD_CONST               1 (&lt;code object circle_area at 00000000036DBEB0, file &quot;test.py&quot;, line 3&gt;)</span><br><span class="line">              9 MAKE_FUNCTION            0</span><br><span class="line">             12 STORE_NAME               1 (circle_area)</span><br><span class="line"></span><br><span class="line">  6          15 LOAD_CONST               2 (&#39;Dog&#39;)</span><br><span class="line">             18 LOAD_NAME                2 (object)</span><br><span class="line">             21 BUILD_TUPLE              1</span><br><span class="line">             24 LOAD_CONST               3 (&lt;code object Dog at 00000000036E2A30, file &quot;test.py&quot;, line 6&gt;)</span><br><span class="line">             27 MAKE_FUNCTION            0</span><br><span class="line">             30 CALL_FUNCTION            0</span><br><span class="line">             33 BUILD_CLASS</span><br><span class="line">             34 STORE_NAME               3 (Dog)</span><br><span class="line">             37 LOAD_CONST               4 (None)</span><br></pre></td></tr></table></figure>
+<p>注意到，操作数 指定的 常量或名字的 <strong>实际值</strong>在旁边的<strong>括号内列出</strong>。另外，字节码<strong>以语句为单位进行分组</strong>，中间以<strong>空行隔开</strong>，<strong>语句行号</strong>在字节码前面给出。 PI = 3.14 这个语句编译成以下两条字节码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1           0 LOAD_CONST               0 (3.14)</span><br><span class="line">            3 STORE_NAME               0 (PI)</span><br></pre></td></tr></table></figure>
+
+<h2 id="pyc"><a href="#pyc" class="headerlink" title="pyc"></a>pyc</h2><p>如果将 test 作为模块导入， Python 将在 test.py 文件所在目录下生成 .pyc 文件：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>import test<br>pyc 文件保存 <strong>经过序列化处理的代码对象 PyCodeObject</strong> 。这样一来， Python 后续导入 test 模块时，<strong>直接读取 pyc 文件并反序列化即可得到代码对象</strong> ，避免了重复编译导致的开销。只有 test.py **有新修改(时间戳比 pyc 文件新)**， Python 才会重新编译。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/helloxiaozhe/article/details/78104975">python编译过程和执行原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1915">Python 源码深度剖析/18 Python 程执行过程与字节码</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1182,7 +1325,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-01-05 12:54:58" itemprop="dateModified" datetime="2021-01-05T12:54:58+08:00">2021-01-05</time>
+        <time title="Modified: 2021-02-23 19:21:08" itemprop="dateModified" datetime="2021-02-23T19:21:08+08:00">2021-02-23</time>
       </span>
 
   
@@ -1195,7 +1338,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h2><p> C++ 标准模板库中的 <strong>map</strong> 是一种关联式容器，内部基于 <strong>红黑树</strong> 实现。红黑树是一种 <strong>平衡 二叉树，插入、删除、查找</strong> 等关键操作的时间复杂度均为 ** O(logn)**。</p>
+          <h2 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h2><p> C++ 标准模板库中的 <strong>map</strong> 是一种关联式容器，内部基于 <strong>红黑树</strong> 实现。红黑树是一种 <strong>平衡 二叉树，插入、删除、查找</strong> 等关键操作的时间复杂度均为 **O(logn)**。</p>
 <p>Python 虚拟机的运行依赖 dict 对象，包括 <strong>名字空间</strong> 以及 <strong>对象属性空间</strong> 等底层都由 dict 实现的。因此Python 中的 dict 对象基于查找效率更高的 <strong>hash table</strong> 实现的。</p>
 <h3 id="PyDictObject"><a href="#PyDictObject" class="headerlink" title="PyDictObject"></a>PyDictObject</h3><p>首先来看看dict的结构，PyDictObject 在头文件 Include/dictobject.h 中定义：</p>
 <div style="width:100%;margin:auto"><img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/PyDictObject.png" class="" title="PyDictObject图"></div>
@@ -1205,7 +1348,7 @@
 <li>Py_ssize_t ma_used ，对象当前所保存的 <strong>键值对个数</strong> ；</li>
 <li>uint64_t ma_version_tag ，对象当前 版本号 ，每次 <strong>修改时更新</strong>；</li>
 <li>PyDictKeysObject *ma_keys ，指向按键对象映射的 <strong>哈希表</strong> 结构；</li>
-<li>PyObject <strong>ma_values ， split table模式下指向由所有 **值对象 组成的数组</strong>。</li>
+<li>PyObject ** ma_values ， split table模式下指向由所有 <strong>值对象 组成的数组</strong>。</li>
 </ul>
 <h4 id="dictkeysobject"><a href="#dictkeysobject" class="headerlink" title="_dictkeysobject"></a>_dictkeysobject</h4><p>然后我们再看看 PyDictKeysObject 的源码，在Objects/dict-common.h 头文件中的 <strong>_dictkeysobject</strong>:</p>
 <ul>
@@ -1267,11 +1410,11 @@
 <div style="width:100%;margin:auto"><img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/after_py36_search.png" class="" title="after_py36_search图"></div>
 
 
-<p>为优化内存使用， Python 将 dict 哈希表分为 <strong>哈希索引(indices)</strong> 和 <strong>键值对(entries)</strong> 两个数组来实现。例如，在64字大小的操作系统中，每个指针需要8个字节，原来需要8<em>3</em>8=192，而优化后只需8<em>3</em>3+1*8=80，节省了大约58%的内存使用。</p>
+<p>为优化内存使用， Python 将 dict 哈希表分为 <strong>哈希索引(indices)</strong> 和 <strong>键值对(entries)</strong> 两个数组来实现。例如，在64字大小的操作系统中，每个指针需要8个字节，原来需要 $8 * 3 * 8 = 192$ ，而优化后只需 $8 * 3 * 3 + 1 * 8 = 80 $ ，节省了大约58%的内存使用。</p>
 <h5 id="为什么遍历字典python3-6之前是无序的，python3-6之后有序？"><a href="#为什么遍历字典python3-6之前是无序的，python3-6之后有序？" class="headerlink" title="为什么遍历字典python3.6之前是无序的，python3.6之后有序？"></a>为什么遍历字典python3.6之前是无序的，python3.6之后有序？</h5><p>因为entries <strong>按插入顺序存储元素</strong>，所以可以 <strong>按插入项的相同顺序遍历哈希表</strong>。在旧版本的实现中，按<strong>hash key</strong>的顺序存储元素，<strong>遍历哈希表时会出现无序</strong>。这就是为什么dict在python3.6之前是无序的，而在python3.6之后是有序的</p>
 <h4 id="优化计算"><a href="#优化计算" class="headerlink" title="优化计算"></a>优化计算</h4><p>由于哈希表必须保持 稀疏 ，最多只有 <strong>2/3</strong> 满，这意味着要浪费至少 <strong>$\frac{1}{3}$</strong> 的内存空间。更雪上加霜的是，一个键值对条目 PyDictKeyEntry 大小达 24 字节，试想一个规模为 65536 的哈希表，将浪费高达 512KB 的内存空间：</p>
 <p> $$65536 * \frac{1}{3} * 24 = 524288$$ </p>
-<p>为了尽量节省内存， Python 将 <strong>键值对数组</strong>压缩到原来的 \frac{2}{3}，只负责存储，索引由另一个数组负责。由于索引数组只需要保存 键值对数组 的下标，而整数占用的内存空间只是若干字节，因此可以 <strong>节约大量内存</strong>。</p>
+<p>为了尽量节省内存， Python 将 <strong>键值对数组</strong>压缩到原来的 $\frac{2}{3}$，只负责存储，索引由另一个数组负责。由于索引数组只需要保存 键值对数组 的下标，而整数占用的内存空间只是若干字节，因此可以 <strong>节约大量内存</strong>。</p>
 <h5 id="索引数组每个元素的大小"><a href="#索引数组每个元素的大小" class="headerlink" title="索引数组每个元素的大小"></a>索引数组每个元素的大小</h5><p>索引数组 可根据哈希表规模，选择 <strong>尽量小的整数类型</strong>。对于规模 <strong>不超过 256</strong> 的哈希表，选择 <strong>8</strong> 位整数即可；对于长度 <strong>不超过 6553</strong>6 的哈希表， <strong>16</strong> 位整数足矣；以此类推。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#define DK_SIZE(dk) ((dk)-&gt;dk_size)</span><br><span class="line">#if SIZEOF_VOID_P &gt; 4</span><br><span class="line">#define DK_IXSIZE(dk)                          \</span><br><span class="line">    (DK_SIZE(dk) &lt;&#x3D; 0xff ?                     \</span><br><span class="line">        1 : DK_SIZE(dk) &lt;&#x3D; 0xffff ?            \</span><br><span class="line">            2 : DK_SIZE(dk) &lt;&#x3D; 0xffffffff ?    \</span><br><span class="line">                4 : sizeof(int64_t))</span><br><span class="line">#else</span><br><span class="line">#define DK_IXSIZE(dk)                          \</span><br><span class="line">    (DK_SIZE(dk) &lt;&#x3D; 0xff ?                     \</span><br><span class="line">        1 : DK_SIZE(dk) &lt;&#x3D; 0xffff ?            \</span><br><span class="line">            2 : sizeof(int32_t))</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
 <div style="width:100%;margin:auto"><img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/indices.png" class="" title="indices图"></div>
@@ -1613,134 +1756,6 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/16/linux-4-grep-tail%E7%AD%89%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/16/linux-4-grep-tail%E7%AD%89%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 4.grep,tail等查看文件命令</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-16 20:32:41" itemprop="dateCreated datePublished" datetime="2020-12-16T20:32:41+08:00">2020-12-16</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-02-21 09:56:16" itemprop="dateModified" datetime="2021-02-21T09:56:16+08:00">2021-02-21</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <hr>
-<h2 id="读取文件之-tail-命令"><a href="#读取文件之-tail-命令" class="headerlink" title="读取文件之 tail 命令"></a>读取文件之 tail 命令</h2><p>‘tail’ 命令 <strong>显示文件最后几行内容</strong>，读取log神奇。<strong>默认读取文件最后 10 行内容</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail &lt;file name&gt;  </span><br></pre></td></tr></table></figure>
-<p>如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tail log.txt  </span><br></pre></td></tr></table></figure>
-
-<h4 id="‘tail-n’"><a href="#‘tail-n’" class="headerlink" title="‘tail -n’"></a>‘tail -n’</h4><p>语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tail -n&lt;number&gt; &lt;file name&gt;  </span><br><span class="line"># tail -n&lt;行数&gt; &lt;文件名称&gt;</span><br></pre></td></tr></table></figure>
-<p>如读取最后5行:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tail -n5 log.txt  </span><br></pre></td></tr></table></figure>
-
-<h4 id="‘tail-c’-选项"><a href="#‘tail-c’-选项" class="headerlink" title="‘tail -c’ 选项"></a>‘tail -c’ 选项</h4><p>tail -c 命令选项显示 <strong>文件以指定字符计数的最后内容</strong>。</p>
-<p>语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tail -c&lt;number&gt; &lt;file name&gt;  </span><br><span class="line">#tail -c&lt;字符数&gt; &lt;文件名称&gt;</span><br></pre></td></tr></table></figure>
-<p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ tail -c10 log.game*</span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;&gt; log.game1 &lt;&#x3D;&#x3D;</span><br><span class="line">028.76777</span><br><span class="line">&#x3D;&#x3D;&gt; log.game2 &lt;&#x3D;&#x3D;</span><br><span class="line">028.77236</span><br></pre></td></tr></table></figure>
-<p>显示 log.game为前缀 文件的 <strong>最后 10 个字符内容信息</strong>。</p>
-<h4 id="‘tail-f’"><a href="#‘tail-f’" class="headerlink" title="‘tail -f’"></a>‘tail -f’</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f log.test*</span><br></pre></td></tr></table></figure>
-<p>当前语句可以将  log.test1, log.test2等以 <strong>log.test 打头</strong>文件的 <strong>初始最后十行</strong> 和 <strong>追加显示</strong>,这个是 <strong>看log神器</strong></p>
-<h4 id="‘tail-a’"><a href="#‘tail-a’" class="headerlink" title="‘tail -a’"></a>‘tail -a’</h4><p>有时使用 grep命令会提示 <strong>“binary file matches **.log”</strong><br>从提示可以看出,该文件是个二进制文本。</p>
-<p>此时使用 <strong>-a</strong>参数接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -a test XXX.log</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-a, --text equivalent to --binary-files&#x3D;text，即让二进制文件等价于文本。</span><br></pre></td></tr></table></figure>
-
-
-<hr>
-<h2 id="读取文件之-grep-命令"><a href="#读取文件之-grep-命令" class="headerlink" title="读取文件之 grep 命令"></a>读取文件之 grep 命令</h2><h4 id="c-显示当前有多少条"><a href="#c-显示当前有多少条" class="headerlink" title="-c 显示当前有多少条"></a>-c 显示当前有多少条</h4><p>这个语句非常 <strong>necessary</strong>, 因为log太多时，查找可能会 <strong>爆内存</strong>，先看看log有多少条（配合tail -n100等语句使用）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$grep &quot;leo&quot; .&#x2F;log&#x2F;log.ga* -c</span><br><span class="line"></span><br><span class="line">.&#x2F;log&#x2F;log.ga1:0</span><br><span class="line">.&#x2F;log&#x2F;log.ga2:175</span><br></pre></td></tr></table></figure>
-
-<h4 id="需满足所有条件"><a href="#需满足所有条件" class="headerlink" title="需满足所有条件"></a>需满足所有条件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep word1 file.txt | grep word2 |grep word3</span><br></pre></td></tr></table></figure>
-
-<h4 id="满足任意条件"><a href="#满足任意条件" class="headerlink" title="满足任意条件"></a>满足任意条件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -E &quot;word1|word2|word3&quot;   file.txt</span><br></pre></td></tr></table></figure>
-
-<h4 id="搜索含有Track字段的log"><a href="#搜索含有Track字段的log" class="headerlink" title="搜索含有Track字段的log"></a>搜索含有Track字段的log</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep Trace log.txt</span><br><span class="line">grep &quot;Trace&quot; log.txt</span><br></pre></td></tr></table></figure>
-<h4 id="多文件查找"><a href="#多文件查找" class="headerlink" title="多文件查找"></a>多文件查找</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep Trace file_1 file_2 file_3 ...</span><br></pre></td></tr></table></figure>
-<h4 id="输出除-Trace-之外的所有行-v-选项："><a href="#输出除-Trace-之外的所有行-v-选项：" class="headerlink" title="输出除 Trace 之外的所有行 -v 选项："></a>输出除 Trace 之外的所有行 -v 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -v Trace file_name</span><br></pre></td></tr></table></figure>
-<h4 id="标记匹配颜色-–color-auto-选项："><a href="#标记匹配颜色-–color-auto-选项：" class="headerlink" title="标记匹配颜色 –color=auto 选项："></a>标记匹配颜色 –color=auto 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;Trace&quot; file_name --color&#x3D;auto</span><br></pre></td></tr></table></figure>
-<h4 id="使用正则表达式-E-选项："><a href="#使用正则表达式-E-选项：" class="headerlink" title="使用正则表达式 -E 选项："></a>使用正则表达式 -E 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grep -E &quot;[1-9]+&quot;</span><br><span class="line">或</span><br><span class="line">egrep &quot;[1-9]+&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="只输出文件中匹配到的部分-o-选项："><a href="#只输出文件中匹配到的部分-o-选项：" class="headerlink" title="只输出文件中匹配到的部分 -o 选项："></a>只输出文件中匹配到的部分 -o 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">echo this is a test line. | grep -o -E &quot;[a-z]+\.&quot;</span><br><span class="line">line.</span><br><span class="line"></span><br><span class="line">echo this is a test line. | egrep -o &quot;[a-z]+\.&quot;</span><br><span class="line">line.</span><br></pre></td></tr></table></figure>
-<h4 id="统计文件或者文本中包含匹配字符串的行数-c-选项："><a href="#统计文件或者文本中包含匹配字符串的行数-c-选项：" class="headerlink" title="统计文件或者文本中包含匹配字符串的行数 -c 选项："></a>统计文件或者文本中包含匹配字符串的行数 -c 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -c &quot;Trace&quot; file_name</span><br></pre></td></tr></table></figure>
-<h4 id="输出包含匹配字符串的行数-n-选项："><a href="#输出包含匹配字符串的行数-n-选项：" class="headerlink" title="输出包含匹配字符串的行数 -n 选项："></a>输出包含匹配字符串的行数 -n 选项：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;Trace&quot; -n file_name</span><br><span class="line">或</span><br><span class="line">cat file_name | grep &quot;Trace&quot; -n</span><br></pre></td></tr></table></figure>
-<h4 id="多个文件"><a href="#多个文件" class="headerlink" title="多个文件"></a>多个文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;Trace&quot; -n file_1 file_2</span><br></pre></td></tr></table></figure>
-<h4 id="打印样式匹配所位于的字符或字节偏移："><a href="#打印样式匹配所位于的字符或字节偏移：" class="headerlink" title="打印样式匹配所位于的字符或字节偏移："></a>打印样式匹配所位于的字符或字节偏移：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo gun is not unix | grep -b -o &quot;not&quot;</span><br><span class="line">7:not</span><br><span class="line">#一行中字符串的字符便宜是从该行的第一个字符开始计算，起始值为0。选项 -b -o 一般总是配合使用。</span><br></pre></td></tr></table></figure>
-<h4 id="搜索多个文件并查找匹配文本在哪些文件中-l："><a href="#搜索多个文件并查找匹配文本在哪些文件中-l：" class="headerlink" title="搜索多个文件并查找匹配文本在哪些文件中 -l："></a>搜索多个文件并查找匹配文本在哪些文件中 -l：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -l &quot;Trace&quot; file1 file2 file3...</span><br></pre></td></tr></table></figure>
-
-
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1859,7 +1874,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'a676607444a8bc8b150c9a3aff884e61',
+      id          : 'f8a2880fd3678a8a548cdd1e60372baf',
         language: '',
       distractionFreeMode: true
     });

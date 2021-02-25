@@ -25,21 +25,21 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="下载文件到本地目录123svn checkout path（path是服务器 上的目录）例如：svn checkout svn:&#x2F;&#x2F;192.168.1.1&#x2F;pro&#x2F;domain简写：svn co  查看当前当前项目地址123svn info （这里返回的是root路径）svn info filename （返回的时特定文件filename的路径）  切换分支">
+  <meta name="description" content="1. enable_shared_from_thisenable_shared_from_this定义了两个名为 shared_from_this的成员函数，这些函数根据constness返回shared_ptr 或shared_ptr 。它还定义了两个成员函数weak_from_this，它们返回相应的weak_ptr。 源码分析123456789101112131415161718192021">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[svn]常用命令行">
-<meta property="og:url" content="http://yoursite.com/2020/11/18/svn-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/index.html">
+<meta property="og:title" content="[c++接口] 1.boost常用接口">
+<meta property="og:url" content="http://yoursite.com/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="下载文件到本地目录123svn checkout path（path是服务器 上的目录）例如：svn checkout svn:&#x2F;&#x2F;192.168.1.1&#x2F;pro&#x2F;domain简写：svn co  查看当前当前项目地址123svn info （这里返回的是root路径）svn info filename （返回的时特定文件filename的路径）  切换分支">
+<meta property="og:description" content="1. enable_shared_from_thisenable_shared_from_this定义了两个名为 shared_from_this的成员函数，这些函数根据constness返回shared_ptr 或shared_ptr 。它还定义了两个成员函数weak_from_this，它们返回相应的weak_ptr。 源码分析123456789101112131415161718192021">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-11-18T06:18:12.000Z">
-<meta property="article:modified_time" content="2020-11-18T08:09:53.026Z">
+<meta property="article:published_time" content="2021-02-25T05:00:44.000Z">
+<meta property="article:modified_time" content="2021-02-25T05:37:06.870Z">
 <meta property="article:author" content="Liu Wen">
-<meta property="article:tag" content="svn">
+<meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://yoursite.com/2020/11/18/svn-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/">
+<link rel="canonical" href="http://yoursite.com/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/">
 
 
 <script class="page-configurations">
@@ -52,7 +52,7 @@
   };
 </script>
 
-  <title>[svn]常用命令行 | LiuWen's Blogs</title>
+  <title>[c++接口] 1.boost常用接口 | LiuWen's Blogs</title>
   
 
 
@@ -180,7 +180,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6%E5%88%B0%E6%9C%AC%E5%9C%B0%E7%9B%AE%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">下载文件到本地目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E5%BD%93%E5%89%8D%E9%A1%B9%E7%9B%AE%E5%9C%B0%E5%9D%80"><span class="nav-number">2.</span> <span class="nav-text">查看当前当前项目地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E5%88%86%E6%94%AF%EF%BC%88svn-sw%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">切换分支（svn sw）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97"><span class="nav-number">4.</span> <span class="nav-text">查看日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%94%E8%BE%83%E5%B7%AE%E5%BC%82"><span class="nav-number">5.</span> <span class="nav-text">比较差异</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-enable-shared-from-this"><span class="nav-number">1.</span> <span class="nav-text">1. enable_shared_from_this</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.0.1.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.0.2.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example"><span class="nav-number">1.0.3.</span> <span class="nav-text">example</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">1.0.4.</span> <span class="nav-text">实现原理</span></a></li></ol></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -258,7 +258,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/18/svn-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -271,7 +271,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [svn]常用命令行
+          [c++接口] 1.boost常用接口
         </h1>
 
         <div class="post-meta-container">
@@ -283,7 +283,16 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2020-11-18 14:18:12 / Modified: 16:09:53" itemprop="dateCreated datePublished" datetime="2020-11-18T14:18:12+08:00">2020-11-18</time>
+      <time title="Created: 2021-02-25 13:00:44 / Modified: 13:37:06" itemprop="dateCreated datePublished" datetime="2021-02-25T13:00:44+08:00">2021-02-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/c-%E6%8E%A5%E5%8F%A3/" itemprop="url" rel="index"><span itemprop="name">c++接口</span></a>
+        </span>
     </span>
 
   
@@ -303,16 +312,29 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="下载文件到本地目录"><a href="#下载文件到本地目录" class="headerlink" title="下载文件到本地目录"></a>下载文件到本地目录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">svn checkout path（path是服务器 上的目录）</span><br><span class="line">例如：svn checkout svn:&#x2F;&#x2F;192.168.1.1&#x2F;pro&#x2F;domain</span><br><span class="line">简写：svn co</span><br></pre></td></tr></table></figure>
+        <h2 id="1-enable-shared-from-this"><a href="#1-enable-shared-from-this" class="headerlink" title="1. enable_shared_from_this"></a>1. enable_shared_from_this</h2><p><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/enable_shared_from_this.html">enable_shared_from_this</a><T>定义了两个名为 <strong>shared_from_this</strong>的成员函数，这些函数根据constness返回shared_ptr <T>或shared_ptr <T const>。它还定义了两个成员函数<strong>weak_from_this</strong>，它们返回相应的<strong>weak_ptr</strong>。</p>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">namespace boost</span><br><span class="line">&#123;</span><br><span class="line">template&lt;class T&gt; class enable_shared_from_this</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    shared_ptr&lt;T&gt; shared_from_this();      </span><br><span class="line">    shared_ptr&lt;T const&gt; shared_from_this() const;</span><br><span class="line"></span><br><span class="line">    weak_ptr&lt;T&gt; weak_from_this() noexcept;</span><br><span class="line">    weak_ptr&lt;T const&gt; weak_from_this() const noexcept;</span><br><span class="line"></span><br><span class="line">    template&lt;class X, class Y&gt; void _internal_accept_owner( shared_ptr&lt;X&gt; const * ppx, Y * py ) const</span><br><span class="line">    &#123;</span><br><span class="line">        if( weak_this_.expired() )</span><br><span class="line">        &#123;</span><br><span class="line">            weak_this_ &#x3D; shared_ptr&lt;T&gt;( *ppx, py );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">private:</span><br><span class="line">    mutable weak_ptr&lt;T&gt; weak_this_; &#x2F;&#x2F;弱引用指针数组</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取当前对象的shared_ptr指针就是从该weak_ptr提升而来</span><br><span class="line">shared_ptr&lt;T&gt; shared_from_this()</span><br><span class="line">&#123;</span><br><span class="line">    shared_ptr&lt;T&gt; p( weak_this_ );</span><br><span class="line">    BOOST_ASSERT( p.get() &#x3D;&#x3D; this );</span><br><span class="line">    return p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;而weak_ptr的则是在构造的时候初始化的</span><br><span class="line">explicit shared_ptr( Y * p ): px( p ), pn( p ) &#x2F;&#x2F; Y must be complete</span><br><span class="line">&#123;</span><br><span class="line">    boost::detail::sp_enable_shared_from_this( this, p, p );</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">template&lt; class X, class Y, class T &gt;</span><br><span class="line">inline void sp_enable_shared_from_this( boost::shared_ptr&lt;X&gt; const * ppx, Y const * py, </span><br><span class="line">boost::enable_shared_from_this&lt; T &gt; const * pe )</span><br><span class="line">&#123;</span><br><span class="line">    if( pe !&#x3D; 0 )</span><br><span class="line">    &#123;</span><br><span class="line">        pe-&gt;_internal_accept_owner( ppx, const_cast&lt; Y* &gt;( py ) );</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="查看当前当前项目地址"><a href="#查看当前当前项目地址" class="headerlink" title="查看当前当前项目地址"></a>查看当前当前项目地址</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">svn info （这里返回的是root路径）</span><br><span class="line"></span><br><span class="line">svn info filename （返回的时特定文件filename的路径）</span><br></pre></td></tr></table></figure>
+<h4 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h4><ul>
+<li>当类对象被 shared_ptr 管理时</li>
+<li>需要在类自己定义的函数里 <strong>把当前类对象作为参数</strong>传给其他函数时</li>
+</ul>
+<h4 id="example"><a href="#example" class="headerlink" title="example"></a>example</h4><p>对一个类 Y ，当我们希望使用 shared_ptr 来管理其类对象时，可以让类 Y <strong>从 enable_shared_from_this 继承</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;boost&#x2F;enable_shared_from_this.hpp&gt;</span><br><span class="line">#include &lt;boost&#x2F;shared_ptr.hpp&gt;</span><br><span class="line">#include &lt;cassert&gt;</span><br><span class="line">class Y: public boost::enable_shared_from_this&lt;Y&gt;</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; f()</span><br><span class="line">    &#123;</span><br><span class="line">        return shared_from_this();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; 正确的使用方法</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; p(new Y);</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; q &#x3D; p-&gt;f();   &#x2F;&#x2F; 调用f获得shared_ptr</span><br><span class="line">    assert(p &#x3D;&#x3D; q);</span><br><span class="line">    assert(!(p &lt; q || q &lt; p)); &#x2F;&#x2F; p and q must share ownership</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 错误的使用方法，因为Y的成员weak_ptr 根本就没有得到初始化</span><br><span class="line">    Y  yy;</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; q &#x3D; yy.f();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外可见<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_39_0/doc/html/boost_asio/tutorial/tutdaytime3/src.html">boost官方的详细例子</a></p>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><ul>
+<li>限制：<ul>
+<li>在类对象 <strong>本身</strong>当中 <strong>不能存储</strong>类对象<strong>本身的 shared_ptr</strong> ，否则类对象 shared_ptr 永远也不会为0了，资源永远不会释放，除非程序结束。</li>
+<li>类对象肯定是 外部函数通过某种机制分配的，而且 <strong>一经分配立即交给 shared_ptr 管理</strong>，而且以后凡是需要共享使用类对象的地方必须 <strong>使用这个 shared_ptr 当作右值</strong>来构造产生或者<strong>拷贝产生另一个 shared_ptr</strong> 从而达到共享使用的目的。</li>
+</ul>
+</li>
+<li>方案<ul>
+<li>类对象的<strong>外部 shared_ptr</strong> 作为<strong>函数参数</strong>传给需要<strong>引用类对象自身的函数</strong> 【这种方法很丑陋，而且并不是所有的情况都可行（如在外部 shared_ptr 不可见的作用域中就不行）】</li>
+<li>类对象<strong>自身存储某种信息</strong>，在<strong>需要</strong>自身 shared_ptr 时来<strong>产生一个临时的 shared_ptr</strong> 。</li>
+</ul>
+</li>
+</ul>
 
-<h2 id="切换分支（svn-sw）"><a href="#切换分支（svn-sw）" class="headerlink" title="切换分支（svn sw）"></a>切换分支（svn sw）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">svn sw &lt;branch_full_url&gt;</span><br><span class="line"></span><br><span class="line">sample：</span><br><span class="line">svn sw https:&#x2F;&#x2F;mysvn.cn&#x2F;svn&#x2F;repo&#x2F;project&#x2F;branches&#x2F;version-xxx</span><br></pre></td></tr></table></figure>
-
-<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">svn log path</span><br><span class="line">sample：svn log test.php  （显示这个文件的所有修改记录，及其版本号的变化）</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="比较差异"><a href="#比较差异" class="headerlink" title="比较差异"></a>比较差异</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">svn diff path(将修改的文件与基础版本比较)</span><br><span class="line">sample：svn diff test.php</span><br><span class="line"></span><br><span class="line">svn diff -r m:n path(对版本m和版本n比较差异)</span><br><span class="line">sample：svn diff -r 200:201 test.php</span><br><span class="line"></span><br><span class="line">简写：svn di</span><br></pre></td></tr></table></figure>
     </div>
 
     
@@ -321,21 +343,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/svn/" rel="tag"># svn</a>
+              <a href="/tags/c/" rel="tag"># c++</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/" rel="prev" title="[python]弱引用weakref介绍">
-                  <i class="fa fa-chevron-left"></i> [python]弱引用weakref介绍
+                <a href="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/" rel="prev" title="[python源码分析] 9.执行过程和字节码">
+                  <i class="fa fa-chevron-left"></i> [python源码分析] 9.执行过程和字节码
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/" rel="next" title="[python源码分析] 装饰器">
-                  [python源码分析] 装饰器 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -539,7 +558,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : '488f7eddb0248634216baa3497619c19',
+      id          : 'c64ea1e7e0ab77320fb850446acaa85b',
         language: '',
       distractionFreeMode: true
     });

@@ -188,14 +188,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -243,6 +243,134 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/" class="post-title-link" itemprop="url">[数据库] Mysql为什么用B+树</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-27 22:37:23" itemprop="dateCreated datePublished" datetime="2020-12-27T22:37:23+08:00">2020-12-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-06 13:33:10" itemprop="dateModified" datetime="2021-01-06T13:33:10+08:00">2021-01-06</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="why-not-哈希索引？"><a href="#why-not-哈希索引？" class="headerlink" title="why not 哈希索引？"></a>why not 哈希索引？</h2><ol>
+<li><p>哈希值是无序的值，既然无序，就 <strong>不能进行范围查找</strong>，而数据库需要很多大于小于的查找。</p>
+</li>
+<li><p>如果要进行 <strong>排序操作</strong>，也不能使用哈希值的哈希索引进行排序(例如不能用uuid做索引，只能做唯一标识，因为也是哈希无序的)。</p>
+</li>
+<li><p>有些值的 <strong>哈希索引是一样的</strong>，如果要进行查找，要 <strong>逐一比对</strong>，相当于全盘扫描。</p>
+</li>
+</ol>
+<h2 id="why-not-平衡二叉树？"><a href="#why-not-平衡二叉树？" class="headerlink" title="why not 平衡二叉树？"></a>why not 平衡二叉树？</h2><p>平衡二叉树是采用 <strong>二分法</strong>思维把数据按规则组装成一个树形结构的数据，用这个树形结构的数据 <strong>减少无关数据的检索</strong>，大大的提升了数据检索的速度；平衡二叉树的数据结构组装过程有以下特定：</p>
+<ol>
+<li>平衡二叉树是一种 <strong>二叉查找树</strong></li>
+<li>每个结点的左子树的高度减去右子树的 <strong>高度的绝对值不超过1</strong></li>
+<li>空树和左右子树都是平衡二叉树</li>
+<li>相比红黑树，平衡二叉树比较 <strong>适用于没有删除的情况</strong></li>
+</ol>
+<div style="width:95%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/avl.png" class="" title="avl图"></div>
+
+<p>为什么不能用平衡二叉树：</p>
+<ol>
+<li>由于每个子节点最大数量为2，导致 <strong>平衡二叉树高度较高，查找次数相对较多。</strong></li>
+<li>范围查找时，需要 <strong>向上回旋查找</strong>（例如查找&gt;=56的数，先找到56，然后向上回旋，找出65和87）</li>
+</ol>
+<h2 id="why-not-B树？"><a href="#why-not-B树？" class="headerlink" title="why not B树？"></a>why not B树？</h2><p>B 树又叫 <strong>平衡多路查找树</strong>。一棵m阶的B 树 (注：切勿简单的认为一棵m阶的B树是m叉树，虽然存在四叉树，八叉树，KD树，及vp/R树/R*树/R+树/X树/M树/线段树/希尔伯特R树/优先R树等空间划分树，但与B树完全不等同)的特性如下：</p>
+<ol>
+<li>树中每个结点  <strong>最多含有m个孩子（m&gt;=2）</strong>；</li>
+<li>除根结点和叶子结点外，其它每个结点 <strong>至少有[ceil(m / 2)]个孩子</strong>（其中ceil(x)是一个取上限的函数）；</li>
+<li>若 <strong>根结点</strong>不是叶子结点，则 <strong>至少有2个孩子</strong>（特殊情况：没有孩子的根结点，即根结点为叶子结点，整棵树只有一个根节点）；</li>
+<li>所有 <strong>叶子结点都出现在同一层</strong>，叶子结点 <strong>不包含任何关键字信息</strong>(可以看做是 <strong>外部接点或查询失败的接点</strong>，叶子节点只是没有孩子和指向孩子的指针，这些节点也存在，也有元素。）。</li>
+<li>每个非终端结点中包含有n个关键字信息： (n，P0，K1，P1，K2，P2，……，Kn，Pn)。其中：<pre><code>a)   Ki (i=1...n)为关键字，且关键字按顺序升序排序K(i-1)&lt; Ki。 
+b)   Pi为指向子树根的接点，且指针P(i-1)指向子树种所有结点的关键字均小于Ki，但都大于K(i-1)。 
+c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</code></pre>
+</li>
+</ol>
+<div style="width:95%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b_tree.jpg" class="" title="b_tree图"></div>
+
+<p>为什么不能用B树： 查找深度明显比平衡二叉树要低，但是范围查找仍然需要 <strong>向上回旋查找</strong></p>
+<h2 id="why-choose-B-树？"><a href="#why-choose-B-树？" class="headerlink" title="why choose B+树？"></a>why choose B+树？</h2><p>B+树是B树的一个升级版，相对于B树来说B+树更 <strong>充分的利用了节点的空间</strong>，让查询速度更加稳定，其速度 <strong>完全接近于二分法查找</strong>。为什么说B+树查找的效率要比B树更高、更稳定；我们先看看两者的区别</p>
+<h3 id="B树和B-树"><a href="#B树和B-树" class="headerlink" title="B树和B+树"></a>B树和B+树</h3><ol>
+<li>B+跟B树不同，B+树的 <strong>非叶子节点不保存关键字记录的指针</strong>，只进行<strong>数据索引</strong>，这样使得B+树每个非叶子节点所能保存的关键字大大增加；</li>
+<li>B+树 <strong>叶子节点保存了父节点的所有关键字记录的指针</strong>，<strong>所有数据地址必须要到叶子节点才能获取到</strong>。所以 <strong>每次数据查询的次数都一样</strong>；</li>
+<li>B+树叶子节点的关键字 <strong>从小到大有序</strong>排列，左边结尾数据都会保存右边节点开始数据的指针。</li>
+<li>非叶子节点的子节点数=关键字数（来源百度百科）（根据各种资料 这里有两种算法的实现方式，另一种为非叶节点的关键字数=子节点数-1（来源维基百科)，虽然他们数据排列结构不一样，但其原理还是一样的。Mysql 的B+树是用第一种方式实现）;<div style="width:110%;margin:auto"><img src="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/b+tree.png" class="" title="b+tree图"></div>
+
+</li>
+</ol>
+<p>因此，B+树的 <strong>查找次数少</strong>(树的高度低)，<strong>范围查找也快</strong>（叶子节点通过指针连接）</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chai471793/article/details/99563704" title="彻底搞懂系列B-树、B+树、B-树、B*树">彻底搞懂系列B-树、B+树、B-树、B*树</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -379,7 +507,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-02-21 09:56:16" itemprop="dateModified" datetime="2021-02-21T09:56:16+08:00">2021-02-21</time>
+        <time title="Modified: 2021-03-04 18:04:56" itemprop="dateModified" datetime="2021-03-04T18:04:56+08:00">2021-03-04</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -387,7 +515,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
         </span>
     </span>
 
@@ -507,7 +635,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-02-21 09:56:16" itemprop="dateModified" datetime="2021-02-21T09:56:16+08:00">2021-02-21</time>
+        <time title="Modified: 2021-03-04 18:04:59" itemprop="dateModified" datetime="2021-03-04T18:04:59+08:00">2021-03-04</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -515,7 +643,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
         </span>
     </span>
 
@@ -1584,111 +1712,6 @@ new对数组的支持体现在它会<strong>分别调用构造函数函数初始
 
 <h2 id="默认参数值"><a href="#默认参数值" class="headerlink" title="默认参数值"></a>默认参数值</h2><p>有默认参数的形参必须<strong>列在函数形参列表的最右端</strong><br>调用实参与形参结合的次序是<strong>从左到右</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int add(int x,int y&#x3D;5,int z&#x3D;6);&#x2F;&#x2F;正确</span><br><span class="line">add(1)&#x3D;12;</span><br><span class="line">add(1,2)&#x3D;9;</span><br><span class="line"></span><br><span class="line">int add(int x&#x3D;1,int y&#x3D;5,int z);&#x2F;&#x2F;错误</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/02/%E8%AE%A1%E7%BD%91-http%E4%B9%8BGET%E5%92%8CPOST%E5%8C%BA%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/02/%E8%AE%A1%E7%BD%91-http%E4%B9%8BGET%E5%92%8CPOST%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">[计网]http之GET和POST区别</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-02 20:24:34" itemprop="dateCreated datePublished" datetime="2020-12-02T20:24:34+08:00">2020-12-02</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-12-16 10:40:00" itemprop="dateModified" datetime="2020-12-16T10:40:00+08:00">2020-12-16</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="浏览器的GET和POST"><a href="#浏览器的GET和POST" class="headerlink" title="浏览器的GET和POST"></a>浏览器的GET和POST</h1><p>这里特指浏览器中 <strong>非Ajax的HTTP请求</strong>，即从 <strong>HTML和浏览器</strong>诞生就一直使用的HTTP协议中的GET/POST。浏览器用 <strong>GET请求来获取一个html页面/图片/css/js等资源</strong>；用 <strong>POST来提交一个&lt; form&gt;表单</strong>，并 <strong>得到一个结果的网页</strong>。</p>
-<h2 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h2><p><strong>“读取“一个资源</strong>。比如Get到一个html文件。 <strong>反复读取不应该对访问的数据有副作用</strong>。比如”GET一下，用户就下单了，返回订单已受理“，这是不可接受的。没有副作用被称为 <strong>“幂等“（Idempotent)**。因为 **GET是读取</strong>，就可以 <strong>对GET请求的数据做缓存</strong>。这个缓存可以做到浏览器本身上（彻底 <strong>避免浏览器发请求</strong>），也可以做到代理上（如 <strong>nginx</strong>），或者 <strong>做到server端</strong>（用Etag，至少可以减少带宽消耗）</p>
-<h2 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h2><p>在页面里 <strong>&lt; form&gt; 标签</strong>会定义 <strong>一个表单</strong>。点击其中的 <strong>submit元素</strong>会发出一个 <strong>POST请求让服务器做一件事</strong>。这件事往往是 <strong>有副作用的，不幂等的</strong>。不幂等也就意味着 <strong>不能随意多次执行</strong>。因此也就 <strong>不能缓存</strong>。比如通过POST下一个单，服务器创建了新的订单，然后返回订单成功的界面。这个页面不能被缓存。试想一下，如果POST请求被浏览器缓存了，那么下单请求就可以不向服务器发请求，而直接返回本地缓存的“下单成功界面”，却又没有真的在服务器下单。那是一件多么滑稽的事情。因为POST可能有副作用，所以浏览器实现为 <strong>不能把POST请求保存为书签</strong>。想想，如果点一下书签就下一个单，是不是很恐怖？。此外如果尝试重新执行POST请求，浏览器也会弹一个框提示下这个刷新可能会有副作用，询问要不要继续。</p>
-<h2 id="改造GET和POST"><a href="#改造GET和POST" class="headerlink" title="改造GET和POST"></a>改造GET和POST</h2><p>当然，服务器的 <strong>开发者完全可以把GET实现为有副作用；把POST实现为没有副作用</strong>。只不过这和浏览器的预期不符。把GET实现为有副作用是个很可怕的事情。 我依稀记得很久之前百度贴吧有一个因为 <strong>使用GET请求可以修改管理员的权限而造成的安全漏洞</strong>。反过来，把没有副作用的请求用POST实现，浏览器该弹框还是会弹框，对用户体验好处改善不大。但是后边可以看到，将HTTP POST作为接口的形式使用时，就没有这种弹框了。于是 <strong>把一个POST请求实现为幂等就有实际的意义</strong>。 <strong>POST幂等能让很多业务的前后端交互更顺畅</strong>，以及避免一些因为前端bug，触控失误等带来的重复提交。将一个有副作用的操作实现为幂等必须得从业务上能定义出怎么就算是“重复”。如提交数据中增加一个dedupKey在一个交易会话中有效，或者 <strong>利用提交的数据里可以天然当dedupKey的字段</strong>。这样万一用户强行重复提交，服务器端可以做一次防护。</p>
-<h2 id="GET和POST数据的格式区别"><a href="#GET和POST数据的格式区别" class="headerlink" title="GET和POST数据的格式区别"></a>GET和POST数据的格式区别</h2><p>GET和POST <strong>携带数据的格式也有区别</strong>。<br>当浏览器发出一个GET请求时，就意味着 <strong>要么是用户自己在浏览器的地址栏输入</strong>，要不就是 <strong>点击了html里a标签的href中的url</strong>。所以其实 <strong>并不是GET只能用url</strong>，而是 <strong>浏览器直接发出的GET只能由一个url触发</strong>。GET上要在url之外带一些参数就 <strong>只能依靠url上附带querystring</strong>。请求参数和对应的值附加在URL后面，利用一个 <strong>“?”代表URL的结尾与请求参数的开始</strong>，多个 <strong>参数用 “&amp;”连接</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;server&#x2F;action?id&#x3D;a&amp;id&#x3D;b </span><br><span class="line"></span><br><span class="line">https:&#x2F;&#x2F;server&#x2F;action&#x2F;?info\&#x3D;&#39;&#39;\&amp;abc\&#x3D;c6cebb78a7be\&amp;server\&#x3D;52300 (这里加了转义字符&#39;\&#39;，待验证是否必要)</span><br></pre></td></tr></table></figure>
-
-<p>但是HTTP协议本身并没有这个限制。浏览器的POST请求都来自表单提交。每次提交，表单的数据被浏览器用编码到HTTP请求的body里。浏览器发出的POST请求的body主要有有两种格式，一种是 <strong>application/x-www-form-urlencoded用来传输简单的数据</strong>，大概就是”key1=value1&amp;key2=value2”这样的格式。另外一种是 <strong>传文件，会采用multipart/form-data格式</strong>。采用后者是因为application/x-www-form-urlencoded的编码方式对于文件这种二进制的数据非常低效。浏览器在POST一个表单时，<strong>url上也可以带参数</strong>，只要&lt; form action=”url” &gt;里的url带querystring就行。只不过表单里面的那些用&lt; input&gt; 等标签经过用户操作产生的数据都在会在body里。因此我们一般会泛泛的说“GET请求没有body，只有url，请求数据放在url的querystring中；POST请求的数据在body中“。但这种情况仅限于浏览器发请求的场景。</p>
-<p>参考 <a target="_blank" rel="noopener" href="https://www.zybuluo.com/JunQiu/note/1291674" title="四种常见的 POST 提交数据方式？">四种常见的 POST 提交数据方式</a></p>
-<h1 id="接口中的GET和POST"><a href="#接口中的GET和POST" class="headerlink" title="接口中的GET和POST"></a>接口中的GET和POST</h1><p>这里是指通过浏览器的Ajax api，或者iOS/Android的App的http client，java的commons-httpclient/okhttp或者是curl，postman之类的工具 <strong>发出来的GET和POST请求</strong>。此时GET/POST不光能用在 <strong>前端和后端的交互</strong>中，还能用在 <strong>后端各个子服务的调用</strong>中（即当一种 <strong>RPC协议</strong>使用）。尽管RPC有很多协议，比如thrift，grpc，但是http本身 <strong>已经有大量的现成的支持工具</strong>可以使用，并且对人类很友好，容易debug。HTTP协议在 <strong>微服务中的使用是相当普遍</strong>的。当用 <strong>HTTP实现接口</strong>发送请求时，就 <strong>没有浏览器中那么多限制了，只要是 **符合HTTP格式的就可以发</strong>。HTTP请求的格式，大概是这样的一个字符串：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;METHOD&gt; &lt;URL&gt; HTTP&#x2F;1.1\r\n</span><br><span class="line">&lt;Header1&gt;: &lt;HeaderValue1&gt;\r\n</span><br><span class="line">&lt;Header2&gt;: &lt;HeaderValue2&gt;\r\n</span><br><span class="line">...</span><br><span class="line">&lt;HeaderN&gt;: &lt;HeaderValueN&gt;\r\n</span><br><span class="line">\r\n</span><br><span class="line">&lt;Body Data....&gt;</span><br></pre></td></tr></table></figure>
-<p>其中的“<METHOD>“可以 是 <strong>GET或POST</strong>，或者其他的HTTP Method，如 <strong>PUT、DELETE、OPTION……</strong>。HTTP是 <strong>基于TCP/IP的</strong>关于数据如何在万维网中如何通信的协议。HTTP的底层是TCP/IP。所以GET和POST的底层也是 <strong>TCP/IP</strong>，也就是说，<strong>GET/POST都是TCP链接</strong>。GET和POST能做的事情是一样的。因此从协议本身看，并 <strong>没有什么限制说GET一定不能没有body</strong>，<strong>POST就一定不能把参放到<URL>的querystring上</strong>。因此其实 <strong>可以更加自由的去利用格式</strong>。比如Elastic Search的_search api就 <strong>用了带body的GET</strong>；也可以自己开发接口 <strong>让POST一半的参数放在url的querystring里</strong>，<strong>另外一半放body里</strong>；你甚至还可以让所有的参数都放Header里——可以做各种各样的定制，只要请求的客户端和服务器端能够约定好。</p>
-<p>当然，太自由也带来了另一种麻烦，开发人员不得不每次讨论确定参数是 <strong>放url的path里，querystring里，body里，header里</strong>这种问题。于是就有了 <strong>一些列接口规范/风格</strong>。其中名气最大的当属 <strong>REST</strong>。REST充分运用 <strong>GET、POST、PUT和DELETE，约定了这4个接口分别获取、创建、替换和删除“资源”</strong>，REST最佳实践还推荐在 <strong>请求体使用json格式</strong>。这样仅仅通过看HTTP的method就可以明白接口是什么意思，并且解析格式也得到了统一。</p>
-<h3 id="GET和POST还有一个重大区别："><a href="#GET和POST还有一个重大区别：" class="headerlink" title="GET和POST还有一个重大区别："></a>GET和POST还有一个重大区别：</h3><p><strong>GET产生一个TCP数据包；POST产生两个TCP数据包。</strong></p>
-<p>对于GET方式的请求，浏览器会把 <strong>http header和data一并发送出</strong>去，服务器响应200（返回数据）；</p>
-<p>而对于POST，浏览器 <strong>先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok</strong>（返回数据）。<br><strong>注：</strong></p>
-<ol>
-<li><p>GET与POST都有自己的语义，不能随便混用。</p>
-</li>
-<li><p>据研究，在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。</p>
-</li>
-<li><p>并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次。</p>
-</li>
-</ol>
-<h3 id="json相对于x-www-form-urlencoded的优势"><a href="#json相对于x-www-form-urlencoded的优势" class="headerlink" title="json相对于x-www-form-urlencoded的优势:"></a>json相对于x-www-form-urlencoded的优势:</h3><ol>
-<li>可以有 <strong>嵌套结构</strong></li>
-<li>可以支持 <strong>更丰富的数据类型</strong>。通过一些框架，json可以直接被服务器代码映射为业务实体。用起来十分方便。但是 <strong>如果是写一个接口支持上传文件</strong>，那么还是 <strong>multipart/form-data格式更合适</strong>。</li>
-</ol>
-<h1 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h1><p>我们常听到GET不如POST安全，因为 <strong>POST用body传输数据</strong>，而 <strong>GET用url传输</strong>，更加容易看到。但是 <strong>从攻击的角度，无论是GET还是POST都不够安全</strong>，因为 <strong>HTTP本身是明文协议</strong>。每个 <strong>HTTP请求和返回的每个byte都会在网络上明文传播</strong>，不管是url，header还是body。这完全不是一个“是否容易在浏览器地址栏上看到“的问题。为了避免传输中数据被窃取，<strong>必须做从客户端到服务器的端端加密</strong>。业界的通行做法就是 <strong>https</strong>——即 <strong>用SSL协议协商出的密钥加密明文的http数据</strong>。这个 <strong>加密的协议和HTTP协议本身相互独立</strong>。如果是利用HTTP开发公网的站点/App，要保证安全，<strong>https是最最基本的要求</strong>。当然，端端加密并不一定非得用https。比如国内金融领域都会用私有网络，也有GB的加密协议SM系列。但除了军队，金融等特殊机构之外，似乎并没有必要自己发明一套类似于ssl的协议。</p>
-<p>回到HTTP本身，的确 <strong>GET请求的参数更倾向于放在url</strong>上，因此 <strong>有更多机会被泄漏</strong>。比如携带私密信息的url会展示在地址栏上，还可以分享给第三方，就非常不安全了。此外，从客户端到服务器端，有大量的中间节点，包括网关，代理等。他们的access log通常会输出完整的url，比如nginx的默认access log就是如此。如果url上携带敏感数据，就会被记录下来。但请注意，就算私密数据在body里，也是可以被记录下来的，因此如果请求要经过不信任的公网，<strong>避免泄密的唯一手段就是https</strong>。这里说的“避免access log泄漏“仅仅是指避免可信区域中的http代理的默认行为带来的安全隐患。</p>
-<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><ol>
-<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28586791" title="知乎--GET 和 POST 到底有什么区别？">知乎–GET 和 POST 到底有什么区别？</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.fundebug.com/2019/02/22/compare-http-method-get-and-post/" title="都 2019 年了，还问 GET 和 POST 的区别">都 2019 年了，还问 GET 和 POST 的区别</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.zybuluo.com/JunQiu/note/1291674" title="四种常见的 POST 提交数据方式？">四种常见的 POST 提交数据方式</a></li>
-</ol>
 
       
     </div>

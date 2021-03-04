@@ -25,16 +25,21 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="LiuWen&#39;s Blogs">
-<meta property="og:url" content="http://yoursite.com/tags/linux%E6%8C%87%E4%BB%A4/index.html">
+  <meta name="description" content="nohupnohup在 忽略hangup signals的情况下运行给定命令, 可以实现 退出帐户&#x2F;关闭终端之后继续运行相应的进程 1nohup command [arg]…   在缺省情况下该作业的所有输出都被 重定向到一个名为nohup.out的文件中。  如果当前目录的 nohup.out 文件不可写，输出重定向到 $HOME&#x2F;nohup.out 文件中。   若要输出到 nohup.out">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[linux] 8.nohup命令">
+<meta property="og:url" content="http://yoursite.com/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="nohupnohup在 忽略hangup signals的情况下运行给定命令, 可以实现 退出帐户&#x2F;关闭终端之后继续运行相应的进程 1nohup command [arg]…   在缺省情况下该作业的所有输出都被 重定向到一个名为nohup.out的文件中。  如果当前目录的 nohup.out 文件不可写，输出重定向到 $HOME&#x2F;nohup.out 文件中。   若要输出到 nohup.out">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-04T10:00:33.000Z">
+<meta property="article:modified_time" content="2021-03-04T11:49:05.934Z">
 <meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://yoursite.com/tags/linux%E6%8C%87%E4%BB%A4/">
+<link rel="canonical" href="http://yoursite.com/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/">
 
 
 <script class="page-configurations">
@@ -42,12 +47,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: linux指令 | LiuWen's Blogs</title>
+  <title>[linux] 8.nohup命令 | LiuWen's Blogs</title>
   
 
 
@@ -162,7 +167,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -175,6 +180,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#nohup"><span class="nav-number">1.</span> <span class="nav-text">nohup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nohup%E5%92%8C-amp-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">nohup和&amp;的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#example-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">example 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example-2"><span class="nav-number">2.0.2.</span> <span class="nav-text">example 2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example-3"><span class="nav-number">2.0.3.</span> <span class="nav-text">example 3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example-4"><span class="nav-number">2.0.4.</span> <span class="nav-text">example 4</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -188,14 +194,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -239,181 +245,142 @@
 </noscript>
 
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
       
 
       
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">linux指令
-          <small>Tag</small>
-        </h2>
-      </div>
 
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [linux] 8.nohup命令
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+      <time title="Created: 2021-03-04 18:00:33 / Modified: 19:49:05" itemprop="dateCreated datePublished" datetime="2021-03-04T18:00:33+08:00">2021-03-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="nohup"><a href="#nohup" class="headerlink" title="nohup"></a>nohup</h2><p>nohup在 <strong>忽略hangup signals</strong>的情况下运行给定命令, 可以实现 <strong>退出帐户/关闭终端</strong>之后<strong>继续运行相应的进程</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup command [arg]…</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>在缺省情况下该作业的所有输出都被 <strong>重定向</strong>到一个名为<strong>nohup.out</strong>的文件中。</p>
+</li>
+<li><p>如果当前目录的 nohup.out 文件不可写，输出重定向到 <strong>$HOME/nohup.out</strong> 文件中。</p>
+</li>
+</ul>
+<p>若要输出到 <strong>nohup.out以外</strong>的文件中，可以<strong>对其进行重定向</strong>。例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup make &gt; make.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>nohup <strong>不会自动</strong>将它运行的命令放在后台；必须通过在命令行末尾 <strong>加上“＆”</strong>。</li>
+</ul>
+<h2 id="nohup和-amp-的区别"><a href="#nohup和-amp-的区别" class="headerlink" title="nohup和&amp;的区别"></a>nohup和&amp;的区别</h2><ul>
+<li><p>&amp; ： 指在后台运行</p>
+</li>
+<li><p>nohup ： 不挂断的运行，注意 <strong>并没有后台运行的功能</strong>。用nohup运行命令可以使命令永久的执行下去，和用户终端没有关系，例如我们断开SSH连接都不会影响他的运行，注意了nohup没有后台运行的意思；**&amp;才是后台运行**</p>
+</li>
+<li><p>&amp;是指在后台运行，但当<strong>用户退出</strong>(挂起)的时候，<strong>命令</strong>自动也跟着<strong>退出</strong></p>
+</li>
+</ul>
+<h4 id="example-1"><a href="#example-1" class="headerlink" title="example 1"></a>example 1</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh test.sh &amp; </span><br></pre></td></tr></table></figure>
+<p>将sh test.sh任务放到后台 ，<strong>关闭xshell</strong>，对应的<strong>任务</strong>也跟着<strong>停止</strong>。</p>
+<h4 id="example-2"><a href="#example-2" class="headerlink" title="example 2"></a>example 2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh test.sh  </span><br></pre></td></tr></table></figure>
+<p>将sh test.sh任务<strong>放到后台</strong>，<strong>关闭标准输入</strong>，终端<strong>不再能够接收任何输入（标准输入）</strong>，重定向标准输出和标准错误到当前目录下的<strong>nohup.out文件</strong>，即使<strong>关闭xshell退出当前session依然继续运行</strong>。</p>
+<h4 id="example-3"><a href="#example-3" class="headerlink" title="example 3"></a>example 3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh test.sh  &amp; </span><br></pre></td></tr></table></figure>
+<p>将sh test.sh任务<strong>放到后台</strong>，但是依然<strong>可以使用标准输入</strong>，<strong>终端能够接收任何输入</strong>，重定向标准输出和标准错误到<strong>当前目录下的nohup.out文件</strong>，即使<strong>关闭xshell退出当前session依然继续运行</strong>。</p>
+<h4 id="example-4"><a href="#example-4" class="headerlink" title="example 4"></a>example 4</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup command &gt; myout.file 2&gt;&amp;1 &amp;   </span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，0 – stdin (standard input)，1 – stdout (standard output)，2 – stderr (standard error)；2&gt;&amp;1是<strong>将标准错误（2）重定向到标准输出（&amp;1），标准输出（&amp;1）再被重定向输入到myout.file</strong>文件中。</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://www.gnu.org/software/coreutils/manual/html_node/nohup-invocation.html#nohup-invocation">nohup: Run a command immune to hangups</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jinxiao-pu/p/9131057.html">nohup 详解</a></li>
+</ol>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-04T12:50:15+08:00"
-              content="2021-02-04">
-          02-04
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/04/linux-7-ln%E6%8C%87%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 7.ln指令</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/" rel="prev" title="[c++接口] 1.boost常用接口">
+                  <i class="fa fa-chevron-left"></i> [c++接口] 1.boost常用接口
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-01-20T12:47:32+08:00"
-              content="2021-01-20">
-          01-20
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/20/linux-6-awk%E6%8C%87%E4%BB%A4-linux%E4%B8%89%E5%89%91%E5%AE%A2boss/" itemprop="url">
-            <span itemprop="name">[linux] 6.awk指令--linux三剑客boss</span>
-          </a>
-      </div>
 
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-01-05T12:55:59+08:00"
-              content="2021-01-05">
-          01-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 5.vim指令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-12-16T20:32:41+08:00"
-              content="2020-12-16">
-          12-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/12/16/linux-4-grep-tail%E7%AD%89%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%91%BD%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 4.grep,tail等查看文件命令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-12-16T20:31:45+08:00"
-              content="2020-12-16">
-          12-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/12/16/linux-3-lsof%E5%91%BD%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 3.lsof命令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-11-24T16:12:31+08:00"
-              content="2020-11-24">
-          11-24
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/11/24/linux-2-curl%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/" itemprop="url">
-            <span itemprop="name">[linux] 2.curl命令行工具</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-11-12T14:54:38+08:00"
-              content="2020-11-12">
-          11-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 1.常用指令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-    </div>
-  </div>
-  
-  
-  
-
-  
 
 
 
       
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -593,6 +560,25 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'ec93350d027ba56a72e0c4fb5ecb223b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

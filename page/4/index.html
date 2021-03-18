@@ -188,20 +188,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -243,6 +243,155 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">[python源码分析] 3.float解析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-11-10 22:26:12" itemprop="dateCreated datePublished" datetime="2020-11-10T22:26:12+08:00">2020-11-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-16 09:25:42" itemprop="dateModified" datetime="2020-11-16T09:25:42+08:00">2020-11-16</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h1><p>float 实例对象在 Include/floatobject.h 中定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD   &#x2F;&#x2F;定长对象共用的头部</span><br><span class="line">    double ob_fval;  &#x2F;&#x2F;额外字段,存储对象所承载的浮点值</span><br><span class="line">&#125; PyFloatObject;</span><br></pre></td></tr></table></figure>
+
+<p>下面是浮点<strong>实例对象</strong>内部结构图：</p>
+<div style="width:95%;margin:auto"><img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat1.png" class="" title="PyFloatObject图"></div>
+
+
+<h2 id="float-类型对象"><a href="#float-类型对象" class="headerlink" title="float 类型对象"></a>float 类型对象</h2><p>与实例对象不同， <strong>float 类型对象 全局唯一</strong> ，因此可以作为 <strong>全局变量</strong> 定义。 在 C 文件 <strong>Objects/floatobject.c</strong> 中，我们找到了代表 float 类型对象的<strong>全局变量 PyFloat_Type</strong> ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,                                     &#x2F;*tp_name 字段保存类型名称，常量 float*&#x2F;</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line">    0,</span><br><span class="line">    (destructor)float_dealloc,                  &#x2F;* tp_dealloc 对象销毁相关*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_print *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_getattr *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_setattr *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_reserved *&#x2F;</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_repr 生成语法字符串表示形式的函数*&#x2F;</span><br><span class="line">    &amp;float_as_number,                           &#x2F;* tp_as_number 数值操作集*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line">    (hashfunc)float_hash,                       &#x2F;* tp_hash 哈希值生成函数*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_call *&#x2F;</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_str 生成普通字符串表示形式的函数*&#x2F;</span><br><span class="line">    PyObject_GenericGetAttr,                    &#x2F;* tp_getattro *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_setattro *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_buffer *&#x2F;</span><br><span class="line">    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   &#x2F;* tp_flags *&#x2F;</span><br><span class="line">    float_new__doc__,                           &#x2F;* tp_doc *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_traverse *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_clear *&#x2F;</span><br><span class="line">    float_richcompare,                          &#x2F;* tp_richcompare *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_weaklistoffset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_iter *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_iternext *&#x2F;</span><br><span class="line">    float_methods,                              &#x2F;* tp_methods *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_members *&#x2F;</span><br><span class="line">    float_getset,                               &#x2F;* tp_getset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_base *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_dict *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_descr_get *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_descr_set *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_dictoffset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_init 对象创建相关(tp_init 函数指针在这为空，因为float对象简单，只需要tp_new赋值就行)*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_alloc 对象创建相关*&#x2F;</span><br><span class="line">    float_new,                                  &#x2F;* tp_new 对象创建相关*&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>PyFloat_Type 中保存了很多关于浮点对象的 <strong>元信息</strong></p>
+<p>PyFloat_Type 很重要，作为浮点 <strong>类型对象</strong> ，它决定了<strong>浮点 实例对象 的 生死和行为</strong> 。 </p>
+<h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><p>调用<strong>类型对象 float 创建实例对象</strong>: Python 执行的是 type 类型对象中的 <strong>tp_call</strong> 函数。 tp_call 函数进而调用 <strong>float 类型对象的 tp_new 函数创建实例对象</strong>， 再调用 <strong>tp_init 函数对其进行初始化</strong>：</p>
+<div style="width:95%;margin:auto"><img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_create.jpg" class="" title="Float对象创建图"></div>
+
+
+<p>除了通用的流程， Python 为内置对象实现了对象创建 API ，简化调用，提高效率：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyFloat_FromDouble(double fval);  &#x2F;*通过浮点值创建浮点对象*&#x2F;</span><br><span class="line"></span><br><span class="line">PyObject *</span><br><span class="line">PyFloat_FromString(PyObject *v);  &#x2F;*通过字符串对象创建浮点对象*&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>以 <strong>PyFloat_FromDouble</strong> 为例，特化的对象创建流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyFloat_FromDouble(double fval)</span><br><span class="line">&#123;</span><br><span class="line">    PyFloatObject *op &#x3D; free_list;</span><br><span class="line">    &#x2F;*为对象 分配内存空间，优先使用空闲对象缓存池 *&#x2F;</span><br><span class="line">    if (op !&#x3D; NULL) &#123;                  </span><br><span class="line">        free_list &#x3D; (PyFloatObject *) Py_TYPE(op);</span><br><span class="line">        numfree--;</span><br><span class="line">    &#125; </span><br><span class="line">    &#x2F;*空闲对象缓存池为空，调用PyObject_MALLOC申请内存 *&#x2F;</span><br><span class="line">    else &#123;</span><br><span class="line">        op &#x3D; (PyFloatObject*) PyObject_MALLOC(sizeof(PyFloatObject));</span><br><span class="line">        if (!op)</span><br><span class="line">            return PyErr_NoMemory();</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;* Inline PyObject_New *&#x2F;</span><br><span class="line">    (void)PyObject_INIT(op, &amp;PyFloat_Type);</span><br><span class="line"></span><br><span class="line">    &#x2F;*将 ob_fval 字段初始化为指定 浮点值 *&#x2F;</span><br><span class="line">    op-&gt;ob_fval &#x3D; fval;    </span><br><span class="line">    return (PyObject *) op;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面用到的宏 PyObject_INIT 在头文件 Include/objimpl.h 中定义为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_INIT(op, typeobj) \</span><br><span class="line">    ( Py_TYPE(op) &#x3D; (typeobj), _Py_NewReference((PyObject *)(op)), (op) )  &#x2F;&#x2F;前半部分调用  Py_TYPE(op) 初始化 对象类型 字段 ob_type，后面语句初始化 引用计数 字段 ob_refcnt</span><br></pre></td></tr></table></figure>
+
+<p>上面提到的宏定义 <strong>Py_TYPE</strong>，位于 Include/object.h 头文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define Py_TYPE(ob) (((PyObject*)(ob))&amp;ob_type)</span><br></pre></td></tr></table></figure>
+<p>它的作用是：将 <strong>给定对象的类型对象取出, 返回对象的ob_type字段</strong>。</p>
+<p>宏 _Py_NewReference，在 Include/Object.h 中定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#define _Py_NewReference(op) (                          \</span><br><span class="line">    _Py_INC_TPALLOCS(op) _Py_COUNT_ALLOCS_COMMA         \</span><br><span class="line">    _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA               \</span><br><span class="line">    Py_REFCNT(op) &#x3D; 1)   &#x2F;*将对象引用计数初始化为 1*&#x2F;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="对象的销毁"><a href="#对象的销毁" class="headerlink" title="对象的销毁"></a>对象的销毁</h1><p>当对象不再需要时， Python 通过 <strong>Py_DECREF 或者 Py_XDECREF 宏减少引用计数</strong>； 当引用计数降为 0 时， Python 通过 <strong>_Py_Dealloc</strong> 宏回收对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define _Py_Dealloc(op) (                               \</span><br><span class="line">    _Py_INC_TPFREES(op) _Py_COUNT_ALLOCS_COMMA          \</span><br><span class="line">    (*Py_TYPE(op)-&gt;tp_dealloc)((PyObject *)(op)))   &#x2F;*调用类型对象 **PyFloat_Type 中的 tp_dealloc 函数指针*&#x2F;</span><br></pre></td></tr></table></figure>
+<p>因此，实际调用的函数是 float_dealloc (代码在下一小节 空闲对象缓存池 中解析)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static void</span><br><span class="line">float_dealloc(PyFloatObject *op)</span><br><span class="line">&#123;</span><br><span class="line">    if (PyFloat_CheckExact(op)) &#123;</span><br><span class="line">        &#x2F;*空闲对象缓存池满了，直接销毁*&#x2F;</span><br><span class="line">        if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;</span><br><span class="line">            PyObject_FREE(op);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        numfree++;</span><br><span class="line">        Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;</span><br><span class="line">        free_list &#x3D; op;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">        Py_TYPE(op)-&gt;tp_free((PyObject *)op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总结起来，对象从创建到销毁整个生命周期所涉及的 <strong>关键函数、宏及调用关系</strong> 如下：</p>
+<div style="width:95%;margin:auto"><img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_delete.jpg" class="" title="Float对象生命周期图"></div>
+
+
+<hr>
+<h1 id="空闲对象缓存池"><a href="#空闲对象缓存池" class="headerlink" title="空闲对象缓存池"></a>空闲对象缓存池</h1><p>浮点运算背后涉及 大量临时对象创建以及销毁 ，以下面计算为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; area &#x3D; pi * r ** 2</span><br></pre></td></tr></table></figure>
+<p>这个语句首先计算半径 r ** 2，中间结果由一个<strong>临时对象</strong>来保存，假设是 t ； 然后计算圆周率 <strong>pi 与 t 的乘积</strong>，得到最终结果并赋值给变量 area ； 最后，销毁<strong>临时对象 t</strong> 。 这么简单的语句，背后居然都隐藏着一个 <strong>临时对象的创建以及销毁</strong>操作！</p>
+<p>创建对象时需要分配内存，销毁对象时又需要回收内存。 大量临时对象创建销毁 ，意味着 大量内存分配回收操作 ，这显然是是不可接受的。</p>
+<p>因此 <strong>Python 在浮点对象销毁后，并不急于回收内存</strong>，而是<strong>将对象放入一个 空闲链表</strong> 。 后续需要创建浮点对象时，先到空闲链表中取，省去分配内存的开销。</p>
+<p>浮点对象的空闲链表同样在 Objects/floatobject.c 中定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifndef PyFloat_MAXFREELIST</span><br><span class="line">#define PyFloat_MAXFREELIST    100           &#x2F;*该宏  限制空闲链表的 最大长度 ，避免占用过多内存*&#x2F;</span><br><span class="line">#endif</span><br><span class="line">static int numfree &#x3D; 0;                     &#x2F;*维护空闲链表 当前长度*&#x2F;</span><br><span class="line">static PyFloatObject *free_list &#x3D; NULL;    &#x2F;*指向空闲链表 头节点 的指针*&#x2F;</span><br></pre></td></tr></table></figure>
+<p>为了保持简洁， Python 把 <strong>ob_type 字段当作 next 指针来用</strong>，将 <strong>空闲对象串成链表</strong>：</p>
+<div style="width:95%;margin:auto"></div>
+
+<p>因此创建浮点对象时，可以从 <strong>链表中取出空闲对象</strong>，省去 <strong>申请内存的开销</strong>！ 以 PyFloat_FromDouble 为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PyFloatObject *op &#x3D; free_list;                  &#x2F;*op指向第一个 空闲对象*&#x2F;</span><br><span class="line">if (op !&#x3D; NULL) &#123;</span><br><span class="line">    free_list &#x3D; (PyFloatObject *) Py_TYPE(op);  &#x2F;*free_list指向第一个 空闲对象(op)的ob_type所指向的 下一个空闲对象(相当于链表的头部删除)*&#x2F;</span><br><span class="line">    numfree--;                                  &#x2F;*更新空闲链表维护的数量*&#x2F;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    op &#x3D; (PyFloatObject*) PyObject_MALLOC(sizeof(PyFloatObject));    &#x2F;*free_list为空时，重新分配内存*&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对象销毁时， Python 将其缓存在空闲链表中，以备后用。考察 float_dealloc 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;   &#x2F;*销毁时，判断free_list是否达到最大容量*&#x2F;</span><br><span class="line">    PyObject_FREE(op);                   &#x2F;*回收对象内*&#x2F;</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br><span class="line">numfree++;                                      </span><br><span class="line">Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;  &#x2F;*op的ob_type指向当前 第一个空闲对象*&#x2F;</span><br><span class="line">free_list &#x3D; op;                                 &#x2F;* free_list指向op(相当于链表的头部插入)*&#x2F;</span><br></pre></td></tr></table></figure>
+<p>空闲对象缓存池在 <strong>提高对象分配效率</strong> 方面发挥着至关重要的作用。</p>
+<h1 id="对象的行为"><a href="#对象的行为" class="headerlink" title="对象的行为"></a>对象的行为</h1><p>PyFloat_Type 中定义了很多函数指针，包括 tp_repr 、 tp_str 、 tp_hash 等。 这些函数指针将一起决定 float 对象的行为，例如 tp_hash 函数决定浮点哈希值的计算：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; pi &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; hash(pi)</span><br><span class="line">322818021289917443</span><br></pre></td></tr></table></figure>
+<p>tp_hash 函数指针指向 <strong>float_hash 函数</strong>，实现了 <strong>针对浮点对象的哈希值算法</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static Py_hash_t</span><br><span class="line">float_hash(PyFloatObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    return _Py_HashDouble(v-&gt;ob_fval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数值操作集"><a href="#数值操作集" class="headerlink" title="数值操作集"></a>数值操作集</h2><p>由于加减乘除等数值操作很常见， Python 将其抽象成数值操作集 <strong>PyNumberMethods</strong> 。 数值操作集 PyNumberMethods 在头文件 <strong>Include/object.h</strong> 中定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    &#x2F;* Number implementations must check *both*</span><br><span class="line">    arguments for proper type and implement the necessary conversions</span><br><span class="line">    in the slot functions themselves. *&#x2F;</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_add;</span><br><span class="line">    binaryfunc nb_subtract;</span><br><span class="line">    binaryfunc nb_multiply;</span><br><span class="line">    binaryfunc nb_remainder;</span><br><span class="line">    binaryfunc nb_divmod;</span><br><span class="line">    ternaryfunc nb_power;</span><br><span class="line">    unaryfunc nb_negative;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_inplace_add;</span><br><span class="line">    binaryfunc nb_inplace_subtract;</span><br><span class="line">    binaryfunc nb_inplace_multiply;</span><br><span class="line">    binaryfunc nb_inplace_remainder;</span><br><span class="line">    ternaryfunc nb_inplace_power;</span><br><span class="line">    &#x2F;&#x2F;...</span><br><span class="line">&#125; PyNumberMethods;</span><br></pre></td></tr></table></figure>
+<p>PyNumberMethods 定义了各种数学算子的处理函数，数值计算最终由这些函数执行。 处理函数根据参数个数可以分为： **一元函数 ( unaryfunc )、 二元函数 ( binaryfunc )**等。</p>
+<ul>
+<li>一元函数 ( unaryfunc ): 需要传入一个参数的函数。</li>
+<li>二元函数 ( binaryfunc): 需要传入两个参数的函数。</li>
+</ul>
+<p>回到 Objects/floatobject.c 观察浮点对象数值操作集 float_as_number 是如何初始化的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods float_as_number &#x3D; &#123;</span><br><span class="line">    float_add,          &#x2F;* nb_add *&#x2F;</span><br><span class="line">    float_sub,          &#x2F;* nb_subtract *&#x2F;</span><br><span class="line">    float_mul,          &#x2F;* nb_multiply *&#x2F;</span><br><span class="line">    float_rem,          &#x2F;* nb_remainder *&#x2F;</span><br><span class="line">    float_divmod,       &#x2F;* nb_divmod *&#x2F;</span><br><span class="line">    float_pow,          &#x2F;* nb_power *&#x2F;</span><br><span class="line">    (unaryfunc)float_neg, &#x2F;* nb_negative *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    0,                  &#x2F;* nb_inplace_add *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_subtract *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_multiply *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_remainder *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_power *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以加法为例，以下语句在 Python 内部最终由 float_add 函数执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; 1.5</span><br><span class="line">&gt;&gt;&gt; b &#x3D; 1.1</span><br><span class="line">&gt;&gt;&gt; a + b</span><br><span class="line">2.6</span><br></pre></td></tr></table></figure>
+<p>float_add 是一个 二元函数 ，位于 Objects/floatobject.h 中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">float_add(PyObject *v, PyObject *w)</span><br><span class="line">&#123;</span><br><span class="line">    double a,b;</span><br><span class="line">    &#x2F;&#x2F;将两个参数对象转化成浮点值，CONVERT_TO_DOUBLE是一个宏，将PyFloatObject里面的ob_fval抽出来给double变量</span><br><span class="line">    CONVERT_TO_DOUBLE(v, a);</span><br><span class="line">    CONVERT_TO_DOUBLE(w, b);</span><br><span class="line">    PyFPE_START_PROTECT(&quot;add&quot;, return 0)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;对两个浮点值求和</span><br><span class="line">    a &#x3D; a + b;</span><br><span class="line">    PyFPE_END_PROTECT(a)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;创建一个新浮点对象保存计算结果并返回</span><br><span class="line">    return PyFloat_FromDouble(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>浮点数计算一般都遵循 <strong>IEEE-754</strong>标准，如果计算时出现了错误，那么需要 <strong>将IEEE-754异常转换成Python中的异常</strong>，而 <strong>PyFPE_START_PROTECT和PyFPE_END_PROTECT</strong>这两个宏就是用来干这件事情的。 它们的定义在Include/pyfpe.h中，并且Python3.9的时候会被删除掉。</p>
+<p>所以如果是 <strong>C中的两个浮点数相加，直接a + b就可以了，编译之后就是一条简单的机器指令</strong>，然而 <strong>Python则需要额外做很多其它工作</strong>。从一个简单的加法上面就可以看出来Python为什么会比C慢几十倍了。</p>
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1902" title="小试牛刀，解剖浮点对象 float">小试牛刀，解剖浮点对象 float</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/u/4355012/blog/4464067" title="浮点数的底层实现">浮点数的底层实现</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1666,123 +1815,6 @@
 <h4 id="ExcutionAndPublication模式"><a href="#ExcutionAndPublication模式" class="headerlink" title="ExcutionAndPublication模式"></a>ExcutionAndPublication模式</h4><p><strong>ExcutionAndPublication模式下使用的是Volatile+Monitor</strong>，Monitor就是lock语句的实现，Monitor实现在Native代码中，是重量级的锁</p>
 <p>Monitor支持<strong>队列和线程睡眠</strong>，能够保证一<strong>整个方法块处于单线程执行状态</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">object threadSafeObj &#x3D; Volatile.Read(ref m_threadSafeObj); &#x2F;&#x2F;强制从主内存空间同步变量到线程内存空间副本</span><br><span class="line">bool lockTaken &#x3D; false;</span><br><span class="line">try</span><br><span class="line">&#123;</span><br><span class="line">    if (threadSafeObj !&#x3D; (object)ALREADY_INVOKED_SENTINEL) &#x2F;&#x2F;此时会有多个线程获取到正确值，抢夺开始</span><br><span class="line">        Monitor.Enter(threadSafeObj, ref lockTaken); &#x2F;&#x2F;尝试等待锁，进入成功设置lockTaken为true</span><br><span class="line">    else</span><br><span class="line">        Contract.Assert(m_boxed !&#x3D; null);</span><br><span class="line">　　　　　　　　　　　 &#x2F;&#x2F;单线程代码块 Start</span><br><span class="line">    if (m_boxed &#x3D;&#x3D; null) &#x2F;&#x2F;没有设置值的情况</span><br><span class="line">    &#123;</span><br><span class="line">        boxed &#x3D; CreateValue(); &#x2F;&#x2F;获取值</span><br><span class="line">        m_boxed &#x3D; boxed; &#x2F;&#x2F;设置到字段中</span><br><span class="line">        Volatile.Write(ref m_threadSafeObj, ALREADY_INVOKED_SENTINEL); &#x2F;&#x2F;强制将线程内存空间副本写入到主内存空间</span><br><span class="line">    &#125;</span><br><span class="line">    else &#x2F;&#x2F; got the lock but the value is not null anymore, check if it is created by another thread or faulted and throw if so</span><br><span class="line">    &#123;</span><br><span class="line">        boxed &#x3D; m_boxed as Boxed;</span><br><span class="line">        if (boxed &#x3D;&#x3D; null) &#x2F;&#x2F; it is not Boxed, so it is a LazyInternalExceptionHolder</span><br><span class="line">        &#123;</span><br><span class="line">            LazyInternalExceptionHolder exHolder &#x3D; m_boxed as LazyInternalExceptionHolder;</span><br><span class="line">            Contract.Assert(exHolder !&#x3D; null);</span><br><span class="line">            exHolder.m_edi.Throw();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">　　　　　　　　　　　　&#x2F;&#x2F;单线程代码块End</span><br><span class="line">&#125;</span><br><span class="line">finally</span><br><span class="line">&#123;</span><br><span class="line">    if (lockTaken) &#x2F;&#x2F;进入成功需要释放，避免死锁</span><br><span class="line">        Monitor.Exit(threadSafeObj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/13/c-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/13/c-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">[c#]c#中单例模式的实现</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-13 19:01:37" itemprop="dateCreated datePublished" datetime="2020-08-13T19:01:37+08:00">2020-08-13</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="c-中单例模式的实现"><a href="#c-中单例模式的实现" class="headerlink" title="c#中单例模式的实现"></a>c#中单例模式的实现</h2><p>本质上，单例模式是一个<strong>只允许创建一个实例，并提供对这个实例简单的访问途径的类</strong>。一般而言，单例模式在创建实例时<strong>不允许传递任何参数</strong>,否则不同参数导致不同的实例创建,就会出现问题！（如果同一个实例可以被同参的不同请求所访问，那么工厂模式会更适合。）只有在第一次被用到的时候才会被创建。在C#中有实现单例模式有很多种方法。我展示如下三个版本：从<strong>线程不安全的到简单线程安全的、再到简洁高效的版本</strong>。所有的这些实现都有以下四个特征：</p>
-<ol>
-<li>只有一个构造函数，而且是<strong>私有的，不带参数的</strong>。这是为了防止其他类对其实例化,同时也防止了子类化－－如果一个单例能被子类化 一次，就能被子类化两次，而如果每个子类可以创建一个实例，这与模式本身又产生了冲突。如果你（遇到这样的情况）：只有在运行期才能知道实际的类型，因此需要一个父类的单例，可以使用<strong>工厂模式。</strong></li>
-<li>类是<strong>密封的（即不可以被继承的类）</strong>。这并不是必须的，严格的说，即如上一点所说的原因，可以提高JIT（Just-In-Time , 运行时编译执行的技术）的效率。</li>
-<li>一个<strong>静态变量用来保存单例的引用</strong>。</li>
-<li>一个<strong>用以访问单例引用的公用静态方法</strong>。</li>
-</ol>
-<hr>
-<hr>
-<h5 id="版本1－非线程安全"><a href="#版本1－非线程安全" class="headerlink" title="版本1－非线程安全"></a>版本1－非线程安全</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;&#x2F; Bad code! Do not use!</span><br><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    static Singleton instance&#x3D;null;</span><br><span class="line">    Singleton()</span><br><span class="line">     &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static Singleton Instance</span><br><span class="line">     &#123;</span><br><span class="line">        get</span><br><span class="line">         &#123;</span><br><span class="line">            if (instance&#x3D;&#x3D;null)</span><br><span class="line">             &#123;</span><br><span class="line">                instance &#x3D; new Singleton();</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>两个线程可能同时判断“if (instance==null)”，发现为TRUE,于是都创建了实例，这又违背了单例模式。无法确保只能让一个线程使对象实例化</strong></p>
-<hr>
-<hr>
-<h5 id="版本2－-简单的线程安全"><a href="#版本2－-简单的线程安全" class="headerlink" title="版本2－ 简单的线程安全"></a>版本2－ 简单的线程安全</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    static Singleton instance&#x3D;null;</span><br><span class="line"></span><br><span class="line">    static readonly object padlock &#x3D; new object();</span><br><span class="line">    Singleton()</span><br><span class="line">     &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;每次访问的时候都要进行锁定</span><br><span class="line">    public static Singleton Instance</span><br><span class="line">     &#123;</span><br><span class="line">        get</span><br><span class="line">         &#123;</span><br><span class="line">             &#x2F;&#x2F;共用的对象进行锁定，然后判断实例是否在之前已经创建。</span><br><span class="line">            lock (padlock)</span><br><span class="line">             &#123;</span><br><span class="line">                if (instance&#x3D;&#x3D;null)</span><br><span class="line">                 &#123;</span><br><span class="line">                    instance &#x3D; new Singleton();</span><br><span class="line">                &#125;</span><br><span class="line">                return instance;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个实现是<strong>线程安全的。线程首先对共用的对象进行锁定</strong>，然后判断实例是否在之前已经创建。不幸的是，由于在<strong>每次访问的时候都要进行锁定</strong>，所以<strong>影响了性能</strong>。（这对于多 线程并发的高性能要求的应用显得尤为重要）。对那些可被其他类访问的对象进行锁定或对类型进行锁定<strong>会导致性能问题甚至引起死锁</strong>。</p>
-<hr>
-<hr>
-<h5 id="版本3－-用双重检测机制的错误版本（没用公用只读对象）"><a href="#版本3－-用双重检测机制的错误版本（没用公用只读对象）" class="headerlink" title="版本3－ 用双重检测机制的错误版本（没用公用只读对象）"></a>版本3－ 用双重检测机制的错误版本（没用公用只读对象）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;sealed关键字，表示不能被继承</span><br><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    static Singleton instance&#x3D;null;</span><br><span class="line">    Singleton()</span><br><span class="line">     &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static Singleton Instance</span><br><span class="line">     &#123;</span><br><span class="line">        get</span><br><span class="line">         &#123;</span><br><span class="line">             &#x2F;&#x2F;先判断是否存在单例</span><br><span class="line">            if (instance&#x3D;&#x3D;null)</span><br><span class="line">             &#123;</span><br><span class="line">                lock (instance)</span><br><span class="line">                 &#123;</span><br><span class="line">                    if (instance&#x3D;&#x3D;null)</span><br><span class="line">                     &#123;</span><br><span class="line">                        instance &#x3D; new Singleton();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个是错误的，在c#中，lock空指针会报错。</p>
-<hr>
-<hr>
-<h5 id="版本4－-用双重检测机制的线程安全"><a href="#版本4－-用双重检测机制的线程安全" class="headerlink" title="版本4－ 用双重检测机制的线程安全"></a>版本4－ 用双重检测机制的线程安全</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;sealed关键字，表示不能被继承</span><br><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    static Singleton instance&#x3D;null;</span><br><span class="line">    static readonly object padlock &#x3D; new object();</span><br><span class="line">    Singleton()</span><br><span class="line">     &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static Singleton Instance</span><br><span class="line">     &#123;</span><br><span class="line">        get</span><br><span class="line">         &#123;</span><br><span class="line">             &#x2F;&#x2F;先判断是否存在单例</span><br><span class="line">            if (instance&#x3D;&#x3D;null)</span><br><span class="line">             &#123;</span><br><span class="line">                lock (padlock)</span><br><span class="line">                 &#123;</span><br><span class="line">                    if (instance&#x3D;&#x3D;null)</span><br><span class="line">                     &#123;</span><br><span class="line">                        instance &#x3D; new Singleton();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个实现是<strong>线程安全的。线程先判断是否存在单例，不存在实例才对共用的对象进行锁定</strong>，然后判断实例是否在之前已经创建。看似看似没有问题，但却会引发另一个问题，这个问题由指令重排序引起。指令重排序是为了优化指令，提高程序运行效率。<strong>指令重排序</strong>包括<strong>编译器重排序和运行时重排序</strong>。例如 instance = new Singleton() 可分解为如下伪代码：</p>
-<p><strong>排序前</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">memory &#x3D; allocate();   &#x2F;&#x2F;1：分配对象的内存空间</span><br><span class="line">ctorInstance(memory);  &#x2F;&#x2F;2：初始化对象</span><br><span class="line">instance &#x3D; memory;     &#x2F;&#x2F;3：设置instance指向刚分配的内存地址</span><br></pre></td></tr></table></figure>
-
-<p><strong>排序后</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">memory &#x3D; allocate();   &#x2F;&#x2F;1：分配对象的内存空间</span><br><span class="line">instance &#x3D; memory;     &#x2F;&#x2F;3：设置instance指向刚分配的内存地址</span><br><span class="line">                       &#x2F;&#x2F;注意，此时对象还没有被初始化！</span><br><span class="line">ctorInstance(memory);  &#x2F;&#x2F;2：初始化对象</span><br></pre></td></tr></table></figure>
-<p>由于并行执行，则线程A执行了<strong>instance = memory然后线程B检查到instance不为null</strong>，则<strong>会使用未经实例化完全的对象进行操作</strong>，引发错误。</p>
-<hr>
-<hr>
-<h4 id="版本5－-用双重检测机制的线程安全-加入volatile"><a href="#版本5－-用双重检测机制的线程安全-加入volatile" class="headerlink" title="版本5－ 用双重检测机制的线程安全(加入volatile)"></a>版本5－ 用双重检测机制的线程安全(加入volatile)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Bad code! Do not use!</span><br><span class="line"></span><br><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    private volatile static Singleton instance &#x3D; null;&#x2F;&#x2F;volatile 可以禁止</span><br><span class="line">    private static readonly object padlock &#x3D; new object();</span><br><span class="line"></span><br><span class="line">    Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton Instance</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            if (instance &#x3D;&#x3D; null)</span><br><span class="line">            &#123;</span><br><span class="line">                lock (padlock)</span><br><span class="line">                &#123;</span><br><span class="line">                    if (instance &#x3D;&#x3D; null)</span><br><span class="line">                    &#123;</span><br><span class="line">                        instance &#x3D; new Singleton();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>volatile表明<strong>属性将被多个线程同时访问，告知编译器不要按照单线程访问的方式去优化该字段</strong>，线程会<strong>监听字段变更，但是不保证字段访问总是顺序执行</strong>。</p>
-<hr>
-<hr>
-<h4 id="版本6－-线程安全，避免实例创建和引用赋值混乱"><a href="#版本6－-线程安全，避免实例创建和引用赋值混乱" class="headerlink" title="版本6－ 线程安全，避免实例创建和引用赋值混乱"></a>版本6－ 线程安全，避免实例创建和引用赋值混乱</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    private static Singleton instance &#x3D; null;&#x2F;&#x2F;volatile 可以禁止</span><br><span class="line">    private static readonly object padlock &#x3D; new object();</span><br><span class="line"></span><br><span class="line">    Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton Instance</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            if (instance &#x3D;&#x3D; null)</span><br><span class="line">            &#123;</span><br><span class="line">                lock (padlock)</span><br><span class="line">                &#123;</span><br><span class="line">                    if (instance &#x3D;&#x3D; null)</span><br><span class="line">                    &#123;</span><br><span class="line">                        var tmp&#x3D; new Singleton();</span><br><span class="line">                        &#x2F;&#x2F; ensures that the instance is well initialized,</span><br><span class="line">                       &#x2F;&#x2F; and only then, it assigns the static variable.</span><br><span class="line">                        System.Threading.Thread.MemoryBarrier();</span><br><span class="line">                       instance &#x3D; tmp;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>官方文档是说Thread.MemoryBarrier()，保证之前的数据存取优先于MemoryBarrier执行，只有在多CPU下才需要使用</strong></p>
-<hr>
-<hr>
-<h4 id="版本7－-不用锁实现线程安全，不全是延时初始化"><a href="#版本7－-不用锁实现线程安全，不全是延时初始化" class="headerlink" title="版本7－ 不用锁实现线程安全，不全是延时初始化"></a>版本7－ 不用锁实现线程安全，不全是延时初始化</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    private static readonly Singleton instance &#x3D; new Singleton();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Explicit static constructor to tell C# compiler</span><br><span class="line">    &#x2F;&#x2F; not to mark type as beforefieldinit</span><br><span class="line">    static Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton Instance</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>C＃中的<strong>静态构造函数被指定仅在创建类的实例或引用静态成员时执行</strong>，并且<strong>每个AppDomain只执行一次</strong>，所以是<strong>延时初始化</strong>，但是当Singleton有多个静态属性，且<strong>其他的属性被访问时，实例也会被初始化，所以不是完全的延时初始化方式</strong>。</p>
-<hr>
-<hr>
-<h4 id="版本8－-不用锁实现线程安全，不全是延时初始化"><a href="#版本8－-不用锁实现线程安全，不全是延时初始化" class="headerlink" title="版本8－ 不用锁实现线程安全，不全是延时初始化"></a>版本8－ 不用锁实现线程安全，不全是延时初始化</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    private Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton Instance &#123; get &#123; return Nested.instance; &#125; &#125;</span><br><span class="line"></span><br><span class="line">    private class Nested</span><br><span class="line">    &#123;</span><br><span class="line">        &#x2F;&#x2F; Explicit static constructor to tell C# compiler</span><br><span class="line">        &#x2F;&#x2F; not to mark type as beforefieldinit</span><br><span class="line">        static Nested()</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        internal static readonly Singleton instance &#x3D; new Singleton();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>只有<strong>当Nested类的第一个引用调用时，Singleton才会被实例化</strong>，也就是调用Instance，是<strong>完全的延时初始化</strong>。</p>
-<hr>
-<hr>
-<h4 id="版本9－-线程安全，-NET-4之后支持"><a href="#版本9－-线程安全，-NET-4之后支持" class="headerlink" title="版本9－ 线程安全， .NET 4之后支持"></a>版本9－ 线程安全， .NET 4之后支持</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public sealed class Singleton</span><br><span class="line">&#123;</span><br><span class="line">    private static readonly Lazy&lt;Singleton&gt; lazy &#x3D;</span><br><span class="line">        new Lazy&lt;Singleton&gt;(() &#x3D;&gt; new Singleton());</span><br><span class="line"></span><br><span class="line">    public static Singleton Instance &#123; get &#123; return lazy.Value; &#125; &#125;</span><br><span class="line"></span><br><span class="line">    private Singleton()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 

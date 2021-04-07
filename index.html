@@ -276,7 +276,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-04-07 17:36:22 / Modified: 20:10:43" itemprop="dateCreated datePublished" datetime="2021-04-07T17:36:22+08:00">2021-04-07</time>
+      <time title="Created: 2021-04-07 17:36:22 / Modified: 20:18:11" itemprop="dateCreated datePublished" datetime="2021-04-07T17:36:22+08:00">2021-04-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,10 +298,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="如何生成密钥"><a href="#如何生成密钥" class="headerlink" title="如何生成密钥"></a>如何生成密钥</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh-keygen -t rsa -C ‘xxxxx@company.com’ -f ~&#x2F;.ssh&#x2F;id_rsa_gitlab</span><br></pre></td></tr></table></figure>
-<p><strong>-f</strong> : 指定生成密钥的位置 和 命名<br>**-t** ：指定密钥生成的算法<br>**-C** : 指定账号</p>
+          <h2 id="如何生成密钥？"><a href="#如何生成密钥？" class="headerlink" title="如何生成密钥？"></a>如何生成密钥？</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh-keygen -t rsa -C ‘xxxxx@company.com’ -f ~&#x2F;.ssh&#x2F;id_rsa_gitlab</span><br></pre></td></tr></table></figure>
+<p><strong>-f</strong> : 指定生成密钥的位置 和 命名(可选)<br><strong>-t</strong> ：指定密钥生成的算法(可选)<br><strong>-C</strong> : 指定账号(可选)</p>
 <h2 id="多个ssh密钥-如何指定"><a href="#多个ssh密钥-如何指定" class="headerlink" title="多个ssh密钥,如何指定"></a>多个ssh密钥,如何指定</h2><p>windows下ssh密钥文件在 Users\xxx.ssh\路径下, 系统默认会取 <strong>id_rsa</strong> 作为密钥文件。</p>
-<p>对不同ip or 网址,如果需要指定使用 哪个密钥文件,只需要修改 <strong>Users\xxx.ssh\config文件</strong>, 如：</p>
+<p>对<strong>不同ip or 网址</strong>,如果需要指定使用 哪个密钥文件,只需要修改 <strong>Users\xxx.ssh\config文件</strong>, 如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host 192.168.xx.xx</span><br><span class="line">  HostName 192.168.xx.xx</span><br><span class="line">  User leo</span><br><span class="line">  Port 4000</span><br><span class="line">  IdentityFile &quot;C:\Users\liuwen03\.ssh\id_rsa_liuwen03&quot;</span><br><span class="line"></span><br><span class="line">Host github.com</span><br><span class="line">  HostName github.com</span><br><span class="line">  User liuwen</span><br><span class="line">  IdentityFile &quot;C:\Users\liuwen03\.ssh\id_rsa_github&quot;</span><br></pre></td></tr></table></figure>
       
     </div>
@@ -1608,7 +1608,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'a676607444a8bc8b150c9a3aff884e61',
+      id          : 'f47af1d1eda4d807b02bba32be15120b',
         language: '',
       distractionFreeMode: true
     });

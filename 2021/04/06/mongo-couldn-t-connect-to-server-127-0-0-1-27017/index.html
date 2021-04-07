@@ -25,16 +25,21 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="LiuWen&#39;s Blogs">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="错误排查12345678# mongoMongoDB shell version: 3.0.12connecting to: test2021-04-06T10:58:44.862+0800 W NETWORK  Failed to connect to 127.0.0.1:27017, reason: errno:111 Connection refused2021-04-06T10:58:44">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[mongo] couldn&#39;t connect to server 127.0.0.1:27017">
+<meta property="og:url" content="http://yoursite.com/2021/04/06/mongo-couldn-t-connect-to-server-127-0-0-1-27017/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="错误排查12345678# mongoMongoDB shell version: 3.0.12connecting to: test2021-04-06T10:58:44.862+0800 W NETWORK  Failed to connect to 127.0.0.1:27017, reason: errno:111 Connection refused2021-04-06T10:58:44">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-06T03:14:20.000Z">
+<meta property="article:modified_time" content="2021-04-07T04:54:52.289Z">
 <meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="mongo">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://yoursite.com/archives/">
+<link rel="canonical" href="http://yoursite.com/2021/04/06/mongo-couldn-t-connect-to-server-127-0-0-1-27017/">
 
 
 <script class="page-configurations">
@@ -42,12 +47,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Archive | LiuWen's Blogs</title>
+  <title>[mongo] couldn't connect to server 127.0.0.1:27017 | LiuWen's Blogs</title>
   
 
 
@@ -162,7 +167,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -175,6 +180,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5"><span class="nav-number">1.</span> <span class="nav-text">错误排查</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#solution-1%EF%BC%9A%E4%BF%AE%E6%94%B9%E8%B7%AF%E5%BE%84"><span class="nav-number">1.0.1.</span> <span class="nav-text">solution 1：修改路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#solution-2%EF%BC%9A%E4%BF%AE%E6%94%B9%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90"><span class="nav-number">1.0.2.</span> <span class="nav-text">solution 2：修改文件权限</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#need-to-do"><span class="nav-number"></span> <span class="nav-text">need to do</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -239,241 +245,133 @@
 </noscript>
 
 
-    <div class="main-inner archive posts-collapse">
+    <div class="main-inner post posts-expand">
       
 
       
 
   
+
+
+<div class="post-block">
   
   
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/06/mongo-couldn-t-connect-to-server-127-0-0-1-27017/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [mongo] couldn't connect to server 127.0.0.1:27017
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-06 11:14:20" itemprop="dateCreated datePublished" datetime="2021-04-06T11:14:20+08:00">2021-04-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-07 12:54:52" itemprop="dateModified" datetime="2021-04-07T12:54:52+08:00">2021-04-07</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="错误排查"><a href="#错误排查" class="headerlink" title="错误排查"></a>错误排查</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># mongo</span><br><span class="line">MongoDB shell version: 3.0.12</span><br><span class="line">connecting to: test</span><br><span class="line">2021-04-06T10:58:44.862+0800 W NETWORK  Failed to connect to 127.0.0.1:27017, reason: errno:111 Connection refused</span><br><span class="line">2021-04-06T10:58:44.864+0800 E QUERY    Error: couldn&#39;t connect to server 127.0.0.1:27017 (127.0.0.1), connection attempt failed</span><br><span class="line">    at connect (src&#x2F;mongo&#x2F;shell&#x2F;mongo.js:179:14)</span><br><span class="line">    at (connect):1:6 at src&#x2F;mongo&#x2F;shell&#x2F;mongo.js:179</span><br><span class="line">exception: connect failed</span><br></pre></td></tr></table></figure>
+<p>这个错误是由于mongo shell不能与mongod server通信，可能的原因有:</p>
+<ul>
+<li>mongod server没启动</li>
+<li>ip和端口不正确</li>
+</ul>
+<p>查看进程是否启动 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux|grep mongo</span><br></pre></td></tr></table></figure>
+<p>果然没有启动,尝试启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># mongod --dbpath &#x2F;var&#x2F;lib&#x2F;mongodb&#x2F; --repair</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] MongoDB starting : pid&#x3D;12221 port&#x3D;27017 dbpath&#x3D;&#x2F;var&#x2F;lib&#x2F;mongodb&#x2F; 64-bit host&#x3D;g37-dev-acfd361f</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] db version v3.0.12</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] git version: 33934938e0e95d534cebbaff656cde916b9c3573</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] build info: Linux build14.ny.cbi.10gen.cc 2.6.32-431.3.1.el6.x86_64 #1 SMP Fri Jan 3 21:39:27 UTC 2014 x86_64 BOOST_LIB_VERSION&#x3D;1_49</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] allocator: tcmalloc</span><br><span class="line">2021-04-06T10:53:01.376+0800 I CONTROL  [initandlisten] options: &#123; repair: true, storage: &#123; dbPath: &quot;&#x2F;var&#x2F;lib&#x2F;mongodb&#x2F;&quot; &#125; &#125;</span><br><span class="line">2021-04-06T10:53:01.400+0800 I STORAGE  [initandlisten] exception in initAndListen: 98 Unable to create&#x2F;open lock file: &#x2F;var&#x2F;lib&#x2F;mongodb&#x2F;mongod.lock errno:13 Permission denied Is a mongod instance already running?, terminating</span><br><span class="line">2021-04-06T10:53:01.401+0800 I CONTROL  [initandlisten] dbexit:  rc: 100</span><br></pre></td></tr></table></figure>
+<p>这是因为权限不够，用 <strong>stat</strong> 查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># stat &#x2F;var&#x2F;lib&#x2F;mongodb</span><br><span class="line">  File: ‘&#x2F;var&#x2F;lib&#x2F;mongodb’</span><br><span class="line">  Size: 60              Blocks: 0          IO Block: 4096   directory</span><br><span class="line">Device: fd00h&#x2F;64768d    Inode: 1235426     Links: 4</span><br><span class="line">Access: (0755&#x2F;drwxr-xr-x)  Uid: (  505&#x2F; mongodb)   Gid: (  505&#x2F; mongodb)</span><br><span class="line">Access: 2021-04-06 10:49:04.428179272 +0800</span><br><span class="line">Modify: 2021-04-06 10:48:40.036107174 +0800</span><br><span class="line">Change: 2021-04-06 10:48:40.036107174 +0800</span><br><span class="line"> Birth: -</span><br></pre></td></tr></table></figure>
+<p>仅mongodb用户可读可写</p>
+<h4 id="solution-1：修改路径"><a href="#solution-1：修改路径" class="headerlink" title="solution 1：修改路径"></a>solution 1：修改路径</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mongod --dbpath &#x2F;home&#x2F;liuwen03&#x2F;mongo&#x2F; --repair</span><br><span class="line">mongod --dbpath &#x2F;home&#x2F;liuwen03&#x2F;mongo&#x2F; --journal</span><br></pre></td></tr></table></figure>
+<h4 id="solution-2：修改文件权限"><a href="#solution-2：修改文件权限" class="headerlink" title="solution 2：修改文件权限"></a>solution 2：修改文件权限</h4><p>sudo chmod …</p>
+<h1 id="need-to-do"><a href="#need-to-do" class="headerlink" title="need to do"></a>need to do</h1><h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/13312358/mongo-couldnt-connect-to-server-127-0-0-127017">stackoverflow mongo</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15229412/unable-to-create-open-lock-file-data-mongod-lock-errno13-permission-denied">Unable to create/open lock file: /data/mongod.lock errno:13 Permission denied
+</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mongo/" rel="tag"># mongo</a>
+          </div>
+
         
-        <span class="collection-header">OK! 50 posts in total. Keep on posting.</span>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-06T11:14:20+08:00"
-              content="2021-04-06">
-          04-06
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/06/mongo-couldn-t-connect-to-server-127-0-0-1-27017/" itemprop="url">
-            <span itemprop="name">[mongo] couldn't connect to server 127.0.0.1:27017</span>
-          </a>
-      </div>
-
-      
-    </header>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/31/linux-9-crontab%E5%AE%9A%E6%9C%9F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" rel="prev" title="[linux] 9.crontab定期执行命令">
+                  <i class="fa fa-chevron-left"></i> [linux] 9.crontab定期执行命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-31T13:34:34+08:00"
-              content="2021-03-31">
-          03-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/31/linux-9-crontab%E5%AE%9A%E6%9C%9F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 9.crontab定期执行命令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-18T12:45:36+08:00"
-              content="2021-03-18">
-          03-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/18/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-1-Bayes-theorem/" itemprop="url">
-            <span itemprop="name">[数学基础] 1.Bayes' theorem</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-09T19:46:07+08:00"
-              content="2021-03-09">
-          03-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1-%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84/" itemprop="url">
-            <span itemprop="name">[数据结构]1.树状数组 Binary Indexed Tree</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-04T18:00:33+08:00"
-              content="2021-03-04">
-          03-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 8.nohup命令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-25T13:00:44+08:00"
-              content="2021-02-25">
-          02-25
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/" itemprop="url">
-            <span itemprop="name">[c++接口] 1.boost常用接口</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-23T12:54:42+08:00"
-              content="2021-02-23">
-          02-23
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/" itemprop="url">
-            <span itemprop="name">[python源码分析] 9.执行过程和字节码</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-21T12:45:01+08:00"
-              content="2021-02-21">
-          02-21
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/" itemprop="url">
-            <span itemprop="name">[深入理解linux] 2. soft link/hard link</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-04T12:59:34+08:00"
-              content="2021-02-04">
-          02-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/" itemprop="url">
-            <span itemprop="name">[深入理解linux] 1.what is inode</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-04T12:50:15+08:00"
-              content="2021-02-04">
-          02-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/04/linux-7-ln%E6%8C%87%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">[linux] 7.ln指令</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
+</div>
 
 
-    </div>
-  </div>
-  
-  
-  
 
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
-  </nav>
 
 
 
       
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -653,6 +551,25 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'e390535b6841c6aadfe5cdcc536ac9e3',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

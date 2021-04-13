@@ -25,16 +25,18 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="LiuWen&#39;s Blogs">
-<meta property="og:url" content="http://yoursite.com/categories/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="[c++11] 3.std::move和std::forward">
+<meta property="og:url" content="http://yoursite.com/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-13T13:38:45.000Z">
+<meta property="article:modified_time" content="2021-04-13T13:38:45.748Z">
 <meta property="article:author" content="Liu Wen">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://yoursite.com/categories/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+<link rel="canonical" href="http://yoursite.com/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/">
 
 
 <script class="page-configurations">
@@ -42,12 +44,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Category: 数学基础 | LiuWen's Blogs</title>
+  <title>[c++11] 3.std::move和std::forward | LiuWen's Blogs</title>
   
 
 
@@ -239,58 +241,97 @@
 </noscript>
 
 
-    <div class="main-inner category posts-collapse">
+    <div class="main-inner post posts-expand">
       
 
       
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">数学基础
-          <small>Category</small>
-        </h2>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [c++11] 3.std::move和std::forward
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-13 21:38:45" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:45+08:00">2021-04-13</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-18T12:45:36+08:00"
-              content="2021-03-18">
-          03-18
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/18/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-1-Bayes-theorem/" itemprop="url">
-            <span itemprop="name">[数学基础] 1.Bayes' theorem</span>
-          </a>
-      </div>
+    <footer class="post-footer">
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/07/ssh-%E5%A4%9A%E4%B8%AAssh%E5%AF%86%E9%92%A5-%E5%A6%82%E4%BD%95%E6%8C%87%E5%AE%9A/" rel="prev" title="[ssh] 多个ssh密钥,如何指定?">
+                  <i class="fa fa-chevron-left"></i> [ssh] 多个ssh密钥,如何指定?
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/" rel="next" title="[c++11] 2.可变参数模板">
+                  [c++11] 2.可变参数模板 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-    </div>
-  </div>
-  
-  
-  
 
-  
+
 
 
 
       
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -470,6 +511,25 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'ceedd5a2a2bdb513f613dfa5c80a5695',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

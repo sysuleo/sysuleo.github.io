@@ -188,14 +188,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -243,6 +243,155 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/" class="post-title-link" itemprop="url">[c++11] 2.可变参数模板</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-04-13 21:38:56 / Modified: 23:05:18" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:56+08:00">2021-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/c-11/" itemprop="url" rel="index"><span itemprop="name">c++11</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h2><p>C++11的新特性–<strong>可变模版参数（variadic templates）</strong>是C++11新增的最强大的特性之一，它对参数进行了高度泛化,表示<strong>0到任意个数、任意类型的参数</strong>. </p>
+<h2 id="可变模版参数函数"><a href="#可变模版参数函数" class="headerlink" title="可变模版参数函数"></a>可变模版参数函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class... T&gt;</span><br><span class="line">void f(T... args) </span><br><span class="line">&#123; &#x2F;&#x2F;可以传任意类型和个数的参数给函数f  </span><br><span class="line">    cout &lt;&lt; sizeof...(args) &lt;&lt; endl; &#x2F;&#x2F;打印变参的个数</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f();        &#x2F;&#x2F;0</span><br><span class="line">f(1, 2);    &#x2F;&#x2F;2</span><br><span class="line">f(1, 2.5, &quot;&quot;);    &#x2F;&#x2F;3</span><br></pre></td></tr></table></figure>
+
+<h4 id="递归函数方式展开参数包"><a href="#递归函数方式展开参数包" class="headerlink" title="递归函数方式展开参数包"></a>递归函数方式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">&#x2F;&#x2F;递归终止函数</span><br><span class="line">void print()</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;empty&quot; &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;展开函数</span><br><span class="line">template &lt;class T, class ...Args&gt;</span><br><span class="line">void print(T head, Args... rest)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;parameter &quot; &lt;&lt; head &lt;&lt; endl;</span><br><span class="line">   print(rest...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">   print(1,2,3,4);</span><br><span class="line">   return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="逗号表达式展开参数包"><a href="#逗号表达式展开参数包" class="headerlink" title="逗号表达式展开参数包"></a>逗号表达式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">void printarg(T t)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; t &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class ...Args&gt;</span><br><span class="line">void expand(Args... args)</span><br><span class="line">&#123;</span><br><span class="line">   int arr[] &#x3D; &#123;(printarg(args), 0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">expand(1,2,3,4);</span><br></pre></td></tr></table></figure>
+<p>这种展开参数包的方式，<strong>不需要通过递归终止函数</strong>，是直接在expand函数体中展开的, printarg不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式实现的关键是<strong>逗号表达式</strong>。我们知道逗号表达式会按顺序执行逗号前面的表达式，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d &#x3D; (a &#x3D; b, c); </span><br></pre></td></tr></table></figure>
+<p>这个表达式会按顺序执行：<strong>b会先赋值给a</strong>，接着括号中的<strong>逗号表达式返回c的值</strong>，因此<strong>d将等于c</strong>。</p>
+<p>expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)…}将会展开成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((printarg(arg1),0), (printarg(arg2),0), (printarg(arg3),0),  etc... )</span><br></pre></td></tr></table></figure>
+<p>最终会创建一个元素值 <strong>都为0的数组int arr[sizeof…(Args)]**。由于是逗号表达式，在创建数组的过程中会</strong>先执行逗号表达式前面的部分printarg(args)<strong>打印出参数，也就是说</strong>在构造int数组的过程中就将参数包展开了<strong>，这个数组的目的</strong>纯粹是为了在数组构造的过程展开参数包**。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class F, class... Args&gt;</span><br><span class="line">void expand(const F&amp; f, Args&amp;&amp;...args) </span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;这里用到了完美转发，关于完美转发，读者可以参考笔者在上一期程序员中的文章《通过4行代码看右值引用》</span><br><span class="line">  initializer_list&lt;int&gt;&#123;(f(std::forward&lt; Args&gt;(args)),0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line">expand([](int i)&#123;cout&lt;&lt;i&lt;&lt;endl;&#125;, 1,2,3);</span><br></pre></td></tr></table></figure>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/parameter_pack">type … Args(optional)</a><br>2.<a target="_blank" rel="noopener" href="https://www.cnblogs.com/qicosmos/p/4325949.html">泛化之美–C++11可变模版参数的妙用</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/" class="post-title-link" itemprop="url">[c++11] 3.std::move和std::forward</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-13 21:38:45" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:45+08:00">2021-04-13</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1215,263 +1364,6 @@ public:
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/helloxiaozhe/article/details/78104975">python编译过程和执行原理</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1915">Python 源码深度剖析/18 Python 程执行过程与字节码</a></li>
 </ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/" class="post-title-link" itemprop="url">[深入理解linux] 2. soft link/hard link</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-02-21 12:45:01 / Modified: 13:12:49" itemprop="dateCreated datePublished" datetime="2021-02-21T12:45:01+08:00">2021-02-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="What-is-Soft-Link-And-Hard-Link"><a href="#What-is-Soft-Link-And-Hard-Link" class="headerlink" title="What is Soft Link And Hard Link?"></a>What is Soft Link And Hard Link?</h2><ul>
-<li><strong>硬链接(Hard Link)</strong> 充当所选文件的<strong>副本（镜像）</strong>。它访问原始文件中的可用数据。如果删除了先前选择的文件，则指向该文件的硬链接<strong>仍将包含该文件的数据</strong>。</li>
-<li><strong>软链接(Soft Link)</strong> 充当文件名的 <strong>指针或引用</strong>。它不会访问原始文件中的可用数据。如果删除了先前的文件，则软链接将 <strong>指向不再存在的文件</strong>。</li>
-</ul>
-<h4 id="图解Soft-Link-和-Hard-Link"><a href="#图解Soft-Link-和-Hard-Link" class="headerlink" title="图解Soft Link 和 Hard Link"></a>图解Soft Link 和 Hard Link</h4><div style="width:100%;margin:auto"><img src="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/forgfgarticle-snip.png" class="" title="图解软链接&#x2F;硬链接"></div>
-
-<h2 id="Difference"><a href="#Difference" class="headerlink" title="Difference"></a>Difference</h2><table>
-<thead>
-<tr>
-<th>参数</th>
-<th>Hard link</th>
-<th>Soft link</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a target="_blank" rel="noopener" href="http://liuw.tech/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">Inode</a> number*</td>
-<td>相同</td>
-<td>不同</td>
-</tr>
-<tr>
-<td>Directories 目录</td>
-<td>不能链接目录(超级用户可以链接目录)</td>
-<td>可以链接目录</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>Data 数据</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>保留原始数据文件</td>
-<td>仅指向文件名，不保留文件的数据</td>
-</tr>
-<tr>
-<td>permissions文件权限</td>
-<td>与原始文件 <strong>始终保持</strong>相同权限</td>
-<td>权限不同</td>
-</tr>
-<tr>
-<td>Original file’s deletion 原始文件的删除</td>
-<td>该链接仍可访问原始文件的数据</td>
-<td>该链接无法使用，因为它无法访问原始文件的数据</td>
-</tr>
-<tr>
-<td>Speed 访问速度</td>
-<td>相对快</td>
-<td>相对慢</td>
-</tr>
-</tbody></table>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/difference-between-hard-link-and-soft-link/" title="Difference between Hard link and Soft link">Difference between Hard link and Soft link</a></li>
-<li><a target="_blank" rel="noopener" href="https://ostechnix.com/explaining-soft-link-and-hard-link-in-linux-with-examples/">Explaining Soft Link And Hard Link In Linux With Examples</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/" class="post-title-link" itemprop="url">[深入理解linux] 1.what is inode</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-02-04 12:59:34 / Modified: 14:04:37" itemprop="dateCreated datePublished" datetime="2021-02-04T12:59:34+08:00">2021-02-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Inode">inode</a>是一个重要概念，是理解Unix/Linux文件系统和硬盘储存的基础</p>
-<h2 id="1-what-is-inode"><a href="#1-what-is-inode" class="headerlink" title="1. what is inode?"></a>1. what is inode?</h2><table>
-<thead>
-<tr>
-<th>linux文件相关</th>
-<th>size</th>
-<th>属性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>扇区(Sector)</td>
-<td>512bytes(0.5KB)</td>
-<td>硬盘的最小存储单位</td>
-</tr>
-<tr>
-<td>块(block)</td>
-<td>通常4KB</td>
-<td>文件存取的最小单位(操作系统读取硬盘,一次性读取一个块，提高效率)</td>
-</tr>
-<tr>
-<td>inode</td>
-<td>一般是128字节或256字节</td>
-<td>储存文件的元信息(如创建者、创建日期、大小等)</td>
-</tr>
-</tbody></table>
-<p>inode, 中文译名为”索引节点”,包含了与该 <strong>文件有关的一些信息</strong>。</p>
-<h2 id="2-the-content-of-inode"><a href="#2-the-content-of-inode" class="headerlink" title="2. the content of inode"></a>2. the content of inode</h2><p>use <strong>stat</strong> to check the content of inode:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ stat mssh_ip.sh</span><br><span class="line"></span><br><span class="line">  File: ‘mssh_ip.sh’</span><br><span class="line">  Size: 183             Blocks: 8          IO Block: 4096   regular file</span><br><span class="line">Device: fe21h&#x2F;65057d    Inode: 7120498     Links: 1</span><br><span class="line">Access: (0644&#x2F;-rw-r--r--)  Uid: ( 7857&#x2F;liuwen03)   Gid: ( 7857&#x2F;liuwen03)</span><br><span class="line">Access: 2021-01-28 14:13:04.213991000 +0800</span><br><span class="line">Modify: 2021-01-28 14:13:04.213991000 +0800</span><br><span class="line">Change: 2021-02-04 11:37:19.457991000 +0800</span><br></pre></td></tr></table></figure>
-
-<p>由此可以看出, inode包含文件的元信息，具体来说有以下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">　　* 文件的字节数</span><br><span class="line">　　* 文件拥有者的User ID</span><br><span class="line">　　* 文件的Group ID</span><br><span class="line">　　* 文件的读、写、执行权限</span><br><span class="line">　　* 文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</span><br><span class="line">　　* 链接数，即有多少文件名指向这个inode</span><br><span class="line">　　* 文件数据block的位置</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-what-is-inode-number"><a href="#3-what-is-inode-number" class="headerlink" title="3. what is inode number?"></a>3. what is inode number?</h2><p>inode是<a target="_blank" rel="noopener" href="http://www.nongnu.org/ext2-doc/ext2.html#INODE-TABLE">inode table</a>中的一个item。Linux扩展文件系统 (如ext2/ext3) 维护了一个inode的数组：inode table。inode table包含该文件系统中所有文件的列表。inode table中的各个inode项具有 <strong>唯一的编号</strong> (该文件系统唯一)，即<strong>inode number</strong>。</p>
-<p>使用ls -i命令，可以看到文件名对应的inode number：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls -li mssh_ip.sh</span><br><span class="line">7120498 -rw-r--r-- 1 liuwen03 liuwen03 183 Jan 28 14:13 mssh_ip.sh</span><br></pre></td></tr></table></figure>
-<h2 id="4-the-size-and-the-number-of-inode"><a href="#4-the-size-and-the-number-of-inode" class="headerlink" title="4. the size and the number of inode"></a>4. the size and the number of inode</h2><p>inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是 <strong>数据区</strong>，存放<strong>文件数据</strong>；另一个是inode区（<strong>inode table</strong>），存放<strong>inode所包含的信息</strong>。<br>每个inode节点的size，一般是 <strong>128或256字节</strong>。inode节点的总数，在<strong>格式化时就给定</strong>，一般是每1KB或每2KB就设置一个inode。假定在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode table的大小就会达到128MB，占整块硬盘的12.8%。</p>
-<p><strong>df -i</strong>显示文件系统inode的使用信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ df -i</span><br><span class="line">Filesystem        Inodes  IUsed     IFree IUse% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0        8134656 127239   8007417    2% &#x2F;</span><br><span class="line">udev             2056585    353   2056232    1% &#x2F;dev</span><br><span class="line">tmpfs            2058885    487   2058398    1% &#x2F;run</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs            2058885     13   2058872    1% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1      209713152 344897 209368255    1% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1          62248    328     61920    1% &#x2F;boot</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-目录的inode结构"><a href="#5-目录的inode结构" class="headerlink" title="5. 目录的inode结构"></a>5. 目录的inode结构</h2><p>Linux中的 <strong>目录</strong> 也被视<strong>为文件</strong>。目录是<strong>将文件名映射到其inode number的特殊文件</strong> (此映射称为dentry)。因此，当我们说某个目录包含文件和其他目录时，我们的意思是该目录将这些文件和目录映射到它们的inode number。这就是目录无法容纳两个具有相同名称的文件的原因，因为它<strong>无法使用两个不同的inode number映射一个名称</strong>。</p>
-<p>每个目录项，由两部分组成：所包含文件的<strong>文件名</strong>，以及该文件名<strong>对应的inode号码</strong>。</p>
-<p>理解了上面这些知识，就能理解目录的权限。目录文件的读权限（r）和写权限（w），都是针对目录文件本身。由于目录文件内只有文件名和inode号码，所以 <strong>如果只有读权限，只能获取文件名，无法获取其他信息，因为其他信息都储存在inode节点中</strong>，而 <strong>读取inode节点内的信息需要目录文件的执行权限（x）</strong>。</p>
-<h2 id="6、inode的特殊作用"><a href="#6、inode的特殊作用" class="headerlink" title="6、inode的特殊作用"></a>6、inode的特殊作用</h2><p>由于<strong>inode号码与文件名</strong>分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
-<ul>
-<li><p>有时，文件名包含特殊字符，无法正常删除。这时，<strong>直接删除inode节点，就能起到删除文件的作用</strong>。</p>
-</li>
-<li><p>移动文件或重命名文件，<strong>只是改变文件名，不影响inode号码</strong>。</p>
-</li>
-<li><p>打开一个文件以后，系统就 <strong>以inode号码来识别</strong>这个文件，不再考虑文件名。因此，通常来说，<strong>系统无法从inode号码得知文件名</strong>。</p>
-</li>
-</ul>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2011/12/inode.html" title="理解inode">理解inode</a><br>2.<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0520d6b76318" title="详解Linux Inode">详解Linux Inode</a></p>
 
       
     </div>

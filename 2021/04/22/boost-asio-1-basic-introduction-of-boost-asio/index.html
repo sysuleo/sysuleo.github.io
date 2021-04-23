@@ -25,16 +25,25 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="LiuWen&#39;s Blogs">
-<meta property="og:url" content="http://yoursite.com/tags/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux/index.html">
+  <meta name="description" content="Boost.Asio 可在I&#x2F;O对象(如socket)中进行同步(synchronous)和异步(asynchronous)操作。接下来，以一个基于同步的I&#x2F;O socket连接操作为例：   在program中,至少需要有一个 I&#x2F;0 execution context,如boost::asio::io_context, boost::asio::thread_pool, or boost::a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[boost.asio] 1.basic introduction of boost asio">
+<meta property="og:url" content="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="Boost.Asio 可在I&#x2F;O对象(如socket)中进行同步(synchronous)和异步(asynchronous)操作。接下来，以一个基于同步的I&#x2F;O socket连接操作为例：   在program中,至少需要有一个 I&#x2F;0 execution context,如boost::asio::io_context, boost::asio::thread_pool, or boost::a">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/sync_op.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op1.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op2.png">
+<meta property="article:published_time" content="2021-04-22T08:30:54.000Z">
+<meta property="article:modified_time" content="2021-04-23T07:35:40.304Z">
 <meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/sync_op.png">
 
 
-<link rel="canonical" href="http://yoursite.com/tags/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux/">
+<link rel="canonical" href="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/">
 
 
 <script class="page-configurations">
@@ -42,12 +51,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: 深入理解linux | LiuWen's Blogs</title>
+  <title>[boost.asio] 1.basic introduction of boost asio | LiuWen's Blogs</title>
   
 
 
@@ -162,7 +171,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -175,6 +184,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E8%BF%9E%E6%8E%A5%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E4%BA%8B%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">同步连接操作相关事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E8%BF%9E%E6%8E%A5%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">异步连接操作相关事件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number"></span> <span class="nav-text">reference</span></a></div>
         </section>
         <!--/noindex-->
 
@@ -239,78 +249,158 @@
 </noscript>
 
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
       
 
       
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">深入理解linux
-          <small>Tag</small>
-        </h2>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [boost.asio] 1.basic introduction of boost asio
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-22 16:30:54" itemprop="dateCreated datePublished" datetime="2021-04-22T16:30:54+08:00">2021-04-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-23 15:35:40" itemprop="dateModified" datetime="2021-04-23T15:35:40+08:00">2021-04-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Boost.Asio 可在I/O对象(如socket)中进行同步(synchronous)和异步(asynchronous)操作。<br>接下来，以一个基于同步的I/O socket连接操作为例：</p>
+<div style="width:100%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/sync_op.png" class="" title="同步连接"></div>
+
+<p>在program中,至少需要有一个 I/0 execution context,如<strong>boost::asio::io_context, boost::asio::thread_pool, or boost::asio::system_context</strong></p>
+<p>该boost::asio::io_context表明已经<strong>连接到</strong>了 <strong>操作系统的 I/O services</strong>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::io_context io_context;</span><br></pre></td></tr></table></figure>
+
+<p>program进行I/O操作，必须有一个 I/O object 如 TCP socket：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::ip::tcp::socket socket(io_context);</span><br></pre></td></tr></table></figure>
+
+<h4 id="同步连接操作相关事件"><a href="#同步连接操作相关事件" class="headerlink" title="同步连接操作相关事件"></a>同步连接操作相关事件</h4><p>进行同步连接操作是，如下事件<strong>按顺序</strong>触发</p>
+<ol>
+<li>通过调用  I/O object，进行初始化连接<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.connect(server_endpoint);</span><br></pre></td></tr></table></figure></li>
+<li>I/O object <strong>请求 I/O execution context</strong></li>
+<li>I/O execution context <strong>调用操作系统</strong>，进行<strong>连接操作</strong>。</li>
+<li>操作系统<strong>返回 操作返回值</strong> 给 I/O execution context</li>
+<li>I/O execution context将 操作系统返回的结果 转换为boost::system::error_code 对象。然后返回该结果给  I/O object。</li>
+<li>若操作失败, I/O object 抛出 boost::system::system_error类型的异常。 若初始化操作的code 为：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boost::system::error_code ec;</span><br><span class="line">socket.connect(server_endpoint, ec);</span><br></pre></td></tr></table></figure>
+返回结果设置到 类型为error_code的变量ec, I/O object不会抛出异常。</li>
+</ol>
+<h4 id="异步连接操作相关事件"><a href="#异步连接操作相关事件" class="headerlink" title="异步连接操作相关事件"></a>异步连接操作相关事件</h4><div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op1.png" class="" title="异步连接"></div>
+
+<ol>
+<li><p>通过调用  I/O object，进行初始化连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.async_connect(server_endpoint, your_completion_handler);</span><br></pre></td></tr></table></figure>
+<p>其中 <strong>_completion_handler</strong> 是一个**带有签名(signature)**的函数 or 函数对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void your_completion_handler(const boost::system::error_code&amp; ec);</span><br></pre></td></tr></table></figure>
+<p>这个签名(signature) 取决于正在进行的 异步操作。</p>
+</li>
+<li><p>I/O object <strong>请求 I/O execution context</strong>。</p>
+</li>
+<li><p>I/O execution context 给<strong>操作系统</strong>发signals，通知操作系统进行异步连接。</p>
+</li>
+<li><p><strong>操作系统</strong>完成连接操作后，将结果加入到队列，等待<strong>I/O execution context</strong>处理。</p>
+</li>
+<li><p>当使用 io_context 作为 I/O execution context时, 需要运行**io_context::run()**，获取返回的结果。当有未完成的异步操作时，不能运行 io_context::run()。因此需要在首次进行异步连接操作时，就运行io_context::run()。</p>
+</li>
+<li><p>在 io_context::run() 里，<strong>I/O execution context</strong> 将处理队列中的返回结果，将其翻译成 error_code，然后传给 <strong>completion handler(回调)</strong></p>
+</li>
+</ol>
+<div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op2.png" class="" title="异步连接2"></div>
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li>(Basic Boost.Asio Anatomy)[<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]">https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]</a></li>
+</ol>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-21T12:45:01+08:00"
-              content="2021-02-21">
-          02-21
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/" itemprop="url">
-            <span itemprop="name">[深入理解linux] 2. soft link/hard link</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c++</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/22/problems-solution-windows-cmd-cd%E6%97%A0%E6%95%88%E9%97%AE%E9%A2%98/" rel="prev" title="[problems solution] windows cmd cd无效问题">
+                  <i class="fa fa-chevron-left"></i> [problems solution] windows cmd cd无效问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-02-04T12:59:34+08:00"
-              content="2021-02-04">
-          02-04
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/" itemprop="url">
-            <span itemprop="name">[深入理解linux] 1.what is inode</span>
-          </a>
-      </div>
 
-      
-    </header>
-  </article>
-
-    </div>
-  </div>
-  
-  
-  
-
-  
 
 
 
       
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -490,6 +580,25 @@ NexT.utils.loadComments('#gitalk-container', () => {
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'a8dcb97c8e895a22a98eef90ec6ed0b8',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -251,6 +251,123 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/" class="post-title-link" itemprop="url">[boost.asio] 2.proactor I/0设计模式:单线程并发</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-23 16:30:26" itemprop="dateCreated datePublished" datetime="2021-04-23T16:30:26+08:00">2021-04-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-26 15:24:02" itemprop="dateModified" datetime="2021-04-26T15:24:02+08:00">2021-04-26</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。</p>
+<h2 id="Proactor-与-Reactor"><a href="#Proactor-与-Reactor" class="headerlink" title="Proactor 与 Reactor"></a>Proactor 与 Reactor</h2><ul>
+<li>Proactor和Reactor都是<strong>并发编程中的设计模式</strong></li>
+<li>Proactor用于<strong>异步IO</strong>，而Reactor用于<strong>同步IO</strong>， 关键区别在于 <strong>何时IO</strong></li>
+<li>Reactor：非阻塞同步网络模型，关心<strong>就绪事件</strong>， 可以理解为：来了事件我通知你，你来处理，如epoll_wait</li>
+<li>Proactor：异步网络模型，关心<strong>完成事件</strong>，可以理解为：来了事件我来处理，处理完了我通知你。</li>
+</ul>
+<h2 id="Proactor-与-Boost-Asio"><a href="#Proactor-与-Boost-Asio" class="headerlink" title="Proactor 与 Boost.Asio"></a>Proactor 与 Boost.Asio</h2><div style="width:90%;margin:auto"><img src="/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png" class="" title="proactor"></div>
+
+<h2 id="Proactor设计模式"><a href="#Proactor设计模式" class="headerlink" title="Proactor设计模式"></a>Proactor设计模式</h2><ul>
+<li>异步操作(Asynchronous Operation)<br>  定义异步执行的操作，例如 <strong>异步读</strong>或在<strong>套接字上写入</strong>。</li>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  执行异步操作，并在操作完成时<strong>对completion event queue中的事件进行排队</strong>。从高层次的角度来看，像<strong>reactive_socket_service</strong>这样的内部服务是异步操作处理器。</li>
+<li>完成事件队列(Completion Event Queue)<br>  缓冲完成事件，直到它们被<strong>Asynchronous Event Demultiplexer</strong>移出队列。</li>
+<li>完成处理程序(Completion Handler)<br>  处理异步操作的结果。这些是函数对象，通常<strong>使用boost::bind创建</strong>。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  阻塞并等待完成事件队列上发生的事件，并将完成的事件返回其调用者。</li>
+<li>前摄器(Proactor)<br>  调用<strong>Asynchronous Event Demultiplexer</strong>将事件出列，并分派与事件关联的Completion Handler程序（即调用函数对象）。这个抽象由io_context类表示。</li>
+<li>发起者(Initiator)<br>  <strong>启动异步操作的应用程序</strong>特定代码。启动器通过高级接口（如basic_stream_socket）与异步操作处理器进行交互，而高级接口又 <strong>委托给 （如reactive_socket_service）等服务</strong>。</li>
+</ul>
+<h3 id="基于Reactor的实现"><a href="#基于Reactor的实现" class="headerlink" title="基于Reactor的实现"></a>基于Reactor的实现</h3><p>在许多平台上，Boost.Asio 在Reactor（如select, epoll或kqueue）中实现Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  使用<strong>select, epoll或kqueue</strong>实现的Reactor。当Reactor指示资源已准备好执行操作时，处理器将执行异步操作，并将关联的completion handler程序入列(enqueue)完成事件队列。</li>
+<li>完成事件队列(Completion Event Queue)<br>  完成处理程序（即函数对象）的链表。  </li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  这是通过等待事件或条件变量实现的，直到完成处理程序在完成事件队列中可用。</li>
+</ul>
+<h3 id="使用-Windows-重叠（Overlapped）I-O-实现"><a href="#使用-Windows-重叠（Overlapped）I-O-实现" class="headerlink" title="使用 Windows 重叠（Overlapped）I/O 实现"></a>使用 Windows 重叠（Overlapped）I/O 实现</h3><p>在 Windows NT、2000 和 XP 上，Boost.Asio 利用重叠 I/O 提供Proactor模式的高效实现。此实现方法对应于Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  这是由操作系统实现的。操作通过调用Overlapped函数（如AcceptEx）启动。</li>
+<li>完成事件队列(Completion Event Queue)<br>  这由操作系统实现，并关联到 I/O 完成端口。每个io_context实例都有一个 I/O 完成端口。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  由 Boost.Asio 调用，使事件及其关联的完成处理程序出列。</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>程序复杂性(Program complexity)。<br>  由于操作启动和完成之间的 <strong>时间和空间的分离</strong>，使用异步机制<strong>开发应用程序更加困难</strong>。由于<strong>控制流的倒置</strong>，应用程序也可能更<strong>难调试</strong>。</li>
+<li>内存使用情况(Memory usage)。<br>  在读取或写入操作期间必须<strong>提交缓冲区空间</strong>，此操作可能会<strong>无限期地继续</strong>，并且每个并发操作都需要单独的缓冲区。另一方面，在套接字准备好读取或写入之前，Reactor模式不需要缓冲空间。</li>
+</ul>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/26943938">如何深刻理解Reactor和Proactor？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/async.html">The Proactor Design Pattern: Concurrency Without Threads</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +399,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-23 15:35:40" itemprop="dateModified" datetime="2021-04-23T15:35:40+08:00">2021-04-23</time>
+        <time title="Modified: 2021-04-23 15:42:34" itemprop="dateModified" datetime="2021-04-23T15:42:34+08:00">2021-04-23</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -339,7 +456,7 @@
 </li>
 <li><p><strong>操作系统</strong>完成连接操作后，将结果加入到队列，等待<strong>I/O execution context</strong>处理。</p>
 </li>
-<li><p>当使用 io_context 作为 I/O execution context时, 需要运行**io_context::run()**，获取返回的结果。当有未完成的异步操作时，不能运行 io_context::run()。因此需要在首次进行异步连接操作时，就运行io_context::run()。</p>
+<li><p>当使用 io_context 作为 I/O execution context时, 需要运行io_context::run()，获取返回的结果。当有未完成的异步操作时，不能运行 io_context::run()。因此需要在首次进行异步连接操作时，就运行io_context::run()。</p>
 </li>
 <li><p>在 io_context::run() 里，<strong>I/O execution context</strong> 将处理队列中的返回结果，将其翻译成 error_code，然后传给 <strong>completion handler(回调)</strong></p>
 </li>
@@ -1203,114 +1320,6 @@ $$P(A|B) = \frac {P(B|A) P(A)} {P(B)}$$
 <li><a target="_blank" rel="noopener" href="https://mingshan.fun/2019/11/29/binary-indexed-tree/">树状数组BinaryIndexedTree</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.acwing.com/blog/content/80/">树状数组学习笔记</a></li>
 <li><a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/fenwick/">树状数组</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/linux-8-nohup%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 8.nohup命令</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-03-04 18:00:33 / Modified: 19:49:05" itemprop="dateCreated datePublished" datetime="2021-03-04T18:00:33+08:00">2021-03-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="nohup"><a href="#nohup" class="headerlink" title="nohup"></a>nohup</h2><p>nohup在 <strong>忽略hangup signals</strong>的情况下运行给定命令, 可以实现 <strong>退出帐户/关闭终端</strong>之后<strong>继续运行相应的进程</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup command [arg]…</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>在缺省情况下该作业的所有输出都被 <strong>重定向</strong>到一个名为<strong>nohup.out</strong>的文件中。</p>
-</li>
-<li><p>如果当前目录的 nohup.out 文件不可写，输出重定向到 <strong>$HOME/nohup.out</strong> 文件中。</p>
-</li>
-</ul>
-<p>若要输出到 <strong>nohup.out以外</strong>的文件中，可以<strong>对其进行重定向</strong>。例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup make &gt; make.log</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>nohup <strong>不会自动</strong>将它运行的命令放在后台；必须通过在命令行末尾 <strong>加上“＆”</strong>。</li>
-</ul>
-<h2 id="nohup和-amp-的区别"><a href="#nohup和-amp-的区别" class="headerlink" title="nohup和&amp;的区别"></a>nohup和&amp;的区别</h2><ul>
-<li><p>&amp; ： 指在后台运行</p>
-</li>
-<li><p>nohup ： 不挂断的运行，注意 <strong>并没有后台运行的功能</strong>。用nohup运行命令可以使命令永久的执行下去，和用户终端没有关系，例如我们断开SSH连接都不会影响他的运行，注意了nohup没有后台运行的意思；**&amp;才是后台运行**</p>
-</li>
-<li><p>&amp;是指在后台运行，但当<strong>用户退出</strong>(挂起)的时候，<strong>命令</strong>自动也跟着<strong>退出</strong></p>
-</li>
-</ul>
-<h4 id="example-1"><a href="#example-1" class="headerlink" title="example 1"></a>example 1</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh test.sh &amp; </span><br></pre></td></tr></table></figure>
-<p>将sh test.sh任务放到后台 ，<strong>关闭xshell</strong>，对应的<strong>任务</strong>也跟着<strong>停止</strong>。</p>
-<h4 id="example-2"><a href="#example-2" class="headerlink" title="example 2"></a>example 2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh test.sh  </span><br></pre></td></tr></table></figure>
-<p>将sh test.sh任务<strong>放到后台</strong>，<strong>关闭标准输入</strong>，终端<strong>不再能够接收任何输入（标准输入）</strong>，重定向标准输出和标准错误到当前目录下的<strong>nohup.out文件</strong>，即使<strong>关闭xshell退出当前session依然继续运行</strong>。</p>
-<h4 id="example-3"><a href="#example-3" class="headerlink" title="example 3"></a>example 3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh test.sh  &amp; </span><br></pre></td></tr></table></figure>
-<p>将sh test.sh任务<strong>放到后台</strong>，但是依然<strong>可以使用标准输入</strong>，<strong>终端能够接收任何输入</strong>，重定向标准输出和标准错误到<strong>当前目录下的nohup.out文件</strong>，即使<strong>关闭xshell退出当前session依然继续运行</strong>。</p>
-<h4 id="example-4"><a href="#example-4" class="headerlink" title="example 4"></a>example 4</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup command &gt; myout.file 2&gt;&amp;1 &amp;   </span><br></pre></td></tr></table></figure>
-<p>在上面的例子中，0 – stdin (standard input)，1 – stdout (standard output)，2 – stderr (standard error)；2&gt;&amp;1是<strong>将标准错误（2）重定向到标准输出（&amp;1），标准输出（&amp;1）再被重定向输入到myout.file</strong>文件中。</p>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="http://www.gnu.org/software/coreutils/manual/html_node/nohup-invocation.html#nohup-invocation">nohup: Run a command immune to hangups</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jinxiao-pu/p/9131057.html">nohup 详解</a></li>
 </ol>
 
       

@@ -25,23 +25,23 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 
-  <meta name="description" content="What is Soft Link And Hard Link? 硬链接(Hard Link) 充当所选文件的副本（镜像）。它访问原始文件中的可用数据。如果删除了先前选择的文件，则指向该文件的硬链接仍将包含该文件的数据。 软链接(Soft Link) 充当文件名的 指针或引用。它不会访问原始文件中的可用数据。如果删除了先前的文件，则软链接将 指向不再存在的文件。  图解Soft Link 和 Ha">
+  <meta name="description" content="Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。 Proactor 与 Reactor Proactor和Reactor都是并发编程中的设计模式 Proactor用于异步IO，而Reactor用于同步IO， 关键区别在于 何时IO Reactor：非阻塞同步网络模型，关心就绪事件， 可以">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[深入理解linux] 2. soft link&#x2F;hard link">
-<meta property="og:url" content="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/index.html">
+<meta property="og:title" content="[boost.asio] 2.proactor I&#x2F;0设计模式:单线程并发">
+<meta property="og:url" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/index.html">
 <meta property="og:site_name" content="LiuWen&#39;s Blogs">
-<meta property="og:description" content="What is Soft Link And Hard Link? 硬链接(Hard Link) 充当所选文件的副本（镜像）。它访问原始文件中的可用数据。如果删除了先前选择的文件，则指向该文件的硬链接仍将包含该文件的数据。 软链接(Soft Link) 充当文件名的 指针或引用。它不会访问原始文件中的可用数据。如果删除了先前的文件，则软链接将 指向不再存在的文件。  图解Soft Link 和 Ha">
+<meta property="og:description" content="Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。 Proactor 与 Reactor Proactor和Reactor都是并发编程中的设计模式 Proactor用于异步IO，而Reactor用于同步IO， 关键区别在于 何时IO Reactor：非阻塞同步网络模型，关心就绪事件， 可以">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/forgfgarticle-snip.png">
-<meta property="article:published_time" content="2021-02-21T04:45:01.000Z">
-<meta property="article:modified_time" content="2021-02-21T05:12:49.860Z">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png">
+<meta property="article:published_time" content="2021-04-23T08:30:26.000Z">
+<meta property="article:modified_time" content="2021-04-26T07:24:02.623Z">
 <meta property="article:author" content="Liu Wen">
-<meta property="article:tag" content="深入理解linux">
+<meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/forgfgarticle-snip.png">
+<meta name="twitter:image" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png">
 
 
-<link rel="canonical" href="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/">
+<link rel="canonical" href="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/">
 
 
 <script class="page-configurations">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>[深入理解linux] 2. soft link/hard link | LiuWen's Blogs</title>
+  <title>[boost.asio] 2.proactor I/0设计模式:单线程并发 | LiuWen's Blogs</title>
   
 
 
@@ -182,7 +182,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Soft-Link-And-Hard-Link"><span class="nav-number">1.</span> <span class="nav-text">What is Soft Link And Hard Link?</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E8%A7%A3Soft-Link-%E5%92%8C-Hard-Link"><span class="nav-number">1.0.1.</span> <span class="nav-text">图解Soft Link 和 Hard Link</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Difference"><span class="nav-number">2.</span> <span class="nav-text">Difference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Proactor-%E4%B8%8E-Reactor"><span class="nav-number">1.</span> <span class="nav-text">Proactor 与 Reactor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Proactor-%E4%B8%8E-Boost-Asio"><span class="nav-number">2.</span> <span class="nav-text">Proactor 与 Boost.Asio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Proactor%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">Proactor设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EReactor%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text">基于Reactor的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Windows-%E9%87%8D%E5%8F%A0%EF%BC%88Overlapped%EF%BC%89I-O-%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.</span> <span class="nav-text">使用 Windows 重叠（Overlapped）I&#x2F;O 实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">reference</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -260,7 +260,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -273,7 +273,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [深入理解linux] 2. soft link/hard link
+          [boost.asio] 2.proactor I/0设计模式:单线程并发
         </h1>
 
         <div class="post-meta-container">
@@ -283,17 +283,23 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-02-21 12:45:01 / Modified: 13:12:49" itemprop="dateCreated datePublished" datetime="2021-02-21T12:45:01+08:00">2021-02-21</time>
+      <time title="Created: 2021-04-23 16:30:26" itemprop="dateCreated datePublished" datetime="2021-04-23T16:30:26+08:00">2021-04-23</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-26 15:24:02" itemprop="dateModified" datetime="2021-04-26T15:24:02+08:00">2021-04-26</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
         </span>
     </span>
 
@@ -314,64 +320,43 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="What-is-Soft-Link-And-Hard-Link"><a href="#What-is-Soft-Link-And-Hard-Link" class="headerlink" title="What is Soft Link And Hard Link?"></a>What is Soft Link And Hard Link?</h2><ul>
-<li><strong>硬链接(Hard Link)</strong> 充当所选文件的<strong>副本（镜像）</strong>。它访问原始文件中的可用数据。如果删除了先前选择的文件，则指向该文件的硬链接<strong>仍将包含该文件的数据</strong>。</li>
-<li><strong>软链接(Soft Link)</strong> 充当文件名的 <strong>指针或引用</strong>。它不会访问原始文件中的可用数据。如果删除了先前的文件，则软链接将 <strong>指向不再存在的文件</strong>。</li>
+        <p>Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。</p>
+<h2 id="Proactor-与-Reactor"><a href="#Proactor-与-Reactor" class="headerlink" title="Proactor 与 Reactor"></a>Proactor 与 Reactor</h2><ul>
+<li>Proactor和Reactor都是<strong>并发编程中的设计模式</strong></li>
+<li>Proactor用于<strong>异步IO</strong>，而Reactor用于<strong>同步IO</strong>， 关键区别在于 <strong>何时IO</strong></li>
+<li>Reactor：非阻塞同步网络模型，关心<strong>就绪事件</strong>， 可以理解为：来了事件我通知你，你来处理，如epoll_wait</li>
+<li>Proactor：异步网络模型，关心<strong>完成事件</strong>，可以理解为：来了事件我来处理，处理完了我通知你。</li>
 </ul>
-<h4 id="图解Soft-Link-和-Hard-Link"><a href="#图解Soft-Link-和-Hard-Link" class="headerlink" title="图解Soft Link 和 Hard Link"></a>图解Soft Link 和 Hard Link</h4><div style="width:100%;margin:auto"><img src="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/forgfgarticle-snip.png" class="" title="图解软链接&#x2F;硬链接"></div>
+<h2 id="Proactor-与-Boost-Asio"><a href="#Proactor-与-Boost-Asio" class="headerlink" title="Proactor 与 Boost.Asio"></a>Proactor 与 Boost.Asio</h2><div style="width:90%;margin:auto"><img src="/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png" class="" title="proactor"></div>
 
-<h2 id="Difference"><a href="#Difference" class="headerlink" title="Difference"></a>Difference</h2><table>
-<thead>
-<tr>
-<th>参数</th>
-<th>Hard link</th>
-<th>Soft link</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a target="_blank" rel="noopener" href="http://liuw.tech/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">Inode</a> number*</td>
-<td>相同</td>
-<td>不同</td>
-</tr>
-<tr>
-<td>Directories 目录</td>
-<td>不能链接目录(超级用户可以链接目录)</td>
-<td>可以链接目录</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>Data 数据</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>保留原始数据文件</td>
-<td>仅指向文件名，不保留文件的数据</td>
-</tr>
-<tr>
-<td>permissions文件权限</td>
-<td>与原始文件 <strong>始终保持</strong>相同权限</td>
-<td>权限不同</td>
-</tr>
-<tr>
-<td>Original file’s deletion 原始文件的删除</td>
-<td>该链接仍可访问原始文件的数据</td>
-<td>该链接无法使用，因为它无法访问原始文件的数据</td>
-</tr>
-<tr>
-<td>Speed 访问速度</td>
-<td>相对快</td>
-<td>相对慢</td>
-</tr>
-</tbody></table>
+<h2 id="Proactor设计模式"><a href="#Proactor设计模式" class="headerlink" title="Proactor设计模式"></a>Proactor设计模式</h2><ul>
+<li>异步操作(Asynchronous Operation)<br>  定义异步执行的操作，例如 <strong>异步读</strong>或在<strong>套接字上写入</strong>。</li>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  执行异步操作，并在操作完成时<strong>对completion event queue中的事件进行排队</strong>。从高层次的角度来看，像<strong>reactive_socket_service</strong>这样的内部服务是异步操作处理器。</li>
+<li>完成事件队列(Completion Event Queue)<br>  缓冲完成事件，直到它们被<strong>Asynchronous Event Demultiplexer</strong>移出队列。</li>
+<li>完成处理程序(Completion Handler)<br>  处理异步操作的结果。这些是函数对象，通常<strong>使用boost::bind创建</strong>。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  阻塞并等待完成事件队列上发生的事件，并将完成的事件返回其调用者。</li>
+<li>前摄器(Proactor)<br>  调用<strong>Asynchronous Event Demultiplexer</strong>将事件出列，并分派与事件关联的Completion Handler程序（即调用函数对象）。这个抽象由io_context类表示。</li>
+<li>发起者(Initiator)<br>  <strong>启动异步操作的应用程序</strong>特定代码。启动器通过高级接口（如basic_stream_socket）与异步操作处理器进行交互，而高级接口又 <strong>委托给 （如reactive_socket_service）等服务</strong>。</li>
+</ul>
+<h3 id="基于Reactor的实现"><a href="#基于Reactor的实现" class="headerlink" title="基于Reactor的实现"></a>基于Reactor的实现</h3><p>在许多平台上，Boost.Asio 在Reactor（如select, epoll或kqueue）中实现Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  使用<strong>select, epoll或kqueue</strong>实现的Reactor。当Reactor指示资源已准备好执行操作时，处理器将执行异步操作，并将关联的completion handler程序入列(enqueue)完成事件队列。</li>
+<li>完成事件队列(Completion Event Queue)<br>  完成处理程序（即函数对象）的链表。  </li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  这是通过等待事件或条件变量实现的，直到完成处理程序在完成事件队列中可用。</li>
+</ul>
+<h3 id="使用-Windows-重叠（Overlapped）I-O-实现"><a href="#使用-Windows-重叠（Overlapped）I-O-实现" class="headerlink" title="使用 Windows 重叠（Overlapped）I/O 实现"></a>使用 Windows 重叠（Overlapped）I/O 实现</h3><p>在 Windows NT、2000 和 XP 上，Boost.Asio 利用重叠 I/O 提供Proactor模式的高效实现。此实现方法对应于Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor)<br>  这是由操作系统实现的。操作通过调用Overlapped函数（如AcceptEx）启动。</li>
+<li>完成事件队列(Completion Event Queue)<br>  这由操作系统实现，并关联到 I/O 完成端口。每个io_context实例都有一个 I/O 完成端口。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)<br>  由 Boost.Asio 调用，使事件及其关联的完成处理程序出列。</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>程序复杂性(Program complexity)。<br>  由于操作启动和完成之间的 <strong>时间和空间的分离</strong>，使用异步机制<strong>开发应用程序更加困难</strong>。由于<strong>控制流的倒置</strong>，应用程序也可能更<strong>难调试</strong>。</li>
+<li>内存使用情况(Memory usage)。<br>  在读取或写入操作期间必须<strong>提交缓冲区空间</strong>，此操作可能会<strong>无限期地继续</strong>，并且每个并发操作都需要单独的缓冲区。另一方面，在套接字准备好读取或写入之前，Reactor模式不需要缓冲空间。</li>
+</ul>
 <h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/difference-between-hard-link-and-soft-link/" title="Difference between Hard link and Soft link">Difference between Hard link and Soft link</a></li>
-<li><a target="_blank" rel="noopener" href="https://ostechnix.com/explaining-soft-link-and-hard-link-in-linux-with-examples/">Explaining Soft Link And Hard Link In Linux With Examples</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/26943938">如何深刻理解Reactor和Proactor？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/async.html">The Proactor Design Pattern: Concurrency Without Threads</a></li>
 </ol>
 
     </div>
@@ -382,21 +367,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux/" rel="tag"># 深入理解linux</a>
+              <a href="/tags/c/" rel="tag"># c++</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/" rel="prev" title="[深入理解linux] 1.what is inode">
-                  <i class="fa fa-chevron-left"></i> [深入理解linux] 1.what is inode
+                <a href="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/" rel="prev" title="[boost.asio] 1.basic introduction of boost asio">
+                  <i class="fa fa-chevron-left"></i> [boost.asio] 1.basic introduction of boost asio
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/" rel="next" title="[python源码分析] 9.执行过程和字节码">
-                  [python源码分析] 9.执行过程和字节码 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -600,7 +582,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : '02c49e13138d5a0efac918a6902c6472',
+      id          : '2eea1859f3161c000b51e60f6b721f70',
         language: '',
       distractionFreeMode: true
     });

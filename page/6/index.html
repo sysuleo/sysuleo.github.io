@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,86 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">[游戏编程模式] 2.3设计模式之观察者模式</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-08-12 15:33:02" itemprop="dateCreated datePublished" datetime="2020-08-12T15:33:02+08:00">2020-08-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-08-13 12:09:00" itemprop="dateModified" datetime="2020-08-13T12:09:00+08:00">2020-08-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p><strong>Model-View-Controller架构就是观察者模式的例子，C#中的Event委托也是使用的观察者模式</strong></p>
+<hr>
+<h5 id="进度条更新初阶版本"><a href="#进度条更新初阶版本" class="headerlink" title="进度条更新初阶版本"></a>进度条更新初阶版本</h5><p><strong>下面样例产生了编译时的依赖（违背了抽象依赖细节）应该依赖抽象基类（MainForm与ProgressBar之间产生了依赖）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">class FileSplitter</span><br><span class="line">&#123;</span><br><span class="line">    string m_filePath;</span><br><span class="line">    int m_fileNumber;</span><br><span class="line">    ProgressBar* m_progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    FileSplitter(const string&amp; filePath, int fileNumber, ProgressBar* progressBar) :</span><br><span class="line">        m_filePath(filePath), </span><br><span class="line">        m_fileNumber(fileNumber),</span><br><span class="line">        m_progressBar(progressBar)&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void split()&#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;1.读取大文件</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;2.分批次向小文件中写入</span><br><span class="line">        for (int i &#x3D; 0; i &lt; m_fileNumber; i++)&#123;</span><br><span class="line">            &#x2F;&#x2F;...</span><br><span class="line">            float progressValue &#x3D; m_fileNumber;</span><br><span class="line">            progressValue &#x3D; (i + 1) &#x2F; progressValue;</span><br><span class="line">            &#x2F;&#x2F;更新进度条</span><br><span class="line">            &#x2F;&#x2F;不能依赖实现细节</span><br><span class="line">            m_progressBar-&gt;setValue(progressValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    class MainForm : public Form</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line">    &#x2F;&#x2F;依赖ProgressBar</span><br><span class="line">    ProgressBar* progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    void Button1_Click()&#123;</span><br><span class="line"></span><br><span class="line">        string filePath &#x3D; txtFilePath-&gt;getText();</span><br><span class="line">        int number &#x3D; atoi(txtFileNumber-&gt;getText().c_str());</span><br><span class="line"></span><br><span class="line">        FileSplitter splitter(filePath, number, progressBar);</span><br><span class="line"></span><br><span class="line">        splitter.split();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h5 id="文件读取进度条更新观察者模式改进版本"><a href="#文件读取进度条更新观察者模式改进版本" class="headerlink" title="文件读取进度条更新观察者模式改进版本"></a>文件读取进度条更新观察者模式改进版本</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;修改后，将progressbar抽象成接口，紧耦合变成松耦合，编译就不依赖progress</span><br><span class="line">&#x2F;&#x2F;变成了良好的耦合，符合依赖倒置原则</span><br><span class="line">&#x2F;&#x2F;iprogress接口</span><br><span class="line">class IProgress&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void DoProgress(float value)&#x3D;0;</span><br><span class="line">    virtual ~IProgress()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;被观察对象拥有一个观察者对象的集合（相当于subject）</span><br><span class="line">class FileSplitter</span><br><span class="line">&#123;</span><br><span class="line">    string m_filePath;</span><br><span class="line">    int m_fileNumber;</span><br><span class="line">    &#x2F;&#x2F;改良：使支持多个观察者，加入vector 或者list等</span><br><span class="line">    List&lt;IProgress*&gt;  m_iprogressList; &#x2F;&#x2F; 抽象通知机制，支持多个观察者</span><br><span class="line">    </span><br><span class="line">public:</span><br><span class="line">    FileSplitter(const string&amp; filePath, int fileNumber) :</span><br><span class="line">        m_filePath(filePath), </span><br><span class="line">        m_fileNumber(fileNumber)&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void split()&#123;</span><br><span class="line">        &#x2F;&#x2F;1.读取大文件</span><br><span class="line">        &#x2F;&#x2F;2.分批次向小文件中写入</span><br><span class="line">        for (int i &#x3D; 0; i &lt; m_fileNumber; i++)&#123;</span><br><span class="line">            &#x2F;&#x2F;...</span><br><span class="line">            float progressValue &#x3D; m_fileNumber;</span><br><span class="line">            progressValue &#x3D; (i + 1) &#x2F; progressValue;</span><br><span class="line">            onProgress(progressValue);&#x2F;&#x2F;发送通知</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;原本列表初始化已经不适用，添加add和remove操作函数</span><br><span class="line">    void addIProgress(IProgress* iprogress)&#123;</span><br><span class="line">        m_iprogressList.push_back(iprogress);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void removeIProgress(IProgress* iprogress)&#123;</span><br><span class="line">        m_iprogressList.remove(iprogress);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;继续优化，protected下写onProgress，层次更清晰</span><br><span class="line">protected:</span><br><span class="line">    &#x2F;&#x2F;对于onprogress也需要改变</span><br><span class="line">    virtual void onProgress(float value)&#123;</span><br><span class="line">        List&lt;IProgress*&gt;::iterator itor&#x3D;m_iprogressList.begin();</span><br><span class="line">        while (itor !&#x3D; m_iprogressList.end() )</span><br><span class="line">            (*itor)-&gt;DoProgress(value); &#x2F;&#x2F;更新进度条</span><br><span class="line">            itor++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">class ConsoleNotifier : public IProgress &#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void DoProgress(float value)&#123;</span><br><span class="line">        cout &lt;&lt; &quot;.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class MainForm : public Form, public IProgress</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line"></span><br><span class="line">    ProgressBar* progressBar;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    void Button1_Click()&#123;</span><br><span class="line"></span><br><span class="line">        string filePath &#x3D; txtFilePath-&gt;getText();</span><br><span class="line">        int number &#x3D; atoi(txtFileNumber-&gt;getText().c_str());</span><br><span class="line"></span><br><span class="line">        ConsoleNotifier cn;</span><br><span class="line"></span><br><span class="line">        FileSplitter splitter(filePath, number);</span><br><span class="line">        &#x2F;&#x2F;添加监听</span><br><span class="line">        splitter.addIProgress(this); &#x2F;&#x2F;订阅通知</span><br><span class="line">        splitter.addIProgress(&amp;cn)； &#x2F;&#x2F;订阅通知</span><br><span class="line"></span><br><span class="line">        splitter.split();</span><br><span class="line"></span><br><span class="line">        splitter.removeIProgress(this);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;重写DoProgress</span><br><span class="line">    virtual void DoProgress(float value)&#123;</span><br><span class="line">        progressBar-&gt;setValue(value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<div style="width:80%;margin:auto"><img src="/2020/08/12/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/sum_up.png" class="" title="观察者模式要点总结"></div>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 

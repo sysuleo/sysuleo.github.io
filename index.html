@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,149 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/26/boost-asio-3-Overview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/26/boost-asio-3-Overview/" class="post-title-link" itemprop="url">[boost.asio] 3.Overview (1)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-26 16:02:47" itemprop="dateCreated datePublished" datetime="2021-04-26T16:02:47+08:00">2021-04-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-27 19:23:03" itemprop="dateModified" datetime="2021-04-27T19:23:03+08:00">2021-04-27</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Threads-and-Boost-Asio"><a href="#Threads-and-Boost-Asio" class="headerlink" title="Threads and Boost.Asio"></a>Threads and Boost.Asio</h2><h4 id="线程安全（Thread-Safety）"><a href="#线程安全（Thread-Safety）" class="headerlink" title="线程安全（Thread Safety）"></a>线程安全（Thread Safety）</h4><p>并发（concurrent）在不同对象间是安全的，但对于单一对象，却是不安全的。然而 <strong>io_context等类型</strong>可以保证 <strong>单一对象的并发线程安全</strong>。</p>
+<h4 id="线程池（Thread-Pools）"><a href="#线程池（Thread-Pools）" class="headerlink" title="线程池（Thread Pools）"></a>线程池（Thread Pools）</h4><p>多个线程可以调用 <strong>io_context::run()**来建立一个</strong>线程池<strong>，从中可以调用完成处理程序。这种方法也可以</strong>与post()一起使用<strong>，作为</strong>跨线程池**执行任意计算任务的方法。</p>
+<p>所有加入到io_context’s pool的线程都是对等的，io_context可以任意方式分发工作。</p>
+<h4 id="内部线程（Internal-Threads）"><a href="#内部线程（Internal-Threads）" class="headerlink" title="内部线程（Internal Threads）"></a>内部线程（Internal Threads）</h4><p>为了实现异步，有一些调用者不可见的 内部线程，他们必须满足：</p>
+<ul>
+<li>不能被库函数使用者 直接调用</li>
+<li>屏蔽所有signal</li>
+</ul>
+<p>这种方法辅之以以下保证：</p>
+<ul>
+<li>异步completion handlers程序将仅从当前<strong>正在调用io_context::run()的线程</strong>调用。</li>
+</ul>
+<p>因此，库用户需要 <strong>创建 和 管理</strong>所有<strong>收消息的线程</strong>。</p>
+<p>这种方法的原因包括：</p>
+<ul>
+<li>单线程调用<strong>io_context::run()**，可以避免与</strong>同步相关的开发复杂性<strong>。例如，库用户可以实现</strong>单线程的可扩展服务器**。</li>
+<li>库用户需要在<strong>线程启动后</strong>以及<strong>执行其他应用程序代码之前</strong>在线程中执行初始化。</li>
+<li>库接口与<strong>线程创建和管理</strong>接口<strong>解耦合</strong>，并允许在<strong>线程不可用的平台上实现</strong>。</li>
+</ul>
+<h2 id="Strands-使用没有显式锁定的线程-Strands-Use-Threads-Without-Explicit-Locking"><a href="#Strands-使用没有显式锁定的线程-Strands-Use-Threads-Without-Explicit-Locking" class="headerlink" title="Strands: 使用没有显式锁定的线程(Strands: Use Threads Without Explicit Locking)"></a>Strands: 使用没有显式锁定的线程(Strands: Use Threads Without Explicit Locking)</h2><p>Strand定义为event handlers的<strong>严格顺序调用</strong>（即没有并发调用）。使用Strand允许<strong>在多线程</strong>中执行代码，而<strong>无需显式加锁</strong>（例如，使用互斥）。</p>
+<p>Strands可implicit 或 explicit:</p>
+<ul>
+<li>由于io_context保证了event handlers仅从io_context::run()里面触发，因此在单线程中调用 io_context::run()，意味着所有的event handlers在implicit strand中执行。</li>
+<li>当与连接相关联的单链异步操作（例如采用半双工协议，如HTTP），是不可能存在并发的handlers，这种情况就是implicit strand。</li>
+<li>explicit strand是 <strong>strand&lt;&gt; or io_context::strand</strong> 的实例。所有的event handler函数 需要使用 <strong>boost::asio::bind_executor()**绑定到strand上 或 通过</strong>strand对象发布/调度（posted/dispatched）**</li>
+</ul>
+<p>对于<strong>组合异步操作</strong>，如<strong>async_read()**或</strong>async_read_until()<strong>，如果completion handler通过strand，则所有中间handlers也应该经历相同的strand。这是确保调用方和组合操作之间</strong>共享的任何对象的线程安全**。</p>
+<p>为此，所有异步操作都使用<strong>get_associated_executor</strong>函数获取handler的关联执行器。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::associated_executor_t&lt;Handler&gt; a &#x3D; boost::asio::get_associated_executor(h);</span><br></pre></td></tr></table></figure>
+<p>通过指定<strong>嵌套类型executor_type</strong>和**成员函数get_executor()**，可以针对特定处理程序类型自定义执行器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class my_handler</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">  &#x2F;&#x2F; Custom implementation of Executor type requirements.</span><br><span class="line">  typedef my_executor executor_type;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Return a custom executor implementation.</span><br><span class="line">  executor_type get_executor() const noexcept</span><br><span class="line">  &#123;</span><br><span class="line">    return my_executor();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void operator()() &#123; ... &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在更复杂的情况下，associated_executor模板可能直接<strong>偏特化</strong>（partially specialised）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">struct my_handler</span><br><span class="line">&#123;</span><br><span class="line">  void operator()() &#123; ... &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">namespace boost &#123; namespace asio &#123;</span><br><span class="line"></span><br><span class="line">  template &lt;class Executor&gt;</span><br><span class="line">  struct associated_executor&lt;my_handler, Executor&gt;</span><br><span class="line">  &#123;</span><br><span class="line">    &#x2F;&#x2F; Custom implementation of Executor type requirements.</span><br><span class="line">    typedef my_executor type;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Return a custom executor implementation.</span><br><span class="line">    static type get(const my_handler&amp;,</span><br><span class="line">        const Executor&amp; &#x3D; Executor()) noexcept</span><br><span class="line">    &#123;</span><br><span class="line">      return my_executor();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">&#125; &#125; &#x2F;&#x2F; namespace boost::asio</span><br></pre></td></tr></table></figure>
+
+<p>boost::asio::bind_executor()函数用于绑定特殊executor对象（如一个strand）到completion handler。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_socket.async_read_some(my_buffer,</span><br><span class="line">    boost::asio::bind_executor(my_strand,</span><br><span class="line">      [](error_code ec, size_t length) &#x2F;&#x2F; 这是个lambda函数</span><br><span class="line">      &#123;</span><br><span class="line">        &#x2F;&#x2F; ...</span><br><span class="line">      &#125;));</span><br></pre></td></tr></table></figure>
+
+<h2 id="Buffers"><a href="#Buffers" class="headerlink" title="Buffers"></a>Buffers</h2><p>I/O 涉及数据<strong>在内存的连续区域</strong>（称为缓冲区）之间传输，这些缓冲区可以简单地表示为<strong>由指针和字节大小组成的元组</strong>。为了开发高效的网络应用程序，Boost.Asio 包括对**分散收集(scatter-gather)**操作的支持：</p>
+<ul>
+<li>散点读取(scatter-read)将数据<strong>接收到多个缓冲区</strong>中。</li>
+<li>收集写入(gather-write)<strong>传输多个缓冲区</strong>。</li>
+</ul>
+<p>除了将缓冲区指定为指针和大小（以字节为单位）之外，Boost.Asio 还区分了可修改内存（称为mutable）和非可修改内存（其中后者从存储中创建为 const 限定变量）。因此，这两种类型可以定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">typedef std::pair&lt;void*, std::size_t&gt; mutable_buffer;</span><br><span class="line">typedef std::pair&lt;const void*, std::size_t&gt; const_buffer;</span><br></pre></td></tr></table></figure>
+<p>mutable_buffer 可以转换为const_buffer，反之不行。</p>
+<p>但是，Boost.Asio 没有使用上述定义，而是<strong>定义两个类：mutable_buffer和const_buffer</strong>。这个目的是提供连续内存的不透明表示形式，其中：</p>
+<ul>
+<li>转换行为与std::pair一样：mutable_buffer可单向转换为const_buffer，反之不行。</li>
+<li>有缓冲区<strong>溢出保护</strong>。给定一个缓冲区实例，用户只能创建另一个表示相同内存范围或其子范围的缓冲区。为了提供进一步的安全性，库还包括用于从 POD 元素的数组、boost::array或std::vector或std::string自动确定缓冲区大小的机制。</li>
+<li>使用<strong>data()**成员函数</strong>显式访问底层内存<strong>。通常应用程序不需要这样做，但库实现需要将原始内存传递给</strong>底层操作系统函数**。</li>
+</ul>
+<p>最后，通过将<strong>缓冲区对象放入容器</strong>中，可以将多个缓冲区传递给scatter-gather操作（如read()或 write()）。MutableBufferSequence和ConstBufferSequence概念已经定义好，这样就可以使用诸如std::vector、std::list、std::array或boost::array之类的容器。</p>
+<h4 id="与Iostreams集成的Streambuf"><a href="#与Iostreams集成的Streambuf" class="headerlink" title="与Iostreams集成的Streambuf"></a>与Iostreams集成的Streambuf</h4><p>boost::asio::basic_streambuf 类继承自 std::basic_streambuf，可以将 输入和输出序列（sequence） 关联到一个或多个 <strong>字符串数组对象</strong>，这些元素存储任意值。这些字符数组对象是 <strong>streambuf 对象的内部对象</strong>，但提供了<strong>对数组元素的直接访问</strong>，以允许它们<strong>用于 I/O 操作</strong>，例如套接字的<strong>发送或接收</strong>操作</p>
+<h4 id="缓冲序列的字节遍历"><a href="#缓冲序列的字节遍历" class="headerlink" title="缓冲序列的字节遍历"></a>缓冲序列的字节遍历</h4><p>buffers_iterator&lt;&gt;模板类，允许遍历buffer序列（即满足MutableBufferSequence或ConstBufferSequence要求的类型），就好像它们是连续的字节序列一样。还提供了名为buffers_begin()和buffers_end()的help函数。</p>
+<p>例如，从socket读取一行，并且转换为string：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::streambuf sb;</span><br><span class="line">...</span><br><span class="line">std::size_t n &#x3D; boost::asio::read_until(sock, sb, &#39;\n&#39;);</span><br><span class="line">boost::asio::streambuf::const_buffers_type bufs &#x3D; sb.data();</span><br><span class="line">std::string line(</span><br><span class="line">    boost::asio::buffers_begin(bufs),</span><br><span class="line">    boost::asio::buffers_begin(bufs) + n);</span><br></pre></td></tr></table></figure>
+
+<h4 id="缓冲区调试"><a href="#缓冲区调试" class="headerlink" title="缓冲区调试"></a>缓冲区调试</h4><p>某些标准库的实现（如Microsoft Visual C++ 8.0 和更高版本一起搭载的库）提供了一个称为<strong>迭代器调试</strong>的特性。这意味着在<strong>运行时检查迭代器的有效性</strong>。如果程序尝试使用已失效的迭代器，则会<strong>触发断言</strong>。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;int&gt; v(1)</span><br><span class="line">std::vector&lt;int&gt;::iterator i &#x3D; v.begin();</span><br><span class="line">v.clear(); &#x2F;&#x2F; invalidates iterators</span><br><span class="line">*i &#x3D; 0; &#x2F;&#x2F; assertion!</span><br></pre></td></tr></table></figure>
+<p>Boost.Asio 利用此功能<strong>添加缓冲区调试</strong>。请考虑以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void dont_do_this()</span><br><span class="line">&#123;</span><br><span class="line"> std::string msg &#x3D; &quot;Hello, world!&quot;;</span><br><span class="line"> boost::asio::async_write(sock, boost::asio::buffer(msg), my_handler);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用<strong>异步读或写</strong>时，需要<strong>确保操作的缓冲区</strong>在<strong>调用completion handler之前是有效的</strong>。在上面的示例中，缓冲区是std::string变量msg。这个变量<strong>在栈上(局部变量)**，因此在异步</strong>操作完成之前它就超出了函数的范围（scope）**。如果幸运的话，应用程序会crash，但随机失败的可能性更大。</p>
+<p>启用缓冲区调试时，Boost.Asio 将<strong>迭代器存储到字符串</strong>中，直到异步操作完成，然后取消引用以检查其有效性。</p>
+<p>此功能对 Microsoft Visual Studio 8.0 或更高版本可用，而 GCC 需要定义了<strong>_GLIBCXX_DEBUG</strong>时才可用。此检查会带来性能开销，因此仅在调试生成中启用缓冲区调试。对于其他编译器，可以通过<strong>定义 BOOST_ASIO_ENABLE_BUFFER_DEBUGGING来启用</strong>它。也可以通过定义 <strong>BOOST_ASIO_DISABLE_BUFFER_DEBUGGING来显式禁用</strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1106,221 +1249,6 @@ $$P(A|B) = \frac {P(B|A) P(A)} {P(B)}$$
 </ul>
 <p>所以 $P(H|E) = \frac{P(E|H) P(H)} {P(E)} = \frac{\frac{4}{10} * \frac{1}{21}} {\frac{9}{20}} \approx 0.0423 $</p>
 <h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayesian_inference">Bayesian inference</a><br>2.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes’ theorem</a><br>3.<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2011/08/bayesian_inference_part_one.html">贝叶斯推断及其互联网应用（一）：定理简介</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1-%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1-%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84/" class="post-title-link" itemprop="url">[数据结构]1.树状数组 Binary Indexed Tree</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-03-09 19:46:07" itemprop="dateCreated datePublished" datetime="2021-03-09T19:46:07+08:00">2021-03-09</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-16 19:09:50" itemprop="dateModified" datetime="2021-03-16T19:09:50+08:00">2021-03-16</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="1-what-can-Binary-Indexed-Tree-do？"><a href="#1-what-can-Binary-Indexed-Tree-do？" class="headerlink" title="1.what can Binary Indexed Tree do？"></a>1.what can Binary Indexed Tree do？</h2><p>树状数组，也称作“二叉索引树”（<a target="_blank" rel="noopener" href="https://www.topcoder.com/community/competitive-programming/tutorials/binary-indexed-trees/">Binary Indexed Trees</a>）或 <a target="_blank" rel="noopener" href="https://cp-algorithms.com/data_structures/fenwick.html">Fenwick Tree</a>。 它可以高效地实现如下两个操作：</p>
-<ol>
-<li>数组<strong>前缀和（prefix sum)的查询</strong></li>
-<li>单点更新(update)</li>
-</ol>
-<h2 id="2-why-choose-Binary-Indexed-Tree"><a href="#2-why-choose-Binary-Indexed-Tree" class="headerlink" title="2.why choose Binary Indexed Tree?"></a>2.why choose Binary Indexed Tree?</h2><p>假设有个n维数组： [2,3,5,-1,6]<br>query(2,4) 求从第二个元素到第四个元素的和: 3 + 5 - 1 = 7<br>update(4, 2): 更新第四个元素加2</p>
-<ul>
-<li><p>普通遍历法：<br>  query: O(n)<br>  update: O(1)</p>
-</li>
-<li><p>dp 方法<br>  建立prefix sums数组(前i个元素的和) 耗时: O(n);<br>  query: O(1)<br>  如果有个元素需要更新,则需要更新所有涉及的 prefix sums数组元素:O(n)</p>
-</li>
-<li><p>树状数组<br>  每个结点仅 <strong>存储部分元素的和</strong><br>  query: O(log(n))<br>  update: O(log(n))</p>
-</li>
-</ul>
-<h2 id="3-Basic-idea-of-Binary-Indexed-Tree"><a href="#3-Basic-idea-of-Binary-Indexed-Tree" class="headerlink" title="3.Basic idea of Binary Indexed Tree"></a>3.Basic idea of Binary Indexed Tree</h2><p>Binary Indexed Tree的 每个结点仅 <strong>存储部分区间元素的和</strong>. 我们以长度为16的数组为例</p>
-<table>
-<thead>
-<tr>
-<th>–</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-<th>6</th>
-<th>7</th>
-<th>8</th>
-<th>9</th>
-<th>10</th>
-<th>11</th>
-<th>12</th>
-<th>13</th>
-<th>14</th>
-<th>15</th>
-<th>16</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>A数组</td>
-<td>1</td>
-<td>0</td>
-<td>2</td>
-<td>1</td>
-<td>1</td>
-<td>3</td>
-<td>0</td>
-<td>4</td>
-<td>2</td>
-<td>5</td>
-<td>2</td>
-<td>2</td>
-<td>3</td>
-<td>1</td>
-<td>0</td>
-<td>2</td>
-</tr>
-<tr>
-<td>C数组</td>
-<td>1</td>
-<td>1</td>
-<td>3</td>
-<td>4</td>
-<td>5</td>
-<td>8</td>
-<td>8</td>
-<td>12</td>
-<td>14</td>
-<td>19</td>
-<td>21</td>
-<td>23</td>
-<td>26</td>
-<td>27</td>
-<td>27</td>
-<td>29</td>
-</tr>
-<tr>
-<td>tree node include range</td>
-<td>1</td>
-<td>1~2</td>
-<td>3</td>
-<td>1~4</td>
-<td>5</td>
-<td>5~6</td>
-<td>7</td>
-<td>1~8</td>
-<td>9</td>
-<td>9~10</td>
-<td>11</td>
-<td>9~12</td>
-<td>13</td>
-<td>13~14</td>
-<td>15</td>
-<td>1~16</td>
-</tr>
-</tbody></table>
-<div style="width:102%;margin:auto"><img src="/2021/03/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1-%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84/BinaryIndexedTree_update.png" class="" title="update图"></div>
-
-<ul>
-<li>A数组是 <strong>原值</strong>, C数组是 <strong>根据某一规则存的是A数组若干项的和</strong>。</li>
-<li>从上图来看，C数组似乎是呈对称的形态，比如C[8]表示A[1] ~ A[8]的和，而C[4]表示A[1] ~ A[4]的和，所以C[8]又可以表示C[4] + [6] + C[7]。<strong>一个C数组的元素</strong>只有<strong>一个父结点</strong>，但却<strong>有好多子节点</strong>，可以形象地理解为一个C数组元素管着一片区域，怎么去知道一个元素到底在管着哪些A数组的元素呢？ 下面是C[1] ~ c[8]值计算方式：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">C[1] &#x3D; A[1];</span><br><span class="line">C[2] &#x3D; A[1] + A[2];</span><br><span class="line">C[3] &#x3D; A[3];</span><br><span class="line">C[4] &#x3D; A[1] + A[2] + A[3] + A[4];</span><br><span class="line">C[5] &#x3D; A[5];</span><br><span class="line">C[6] &#x3D; A[5] + A[6];</span><br><span class="line">C[7] &#x3D; A[7];</span><br><span class="line">C[8] &#x3D; A[1] + A[2] + A[3] + A[4] + A[5] + A[6] + A[7] + A[8];</span><br></pre></td></tr></table></figure>
-我们把上面索引的十进制，全部换成二进制，如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">C[1] &#x3D; C[0001] &#x3D; A[0001];</span><br><span class="line">C[2] &#x3D; C[0010] &#x3D; A[0001]+A[0010];</span><br><span class="line">C[3] &#x3D; C[0011] &#x3D; A[0011];</span><br><span class="line">C[4] &#x3D; C[0100] &#x3D; A[0001]+A[0010]+A[0011]+A[0100];</span><br><span class="line">C[5] &#x3D; C[0101] &#x3D; A[0101];</span><br><span class="line">C[6] &#x3D; C[0110] &#x3D; A[0101]+A[0110];</span><br><span class="line">C[7] &#x3D; C[0111] &#x3D; A[0111];</span><br><span class="line">C[8] &#x3D; C[1000] &#x3D; A[0001]+A[0010]+A[0011]+A[0100]+A[0101]+A[0110]+A[0111]+A[1000];</span><br></pre></td></tr></table></figure>
-仔细观察上面的二进制表示，我们可以发现，$C[i]$管的范围就是 $i$ 的二进制表示数 <strong>从低位到高位第一个为1</strong>的位置，(<strong>高位保持不变</strong>)和其<strong>所有低位二进制元素之和</strong>。 </li>
-</ul>
-<h3 id="3-1-lowbit"><a href="#3-1-lowbit" class="headerlink" title="3.1 lowbit"></a>3.1 lowbit</h3><p>那么怎么知道从低位起第一个为1的数怎么表示？这个操作有个名字叫做lowbit，计算方式为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lowbit(i) &#x3D; i &amp; (-i) </span><br></pre></td></tr></table></figure>
-<p>计算该数的二进制从右往左第一个非0位所表示的10进制数，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">* (二进制)保留最低位的1及其后面的0，高位的1全部变为0，</span><br><span class="line">* 即得到该数的二进制从右往左第一个非0位所表示的10进制数。</span><br><span class="line">* 例如：</span><br><span class="line">* &lt;pre&gt;</span><br><span class="line">*  原值 0000 0110</span><br><span class="line">*  取反 1111 1001</span><br><span class="line">*  +1  1111 1010</span><br><span class="line">*  &amp; 0000 0010</span><br><span class="line">* &lt;&#x2F;pre&gt;</span><br><span class="line">*</span><br><span class="line">* @param k 待处理的十进制数</span><br><span class="line">* @return 处理后的十进制数</span><br><span class="line">*&#x2F;</span><br><span class="line">private static int lowBit(int k) &#123;</span><br><span class="line">    return k &amp; -k;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>再从图片宏观来看，我们发现整个结构似乎有点 <strong>二分的味道</strong>，具有某种<strong>对称性</strong>。</p>
-<ul>
-<li>如果数组位置是奇数，那么$C[i] = A[i]$；</li>
-<li>如果是偶数，可以形象地看作二分：$C[i] = C[i / 2] + A[i - (i / 2) + 1] + …. + A[i]$。<br>而$C[i / 2]$又可以利用上面的二分继续继续进行分割，直至不可分割。上面可以推导出如下公式：$C[i]=A[i−2k+1]+A[i−2k+2]+…+A[i]$ ，其中k为i的二进制中从最低位到高位连续零的长度。其中这个2k就是上面提到的$lowbit(i)$。所以我们就知道即C[i]数组中保存的就是数组A的区间$[i-lowbit(i)+1, i]$中所有数的和，公式如下：</li>
-</ul>
-<p>$$ C[i] = \sum_{n=i-lowbit(i)+1}^i A[i]$$</p>
-<p>除此之外，还有一些规律：</p>
-<ul>
-<li>$C[i]$保存的是以它为根的子树中所有叶节点的和。</li>
-<li>$C[i]$的子节点数量$lowbit(i)$</li>
-<li>$C[i]$的父节点为$C[i+lowbit(i)]$</li>
-</ul>
-<h2 id="4-update-单点更新"><a href="#4-update-单点更新" class="headerlink" title="4.update 单点更新"></a>4.update 单点更新</h2><p>在实际编码中，是<strong>没有$A$数组</strong>的，<strong>只有$C$数组</strong>，数据是保存在$C$数组的，但逻辑上的操作是针对A数组，比如获取和更新某个索引位置的元素。</p>
-<p>我们知道,$C$数组中,父节点是所有子节点的和。当子节点更新时,需要从下至上更新所有关联结点。在更新过程中，也就是需要找到所有父节点。已知 $C[i]$的父节点为$C[i+lowbit(i)]$，所以每次向上寻找，只需在索引 $i$ 加上 $lowbit(i)$：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while (i &lt;&#x3D; length) &#123;</span><br><span class="line">  tree[i] +&#x3D; value;</span><br><span class="line">  i +&#x3D; lowBit(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-prefix-sum-数组前缀和"><a href="#5-prefix-sum-数组前缀和" class="headerlink" title="5.prefix sum 数组前缀和"></a>5.prefix sum 数组前缀和</h2><p>查找和的路径有点像单点更新的 <strong>逆过程</strong>。前i个数的和 $Sum(i)$用$C$数组可以表示为：</p>
-<p>$$ Sum(i) = Sum(i-lowbit(i)) + C[i] $$</p>
-<p>代码可以写为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int sum &#x3D; 0;</span><br><span class="line">while (i &gt; 0) &#123;</span><br><span class="line">  sum +&#x3D; tree[i];</span><br><span class="line">  i -&#x3D; lowBit(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://cp-algorithms.com/data_structures/fenwick.html">Fenwick Tree</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.topcoder.com/community/competitive-programming/tutorials/binary-indexed-trees/">Binary Indexed Trees</a></li>
-<li><a target="_blank" rel="noopener" href="https://mingshan.fun/2019/11/29/binary-indexed-tree/">树状数组BinaryIndexedTree</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.acwing.com/blog/content/80/">树状数组学习笔记</a></li>
-<li><a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/fenwick/">树状数组</a></li>
-</ol>
 
       
     </div>

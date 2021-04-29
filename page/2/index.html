@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,126 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/18/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-1-Bayes-theorem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-1-Bayes-theorem/" class="post-title-link" itemprop="url">[数学基础] 1.Bayes' theorem</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-18 12:45:36 / Modified: 19:54:56" itemprop="dateCreated datePublished" datetime="2021-03-18T12:45:36+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">数学基础</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="what-is-Bayes’-theorem"><a href="#what-is-Bayes’-theorem" class="headerlink" title="what is Bayes’ theorem"></a>what is Bayes’ theorem</h2><p>贝叶斯推断（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayesian_inference">Bayesian inference</a>）是一种统计学方法，用来估计统计量的某种性质。</p>
+<p>它是 <strong>贝叶斯定理（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes’ theorem</a>）</strong>的应用。英国数学家<strong>托马斯·贝叶斯（Thomas Bayes）</strong>在1763年发表的一篇论文中，首先提出了这个定理。</p>
+<p>Bayesian inference 与其他统计学推断方法<strong>截然不同</strong>。它建立在<strong>主观判断</strong>的基础上，也就是说，你可以不需要客观证据，<strong>先估计一个值，然后根据实际结果不断修正</strong>。正是因为它的主观性太强，曾经遭到许多统计学家的诟病。</p>
+<p>贝叶斯推断需要 <strong>大量的计算</strong>，因此历史上很长一段时间，无法得到广泛应用。只有<strong>计算机诞生以后</strong>，它才获得真正的重视。人们发现，许多统计量是<strong>无法事先进行客观判断的</strong>，而互联网时代出现的大型数据集，再加上高速运算能力，为验证这些统计量提供了方便，也为应用贝叶斯推断创造了条件，它的威力正在日益显现。</p>
+<h2 id="贝叶斯定理"><a href="#贝叶斯定理" class="headerlink" title="贝叶斯定理"></a>贝叶斯定理</h2><p>贝叶斯定理, 实际上就是计算 <strong>条件概率</strong>的公式。</p>
+<p>所谓”条件概率”（Conditional probability），就是指在<strong>事件B发生的情况下，事件A发生的概率</strong>，用$P(A|B)$来表示。</p>
+<div style="width:100%;margin:auto"><img src="/2021/03/18/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-1-Bayes-theorem/bayers1.jpg" class="" title="bayers1图"></div>
+根据文氏图，可以很清楚地看到 $P(A|B)$ 就是 $P(A \cap B)$除以$P(B)$。
+$$P(A|B) = \frac {P(A \cap B)} {P(B)}$$
+即:
+$$P(A \cap B) = P(A|B) P(B)$$
+同理:
+$$P(A \cap B) = P(B|A) P(A)$$
+因此:
+$$P(A|B) = \frac {P(B|A) P(A)} {P(B)}$$
+
+<p>我们把 $P(A)$称为<strong>先验概率（Prior probability）</strong>，即在B事件发生之前，我们<strong>对A事件概率的一个判断</strong>。$P(A|B)$称为<strong>后验概率</strong>（Posterior probability），即<strong>在B事件发生之后，对A事件概率的重新评估</strong>。$\frac{P(B|A)}{P(B)}$ 称为<strong>似然函数</strong>（<strong>Likelyhood</strong>），这是一个<strong>调整因子</strong>，使得<strong>预估概率更接近真实概率</strong>。</p>
+<p>所以，条件概率可以理解成下面的式子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">后验概率　＝　先验概率 ｘ 调整因子</span><br></pre></td></tr></table></figure>
+<p>我们先预估一个<strong>先验概率</strong>，然后加入实验结果，看这个实验到底是<strong>增强还是削弱</strong>了”先验概率”(<strong>取决于Likelyhood</strong>)，由此得到更接近事实的 “后验概率”。</p>
+<h2 id="when-to-use-Bayes’-theorem"><a href="#when-to-use-Bayes’-theorem" class="headerlink" title="when to use Bayes’ theorem"></a>when to use Bayes’ theorem</h2><p>我们先看看简单的例子：</p>
+<ul>
+<li>事实 <strong>Evidence</strong>: Robin个性安静,喜欢阅读。</li>
+</ul>
+<p>需要猜测 Robin<strong>是图书管理员</strong> 还是 <strong>农民</strong>。大多数人也许会认为Robin是图书管理员。</p>
+<ul>
+<li>假设 hypothesis： Robin是图书管理员</li>
+</ul>
+<p>接下里我们验证一下这个概率，其中目前数据显示：</p>
+<ul>
+<li>人群中: 图书管理员/农民 = $\frac{1}{20}$</li>
+<li>图书管理员符合Evidence的概率为 $\frac{4}{10}$ </li>
+<li>农民符合Evidence的概率为 $\frac{1}{20}$ </li>
+</ul>
+<p>我们需要求出: P(H|E)</p>
+<ul>
+<li><p>P(H|E) –&gt; P(hypothesis given evidence)：<strong>后验概率</strong>，指Evidence条件下，hypothesis成立的概率。通俗的讲，$P(H|E) = \frac{H中符合E的概率}{符合E的总概率} = \frac{P(E|H) P(H)}{P(E)}$</p>
+</li>
+<li><p>$P(E|H) = \frac{4}{10}$ ：P(evidence given hypothesis) <strong>Likehood 似然</strong>,这里指 图书管理员 中 符合Evidence 的概率。</p>
+</li>
+<li><p>$P(H) = \frac{1}{1+20} = \frac{1}{21}$ 。$P(H)$也叫 <strong>先验</strong>,这里指图书管理员的概率。</p>
+</li>
+<li><p>$P(E) = \frac{4}{10} + \frac{1}{20} = \frac{9}{20}$</p>
+</li>
+</ul>
+<p>所以 $P(H|E) = \frac{P(E|H) P(H)} {P(E)} = \frac{\frac{4}{10} * \frac{1}{21}} {\frac{9}{20}} \approx 0.0423 $</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayesian_inference">Bayesian inference</a><br>2.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes’ theorem</a><br>3.<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2011/08/bayesian_inference_part_one.html">贝叶斯推断及其互联网应用（一）：定理简介</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1484,245 +1604,6 @@ public:
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 5.vim指令</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-01-05 12:55:59" itemprop="dateCreated datePublished" datetime="2021-01-05T12:55:59+08:00">2021-01-05</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-04 17:58:41" itemprop="dateModified" datetime="2021-03-04T17:58:41+08:00">2021-03-04</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="what-is-vim？"><a href="#what-is-vim？" class="headerlink" title="what is vim？"></a>what is vim？</h1><p>Vim是从 vi 发展出来的一个 <strong>文本编辑器</strong>。简单的来说， vi 是老式的字处理器，不过功能已经很齐全了，但是还是有可以进步的地方。 vim 则可以说是程序开发者的一项很好用的工具。</p>
-<h1 id="vim-的模式"><a href="#vim-的模式" class="headerlink" title="vim 的模式"></a>vim 的模式</h1><p>vim 共分为三种模式，分别是：</p>
-<ul>
-<li>命令模式（Command mode）</li>
-<li>输入模式（Insert mode）</li>
-<li>底线命令模式（Last line mode）</li>
-</ul>
-<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p>用户刚刚启动 vim，便进入了命令模式。</p>
-<p>此状态下敲击键盘动作会被Vim识别为<strong>命令</strong>，而非输入字符。下面列举常用的命令模式</p>
-<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><p><strong>Command模式</strong>下按 <strong>“/”</strong> 即可进入查找模式，<strong>输入要查找的字符串</strong>并 按下<strong>Enter</strong>。 Vim会跳转到第一个匹配。 按下 <strong>“n”</strong> 查找下一个，按下 <strong>“N”</strong> 查找上一个</p>
-<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-----进入输入模式(Insert mode)-----</span><br><span class="line">i               当前位置前插入</span><br><span class="line">I               当前行首插入</span><br><span class="line"></span><br><span class="line">a               当前位置后插入</span><br><span class="line">A               当前行尾插入</span><br><span class="line"></span><br><span class="line">o               当前行之后插入一行</span><br><span class="line">O               当前行之前插入一行</span><br><span class="line"></span><br><span class="line">-----进入取代模式(Replace mode)-----</span><br><span class="line">r               取代光标所在的那一个字符一次</span><br><span class="line">R               一直取代光标所在的文字，直到按下 ESC 为止</span><br></pre></td></tr></table></figure>
-
-<h4 id="移动"><a href="#移动" class="headerlink" title="移动"></a>移动</h4><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Ctrl + e</td>
-<td>向下滚动一行</td>
-</tr>
-<tr>
-<td>Ctrl + y</td>
-<td>向上滚动一行</td>
-</tr>
-<tr>
-<td>Ctrl + d(down)</td>
-<td>向下滚动半屏</td>
-</tr>
-<tr>
-<td>Ctrl + u(up)</td>
-<td>向上滚动半屏</td>
-</tr>
-<tr>
-<td>Ctrl + f(forward)</td>
-<td>向下滚动一屏</td>
-</tr>
-<tr>
-<td>Ctrl + b(back)</td>
-<td>向上滚动一屏</td>
-</tr>
-<tr>
-<td>Shift + g</td>
-<td>切换到最后</td>
-</tr>
-</tbody></table>
-<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>x, X</td>
-<td>在一行字当中，x 为向后删除一个字符 (相当于 [del] 按键)， X 为向前删除一个字符(相当于 [backspace] 亦即是退格键) (常用)</td>
-</tr>
-<tr>
-<td>nx</td>
-<td>n 为数字，连续向后删除 n 个字符。举例来说，我要连续删除 10 个字符， 『10x』。</td>
-</tr>
-<tr>
-<td>dd</td>
-<td>删除游标所在的那一整行(常用)</td>
-</tr>
-<tr>
-<td>ndd</td>
-<td>n 为数字。删除光标所在的向下 n 行，例如 20dd 则是删除 20 行 (常用)</td>
-</tr>
-<tr>
-<td>d1G</td>
-<td>删除光标所在到第一行的所有数据</td>
-</tr>
-<tr>
-<td>dG</td>
-<td>删除光标所在到最后一行的所有数据</td>
-</tr>
-<tr>
-<td>d$</td>
-<td>删除游标所在处，到该行的最后一个字符</td>
-</tr>
-<tr>
-<td>d0</td>
-<td>那个是数字的 0 ，删除游标所在处，到该行的最前面一个字符</td>
-</tr>
-</tbody></table>
-<h4 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h4><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>yy</td>
-<td>复制游标所在的那一行(常用)</td>
-</tr>
-<tr>
-<td>nyy</td>
-<td>n 为数字。复制光标所在的向下 n 行，例如 20yy 则是复制 20 行(常用)</td>
-</tr>
-<tr>
-<td>y1G</td>
-<td>复制游标所在行到第一行的所有数据</td>
-</tr>
-<tr>
-<td>yG</td>
-<td>复制游标所在行到最后一行的所有数据</td>
-</tr>
-<tr>
-<td>y0</td>
-<td>复制光标所在的那个字符到该行行首的所有数据</td>
-</tr>
-<tr>
-<td>y$</td>
-<td>复制光标所在的那个字符到该行行尾的所有数据</td>
-</tr>
-<tr>
-<td>p, P</td>
-<td>p 为将已复制的数据在光标下一行贴上，P 则为贴在游标上一行！ 举例来说，我目前光标在第 20 行，且已经复制了 10 行数据。则按下 p 后， 那 10 行数据会贴在原本的 20 行之后，亦即由 21 行开始贴。但如果是按下 P 呢？ 那么原本的第 20 行会被推到变成 30 行。 (常用)</td>
-</tr>
-</tbody></table>
-<h4 id="撤销与重做"><a href="#撤销与重做" class="headerlink" title="撤销与重做"></a>撤销与重做</h4><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>u</td>
-<td>撤销 (常用)</td>
-</tr>
-<tr>
-<td>[Ctrl]+r</td>
-<td>重做上一个动作 (常用)</td>
-</tr>
-</tbody></table>
-<h4 id="查看历史输入"><a href="#查看历史输入" class="headerlink" title="查看历史输入"></a>查看历史输入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q + (Ctrl + :)</span><br></pre></td></tr></table></figure>
-
-<h2 id="输入模式"><a href="#输入模式" class="headerlink" title="输入模式"></a>输入模式</h2><p>在命令模式下按下 <strong>i</strong>就进入了输入模式。在输入模式中，可以使用以下按键：</p>
-<ul>
-<li>字符按键以及Shift组合，输入字符</li>
-<li>ENTER，回车键，换行</li>
-<li>BACK SPACE，退格键，<strong>删除光标前一个字符</strong></li>
-<li>DEL，删除键，<strong>删除光标后一个字符</strong></li>
-<li>方向键，在文本中移动光标</li>
-<li>HOME/END，移动光标到行首/行尾</li>
-<li>Page Up/Page Down，上/下翻页</li>
-<li>Insert，切换光标为输入/替换模式，光标将变成竖线/下划线</li>
-<li>ESC，退出输入模式，<strong>切换到命令模式</strong></li>
-</ul>
-<h2 id="底线命令模式"><a href="#底线命令模式" class="headerlink" title="底线命令模式"></a>底线命令模式</h2><p>在命令模式下按下 <strong>:（英文冒号）</strong> 就进入了底线命令模式。</p>
-<p>底线命令模式可以输入单个或多个字符的命令，可用的命令非常多。</p>
-<p>在底线命令模式中，基本的命令有（已经省略了冒号）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">:q          退出程序</span><br><span class="line">:q!         若曾修改过档案，又不想储存，使用 ! 为强制离开不储存</span><br><span class="line">:w          保存文件</span><br><span class="line">:w!            若文件属性为『只读』时，强制写入该档案。到底能不能写入， 还是跟权限有关</span><br><span class="line"></span><br><span class="line">----环境的变更----</span><br><span class="line">:set nu        显示行号，设定之后，会在每一行的前缀显示该行的行号</span><br><span class="line">:set nonu    与 set nu 相反，为取消行号</span><br><span class="line"></span><br><span class="line">ESC         退出底线命令模式</span><br></pre></td></tr></table></figure>
-<p>惊叹号 <strong>(“!”)</strong> 在 vim 当中，常常具有『强制』的意思</p>
-<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><p>1.<a target="_blank" rel="noopener" href="https://www.runoob.com/linux/linux-vim.html" title="Linux vi/vim">Linux vi/vim</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1841,7 +1722,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

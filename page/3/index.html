@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,245 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">[linux] 5.vim指令</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-01-05 12:55:59" itemprop="dateCreated datePublished" datetime="2021-01-05T12:55:59+08:00">2021-01-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-04 17:58:41" itemprop="dateModified" datetime="2021-03-04T17:58:41+08:00">2021-03-04</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="what-is-vim？"><a href="#what-is-vim？" class="headerlink" title="what is vim？"></a>what is vim？</h1><p>Vim是从 vi 发展出来的一个 <strong>文本编辑器</strong>。简单的来说， vi 是老式的字处理器，不过功能已经很齐全了，但是还是有可以进步的地方。 vim 则可以说是程序开发者的一项很好用的工具。</p>
+<h1 id="vim-的模式"><a href="#vim-的模式" class="headerlink" title="vim 的模式"></a>vim 的模式</h1><p>vim 共分为三种模式，分别是：</p>
+<ul>
+<li>命令模式（Command mode）</li>
+<li>输入模式（Insert mode）</li>
+<li>底线命令模式（Last line mode）</li>
+</ul>
+<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p>用户刚刚启动 vim，便进入了命令模式。</p>
+<p>此状态下敲击键盘动作会被Vim识别为<strong>命令</strong>，而非输入字符。下面列举常用的命令模式</p>
+<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><p><strong>Command模式</strong>下按 <strong>“/”</strong> 即可进入查找模式，<strong>输入要查找的字符串</strong>并 按下<strong>Enter</strong>。 Vim会跳转到第一个匹配。 按下 <strong>“n”</strong> 查找下一个，按下 <strong>“N”</strong> 查找上一个</p>
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-----进入输入模式(Insert mode)-----</span><br><span class="line">i               当前位置前插入</span><br><span class="line">I               当前行首插入</span><br><span class="line"></span><br><span class="line">a               当前位置后插入</span><br><span class="line">A               当前行尾插入</span><br><span class="line"></span><br><span class="line">o               当前行之后插入一行</span><br><span class="line">O               当前行之前插入一行</span><br><span class="line"></span><br><span class="line">-----进入取代模式(Replace mode)-----</span><br><span class="line">r               取代光标所在的那一个字符一次</span><br><span class="line">R               一直取代光标所在的文字，直到按下 ESC 为止</span><br></pre></td></tr></table></figure>
+
+<h4 id="移动"><a href="#移动" class="headerlink" title="移动"></a>移动</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ctrl + e</td>
+<td>向下滚动一行</td>
+</tr>
+<tr>
+<td>Ctrl + y</td>
+<td>向上滚动一行</td>
+</tr>
+<tr>
+<td>Ctrl + d(down)</td>
+<td>向下滚动半屏</td>
+</tr>
+<tr>
+<td>Ctrl + u(up)</td>
+<td>向上滚动半屏</td>
+</tr>
+<tr>
+<td>Ctrl + f(forward)</td>
+<td>向下滚动一屏</td>
+</tr>
+<tr>
+<td>Ctrl + b(back)</td>
+<td>向上滚动一屏</td>
+</tr>
+<tr>
+<td>Shift + g</td>
+<td>切换到最后</td>
+</tr>
+</tbody></table>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>x, X</td>
+<td>在一行字当中，x 为向后删除一个字符 (相当于 [del] 按键)， X 为向前删除一个字符(相当于 [backspace] 亦即是退格键) (常用)</td>
+</tr>
+<tr>
+<td>nx</td>
+<td>n 为数字，连续向后删除 n 个字符。举例来说，我要连续删除 10 个字符， 『10x』。</td>
+</tr>
+<tr>
+<td>dd</td>
+<td>删除游标所在的那一整行(常用)</td>
+</tr>
+<tr>
+<td>ndd</td>
+<td>n 为数字。删除光标所在的向下 n 行，例如 20dd 则是删除 20 行 (常用)</td>
+</tr>
+<tr>
+<td>d1G</td>
+<td>删除光标所在到第一行的所有数据</td>
+</tr>
+<tr>
+<td>dG</td>
+<td>删除光标所在到最后一行的所有数据</td>
+</tr>
+<tr>
+<td>d$</td>
+<td>删除游标所在处，到该行的最后一个字符</td>
+</tr>
+<tr>
+<td>d0</td>
+<td>那个是数字的 0 ，删除游标所在处，到该行的最前面一个字符</td>
+</tr>
+</tbody></table>
+<h4 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>yy</td>
+<td>复制游标所在的那一行(常用)</td>
+</tr>
+<tr>
+<td>nyy</td>
+<td>n 为数字。复制光标所在的向下 n 行，例如 20yy 则是复制 20 行(常用)</td>
+</tr>
+<tr>
+<td>y1G</td>
+<td>复制游标所在行到第一行的所有数据</td>
+</tr>
+<tr>
+<td>yG</td>
+<td>复制游标所在行到最后一行的所有数据</td>
+</tr>
+<tr>
+<td>y0</td>
+<td>复制光标所在的那个字符到该行行首的所有数据</td>
+</tr>
+<tr>
+<td>y$</td>
+<td>复制光标所在的那个字符到该行行尾的所有数据</td>
+</tr>
+<tr>
+<td>p, P</td>
+<td>p 为将已复制的数据在光标下一行贴上，P 则为贴在游标上一行！ 举例来说，我目前光标在第 20 行，且已经复制了 10 行数据。则按下 p 后， 那 10 行数据会贴在原本的 20 行之后，亦即由 21 行开始贴。但如果是按下 P 呢？ 那么原本的第 20 行会被推到变成 30 行。 (常用)</td>
+</tr>
+</tbody></table>
+<h4 id="撤销与重做"><a href="#撤销与重做" class="headerlink" title="撤销与重做"></a>撤销与重做</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>u</td>
+<td>撤销 (常用)</td>
+</tr>
+<tr>
+<td>[Ctrl]+r</td>
+<td>重做上一个动作 (常用)</td>
+</tr>
+</tbody></table>
+<h4 id="查看历史输入"><a href="#查看历史输入" class="headerlink" title="查看历史输入"></a>查看历史输入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q + (Ctrl + :)</span><br></pre></td></tr></table></figure>
+
+<h2 id="输入模式"><a href="#输入模式" class="headerlink" title="输入模式"></a>输入模式</h2><p>在命令模式下按下 <strong>i</strong>就进入了输入模式。在输入模式中，可以使用以下按键：</p>
+<ul>
+<li>字符按键以及Shift组合，输入字符</li>
+<li>ENTER，回车键，换行</li>
+<li>BACK SPACE，退格键，<strong>删除光标前一个字符</strong></li>
+<li>DEL，删除键，<strong>删除光标后一个字符</strong></li>
+<li>方向键，在文本中移动光标</li>
+<li>HOME/END，移动光标到行首/行尾</li>
+<li>Page Up/Page Down，上/下翻页</li>
+<li>Insert，切换光标为输入/替换模式，光标将变成竖线/下划线</li>
+<li>ESC，退出输入模式，<strong>切换到命令模式</strong></li>
+</ul>
+<h2 id="底线命令模式"><a href="#底线命令模式" class="headerlink" title="底线命令模式"></a>底线命令模式</h2><p>在命令模式下按下 <strong>:（英文冒号）</strong> 就进入了底线命令模式。</p>
+<p>底线命令模式可以输入单个或多个字符的命令，可用的命令非常多。</p>
+<p>在底线命令模式中，基本的命令有（已经省略了冒号）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">:q          退出程序</span><br><span class="line">:q!         若曾修改过档案，又不想储存，使用 ! 为强制离开不储存</span><br><span class="line">:w          保存文件</span><br><span class="line">:w!            若文件属性为『只读』时，强制写入该档案。到底能不能写入， 还是跟权限有关</span><br><span class="line"></span><br><span class="line">----环境的变更----</span><br><span class="line">:set nu        显示行号，设定之后，会在每一行的前缀显示该行的行号</span><br><span class="line">:set nonu    与 set nu 相反，为取消行号</span><br><span class="line"></span><br><span class="line">ESC         退出底线命令模式</span><br></pre></td></tr></table></figure>
+<p>惊叹号 <strong>(“!”)</strong> 在 vim 当中，常常具有『强制』的意思</p>
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><p>1.<a target="_blank" rel="noopener" href="https://www.runoob.com/linux/linux-vim.html" title="Linux vi/vim">Linux vi/vim</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1553,158 +1792,6 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/" class="post-title-link" itemprop="url">[python源码分析] 5.bytes</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-06 10:35:41" itemprop="dateCreated datePublished" datetime="2020-12-06T10:35:41+08:00">2020-12-06</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-12-08 20:03:08" itemprop="dateModified" datetime="2020-12-08T20:03:08+08:00">2020-12-08</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>由于一个字节8bit最多只能表示 <strong>256 种字符</strong>，用来表示英文字符绰绰有余，想覆盖非英文字符便捉襟见肘了。为了表示众多的非英文字符(比如汉字)，计算机先驱们发明了 <strong>多字节编码</strong> ——通过 <strong>多个字节来表示一个字符</strong>。由于 <strong>原始字节序列不维护编码信息</strong>，操作不慎便导致各种乱码现象。</p>
-<p>Python 提供的解决方案是 <strong>Unicode 字符串 ( str )对象</strong>， Unicode 可以表示各种字符，无需关心编码。然而存储或者网络通讯时，字符串对象不可避免要 <strong>序列化 成字节序列</strong>。为此， Python 额外提供了 <strong>字节序列对象—— bytes</strong> 。</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/str_and_bytes.jpg" class="" title="str_and_bytes图"></div>
-
-<p>如上图， str 对象统一表示一个 <strong>字符串</strong> ，不需要关心编码；计算机通过 <strong>字节序列 与存储介质和网络介质打交道</strong>，字节序列由 <strong>bytes 对象</strong>表示；存储或传输 str 对象时，需要将其 <strong>序列化</strong> 成字节序列，序列化过程也是 <strong>编码</strong> 的过程。</p>
-<h2 id="对象结构"><a href="#对象结构" class="headerlink" title="对象结构"></a>对象结构</h2><p>bytes 对象用于表示由若干字节组成的 字节序列 以及相关的 操作 ，并不关心字节序列的 含义 。因此， bytes 应该一种 <strong>变长 、 不可变</strong> 对象 ，内部由 <strong>C 数组</strong> 实现。如下图:</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_head.png" class="" title="bytes_head图"></div>
-
-
-<ol>
-<li><p>ob_sval<br> 字节序列对象 PyBytesObject 中，确实藏着一个字符数组 ob_sval 。注意到 <strong>ob_sval 数组长度定义为 1</strong> ，这是 C 语言中定义 <strong>变长数组</strong> 的技巧（ob_sval存储的是地址）。</p>
-</li>
-<li><p>ob_snash<br> <strong>ob_shash</strong> ，它用于保存字节序列的 哈希值 。 由于计算 <strong>bytes 对象哈希值需要遍历其内部的字符数组</strong>，开销相对较大。因此， Python <strong>第一次计算</strong> 哈希值时，选择 将哈希值缓存到 <strong>ob_shash字段</strong>中，以 <strong>空间换时间</strong>，避免重复计算。</p>
-</li>
-<li><p>ob_size<br> 每个PyVarObject内部都有个 <strong>ob_size</strong>字段，PyBytesObject使用此字段存储大小信息以 <strong>保持len（）操作的O（1）时间复杂度</strong>，并跟踪非ascii字符串的大小（内部可以为空字符）</p>
-</li>
-</ol>
-<h3 id="空对象样例"><a href="#空对象样例" class="headerlink" title="空对象样例"></a>空对象样例</h3><div style="width:100%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_empty.png" class="" title="bytes_empty图"></div>
-
-<p>Python 为待存储的字节序列 <strong>额外分配一个字节，用于在末尾处保存 \0 ，以便兼容 C 字符串</strong>。从上图可以看出，就算空 bytes 对象( b’’ )也是要占用内存空间的，至少变长对象 公共头部 是少不了的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(b&#39;&#39;)</span><br><span class="line">33</span><br></pre></td></tr></table></figure>
-
-<p>bytes 对象占用的内存空间可分为以下个部分进行计算：</p>
-<ul>
-<li>PyVarObject公共头部 24 字节，ob_refcnt 、 ob_type 、 ob_size 每个字段各占用 8 字节；</li>
-<li>哈希值 ob_shash 占用 8 字节；</li>
-<li>字节序列本身，假设是 n 字节；</li>
-<li>额外 1 字节用于存储末尾处的 \0 ；</li>
-</ul>
-<p>因此，bytes 对象空间计算公式为 24+8+n+124+8+n+1，即 33+n33+n，其中 n 为字节序列长度(也是len的取值)。<br>经过上面的学习，我们可以知道 <strong>len(byte对象) = n</strong>，len显示的只是 <strong>ob_size字段</strong>的值，而bytes对象真实占用内存量还 <strong>需要加 33</strong>.</p>
-<h3 id="ascii样例"><a href="#ascii样例" class="headerlink" title="ascii样例"></a>ascii样例</h3><div style="width:100%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_ascii.png" class="" title="bytes_ascii图"></div>
-
-
-<h2 id="对象行为"><a href="#对象行为" class="headerlink" title="对象行为"></a>对象行为</h2><p>对象的行为由对象的 <strong>类型</strong> 决定，因而我们需要到 bytes 类型对象(PyBytes_Type)中寻找答案。在 <strong>Objects/bytesobject.c</strong> 源码文件中，我们找到 bytes 类型对象 的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyBytes_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;bytes&quot;,</span><br><span class="line">    PyBytesObject_SIZE,</span><br><span class="line">    sizeof(char),</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &amp;bytes_as_number,                           &#x2F;* tp_as_number 保存着 数值运算 处理函数的指针*&#x2F;</span><br><span class="line">    &amp;bytes_as_sequence,                         &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    &amp;bytes_as_mapping,                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line">    (hashfunc)bytes_hash,                       &#x2F;* tp_hash *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>bytes 对象居然支持数据操作？bytes_as_number 结构体中只定义了一个操作—— 模运算 ( % )：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods bytes_as_number &#x3D; &#123;</span><br><span class="line">    0,              &#x2F;*nb_add*&#x2F;</span><br><span class="line">    0,              &#x2F;*nb_subtract*&#x2F;</span><br><span class="line">    0,              &#x2F;*nb_multiply*&#x2F;</span><br><span class="line">    bytes_mod,      &#x2F;*nb_remainder*&#x2F;</span><br><span class="line">&#125;</span><br><span class="line">static PyObject *</span><br><span class="line">bytes_mod(PyObject *self, PyObject *arg)</span><br><span class="line">&#123;</span><br><span class="line">    if (!PyBytes_Check(self)) &#123;</span><br><span class="line">        Py_RETURN_NOTIMPLEMENTED;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;实现字符串格式化</span><br><span class="line">    return _PyBytes_FormatEx(PyBytes_AS_STRING(self), PyBytes_GET_SIZE(self),</span><br><span class="line">                             arg, 0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由此可见， bytes 对象只是 <strong>借用 % 运算符实现字符串格式化</strong>，谈不上支持数值运算，虚惊一场：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b&#39;msg: a&#x3D;%d b&#x3D;%d&#39; % (1, 2)</span><br><span class="line">b&#39;msg: a&#x3D;1 b&#x3D;2&#39;</span><br></pre></td></tr></table></figure>
-
-<h2 id="序列型操作"><a href="#序列型操作" class="headerlink" title="序列型操作"></a>序列型操作</h2><p>众所周知， <strong>bytes 是 序列型对象</strong> ，序列型操作才是研究重点。我们在 bytes_as_sequence 结构体中找到相关定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static PySequenceMethods bytes_as_sequence &#x3D; &#123;</span><br><span class="line">    (lenfunc)bytes_length, &#x2F;*sq_length*&#x2F;</span><br><span class="line">    (binaryfunc)bytes_concat, &#x2F;*sq_concat*&#x2F;</span><br><span class="line">    (ssizeargfunc)bytes_repeat, &#x2F;*sq_repeat*&#x2F;</span><br><span class="line">    (ssizeargfunc)bytes_item, &#x2F;*sq_item*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_slice*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_ass_item*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_ass_slice*&#x2F;</span><br><span class="line">    (objobjproc)bytes_contains &#x2F;*sq_contains*&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>由此可见， bytes 支持的 序列型操作 包括以下 5 个：</p>
-<ul>
-<li>sq_length ，查询序列长度；</li>
-<li>sq_concat ，将两个序列合并为一个；</li>
-<li>sq_repeat ，将序列重复多次；</li>
-<li>sq_item ，取出给定下标序列元素；</li>
-<li>sq_contains，包含关系判断；</li>
-</ul>
-<h3 id="长度"><a href="#长度" class="headerlink" title="长度"></a>长度</h3><p>最简单的序列型操作是 长度查询 ，直接返回 ob_size 字段即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static Py_ssize_t</span><br><span class="line">bytes_length(PyBytesObject *a)</span><br><span class="line">&#123;</span><br><span class="line">    return Py_SIZE(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b&#39;abc&#39; + b&#39;cba&#39;</span><br><span class="line">b&#39;abccba&#39;</span><br></pre></td></tr></table></figure>
-<p>合并操作将两个 bytes 对象拼接成一个，由 bytes_concat 函数处理：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">bytes_concat(PyObject *a, PyObject *b)</span><br><span class="line">&#123;</span><br><span class="line">    Py_buffer va, vb;   &#x2F;&#x2F;定义局部变量 va 、 vb 用于维护缓冲区</span><br><span class="line">    PyObject *result &#x3D; NULL;  &#x2F;&#x2F;新建临时变量，保存合并结果</span><br><span class="line"></span><br><span class="line">    va.len &#x3D; -1;</span><br><span class="line">    vb.len &#x3D; -1;</span><br><span class="line">    &#x2F;&#x2F;获取字节序列所在缓冲区</span><br><span class="line">    if (PyObject_GetBuffer(a, &amp;va, PyBUF_SIMPLE) !&#x3D; 0 ||</span><br><span class="line">        PyObject_GetBuffer(b, &amp;vb, PyBUF_SIMPLE) !&#x3D; 0) &#123;</span><br><span class="line">        PyErr_Format(PyExc_TypeError, &quot;can&#39;t concat %.100s to %.100s&quot;,</span><br><span class="line">                     Py_TYPE(b)-&gt;tp_name, Py_TYPE(a)-&gt;tp_name);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Optimize end cases *&#x2F;</span><br><span class="line">    if (va.len &#x3D;&#x3D; 0 &amp;&amp; PyBytes_CheckExact(b)) &#123;  &#x2F;&#x2F;如果第一个对象长度为 0 ，第二个对象就是结果</span><br><span class="line">        result &#x3D; b;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line">    if (vb.len &#x3D;&#x3D; 0 &amp;&amp; PyBytes_CheckExact(a)) &#123;    &#x2F;&#x2F;第二个对象长度为 0 ，第一个对象就是结果</span><br><span class="line">        result &#x3D; a;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (va.len &gt; PY_SSIZE_T_MAX - vb.len) &#123;   &#x2F;&#x2F;长度超过限制则报错</span><br><span class="line">        PyErr_NoMemory();</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    result &#x3D; PyBytes_FromStringAndSize(NULL, va.len + vb.len);  &#x2F;&#x2F;临时 bytes 对象用于保存合并结果，长度为待合并对象长度之和</span><br><span class="line">    if (result !&#x3D; NULL) &#123;</span><br><span class="line">        memcpy(PyBytes_AS_STRING(result), va.buf, va.len);</span><br><span class="line">        memcpy(PyBytes_AS_STRING(result) + va.len, vb.buf, vb.len);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  done:</span><br><span class="line">    if (va.len !&#x3D; -1)</span><br><span class="line">        PyBuffer_Release(&amp;va);</span><br><span class="line">    if (vb.len !&#x3D; -1)</span><br><span class="line">        PyBuffer_Release(&amp;vb);</span><br><span class="line">    return result;  &#x2F;&#x2F;返回结果</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>bytes_concat 函数逻辑很直白，<strong>将两个 bytes 对象的缓冲区</strong>拷贝到一起形成新 bytes 对象。 </p>
-<h3 id="数据拷贝的陷阱"><a href="#数据拷贝的陷阱" class="headerlink" title="数据拷贝的陷阱"></a>数据拷贝的陷阱</h3><p>考察以下表达式——合并 3 个 bytes 对象：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; a + b + c</span><br></pre></td></tr></table></figure>
-<p>这个语句执行时，分成两步进行合并：先将 a 和 b 合并，得到临时结果 t ，再将 t 和 c 合并得到最终结果 result ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t &#x3D; a + b</span><br><span class="line">&gt;&gt;&gt; result &#x3D; t + c</span><br></pre></td></tr></table></figure>
-<p>这个过程中，<strong>a 和 b 的数据需要被拷贝两遍</strong>！</p>
-<div style="width:100%;margin:auto"></div>
-
-<p>合并 <strong>n 个 bytes 对象，头两个对象需要拷贝 n-1</strong> 次，只有最后一个对象不需要重复拷贝。平均下来，每个对象大约要拷贝 <strong>n/2</strong> 次！</p>
-<h3 id="内建方法-join"><a href="#内建方法-join" class="headerlink" title="内建方法 join"></a>内建方法 join</h3><p>bytes 对象提供了一个内建方法 join ，可高效合并多个 bytes 对象：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; b&#39;&#39;.join(segments)</span><br></pre></td></tr></table></figure>
-<p>join 方法对数据拷贝进行了优化：<strong>先遍历待合并对象</strong>，<strong>计算总长度</strong>；然后根据总长度 <strong>创建目标对象</strong>；最后再 <strong>遍历待合并对象</strong>，逐一拷贝数据。这样一来，每个对象均只需拷贝一次，解决了重复拷贝的陷阱。</p>
-<div style="width:100%;margin:auto"></div>
-
-
-<h2 id="字符缓冲池"><a href="#字符缓冲池" class="headerlink" title="字符缓冲池"></a>字符缓冲池</h2><p>为了优化单字节 <strong>bytes</strong> 对象(也可称为 字符对象 )的创建效率， Python 内部维护了一个 字符缓冲池 ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static PyBytesObject *characters[UCHAR_MAX + 1];</span><br></pre></td></tr></table></figure>
-<p>Python 内部 <strong>创建单字节 bytes</strong> 对象时，先检查目标对象是否已在缓冲池中。PyBytes_FromStringAndSize 函数是负责创建 bytes 对象的通用接口，同样位于 <strong>Objects/bytesobject.c</strong> 中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyBytes_FromStringAndSize(const char *str, Py_ssize_t size)</span><br><span class="line">&#123;</span><br><span class="line">    PyBytesObject *op;</span><br><span class="line">    if (size &lt; 0) &#123;</span><br><span class="line">        PyErr_SetString(PyExc_SystemError,</span><br><span class="line">            &quot;Negative size passed to PyBytes_FromStringAndSize&quot;);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;如果目标对象为 单字节对象 且 已在字符缓冲池 中，直接返回已缓存对象</span><br><span class="line">    if (size &#x3D;&#x3D; 1 &amp;&amp; str !&#x3D; NULL &amp;&amp;</span><br><span class="line">        (op &#x3D; characters[*str &amp; UCHAR_MAX]) !&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">#ifdef COUNT_ALLOCS</span><br><span class="line">        one_strings++;</span><br><span class="line">#endif</span><br><span class="line">        Py_INCREF(op);</span><br><span class="line">        return (PyObject *)op;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;创建新 bytes 对象并拷贝字节序列</span><br><span class="line">    op &#x3D; (PyBytesObject *)_PyBytes_FromSize(size, 0);</span><br><span class="line">    if (op &#x3D;&#x3D; NULL)</span><br><span class="line">        return NULL;</span><br><span class="line">    if (str &#x3D;&#x3D; NULL)</span><br><span class="line">        return (PyObject *) op;</span><br><span class="line"></span><br><span class="line">    memcpy(op-&gt;ob_sval, str, size);</span><br><span class="line">    &#x2F;* share short strings *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;如果创建的对象为单字节对象，将其放入字符缓冲池</span><br><span class="line">    if (size &#x3D;&#x3D; 1) &#123;</span><br><span class="line">        characters[*str &amp; UCHAR_MAX] &#x3D; op;</span><br><span class="line">        Py_INCREF(op);</span><br><span class="line">    &#125;</span><br><span class="line">    return (PyObject *) op;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由此可见，当 Python 程序 <strong>开始运行时</strong>，<strong>字符缓冲池是空的</strong>。随着 <strong>单字节 bytes 对象</strong>的创建，缓冲池中的对象慢慢多了起来。</p>
-<p>字符对象 <strong>首次创建后便在缓冲池中缓存起来</strong>；后续再次使用时， <strong>Python 直接从缓冲池中取</strong>，避免重复创建和销毁。与 小整数 一样，字符对象 <strong>只有为数不多的 256 个</strong>，但使用频率非常高。缓冲池技术作为一种 <strong>以空间换时间</strong> 的优化手段，只需 <strong>较小的内存为代价</strong>，便可明显提升执行效率。</p>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1905" title="Python 源码深度剖析/09 bytes 对象，不可变的字节序列">Python 源码深度剖析/09 bytes 对象，不可变的字节序列</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/bytes/bytes.md" title="bytes">bytes</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1823,7 +1910,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

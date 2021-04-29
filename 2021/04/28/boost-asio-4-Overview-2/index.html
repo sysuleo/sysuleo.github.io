@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="流、短读和短写(Streams, Short Reads and Short Writes)Boost.Asio中許多 I&#x2F;0对象都是面向流的：  没有消息边界。数据通过连续字节序列传输 读取或写入操做传输的数据可能少于请求的字节。这就叫做 短读(short read) or 短写(short write)。  提供面向流的I&#x2F;O模型满足一个或多个如下要求：  SyncReadStream，使用r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[boost.asio] 4.Overview (2)">
+<meta property="og:url" content="http://yoursite.com/2021/04/28/boost-asio-4-Overview-2/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="流、短读和短写(Streams, Short Reads and Short Writes)Boost.Asio中許多 I&#x2F;0对象都是面向流的：  没有消息边界。数据通过连续字节序列传输 读取或写入操做传输的数据可能少于请求的字节。这就叫做 短读(short read) or 短写(short write)。  提供面向流的I&#x2F;O模型满足一个或多个如下要求：  SyncReadStream，使用r">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-28T03:05:37.000Z">
+<meta property="article:modified_time" content="2021-04-29T02:59:26.165Z">
+<meta property="article:author" content="Liu Wen">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://yoursite.com/2021/04/28/boost-asio-4-Overview-2/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[boost.asio] 4.Overview (2) | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E3%80%81%E7%9F%AD%E8%AF%BB%E5%92%8C%E7%9F%AD%E5%86%99-Streams-Short-Reads-and-Short-Writes"><span class="nav-number">1.</span> <span class="nav-text">流、短读和短写(Streams, Short Reads and Short Writes)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Why-EOF-is-an-Error"><span class="nav-number">1.0.1.</span> <span class="nav-text">Why EOF is an Error</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor%E5%BC%8F%E6%93%8D%E4%BD%9C%EF%BC%88Reactor-Style-Operations%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Reactor式操作（Reactor-Style Operations）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%A1%8C%E7%9A%84%E6%93%8D%E4%BD%9C-Line-Based-Operations"><span class="nav-number">3.</span> <span class="nav-text">基于行的操作(Line-Based Operations)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D-Custom-Memory-Allocation"><span class="nav-number">4.</span> <span class="nav-text">自定义内存分配(Custom Memory Allocation)</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/sysuleo" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/28/boost-asio-4-Overview-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [boost.asio] 4.Overview (2)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-28 11:05:37" itemprop="dateCreated datePublished" datetime="2021-04-28T11:05:37+08:00">2021-04-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-29 10:59:26" itemprop="dateModified" datetime="2021-04-29T10:59:26+08:00">2021-04-29</time>
+      </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="流、短读和短写-Streams-Short-Reads-and-Short-Writes"><a href="#流、短读和短写-Streams-Short-Reads-and-Short-Writes" class="headerlink" title="流、短读和短写(Streams, Short Reads and Short Writes)"></a>流、短读和短写(Streams, Short Reads and Short Writes)</h2><p>Boost.Asio中許多 I/0对象都是<strong>面向流</strong>的：</p>
+<ul>
+<li>没有消息边界。数据通过连续字节序列传输</li>
+<li><strong>读取或写入</strong>操做传输的数据可能<strong>少于请求的字节</strong>。这就叫做 短读(short read) or 短写(short write)。</li>
+</ul>
+<p>提供面向流的I/O模型满足一个或多个如下要求：</p>
+<ul>
+<li>SyncReadStream，使用read_some()的成员函数执行。</li>
+<li>AsyncReadStream，使用async_read_some()的成员函数执行。</li>
+<li>SyncWriteStream，使用write_some()的成员函数执行。</li>
+<li>AsyncWriteStream，使用async_write_some()的成员函数执行。</li>
+</ul>
+<p>面向流的I/O对象有：ip::tcp::socket, ssl::stream&lt;&gt;, posix::stream_descriptor, windows::stream_handle 等</p>
+<p>当短读(short read) or 短写(short write)出现时，程序必须重新启动操作，直到传输了所需的字数。Boost.Asio 提供自动执行此操作的常规函数：read()、async_read()、write()和async_write()。</p>
+<h4 id="Why-EOF-is-an-Error"><a href="#Why-EOF-is-an-Error" class="headerlink" title="Why EOF is an Error"></a>Why EOF is an Error</h4><ul>
+<li>stream结束符可以导致 read, async_read, read_until or async_read_until函数终止。例如，由于 EOF，读取 N 个字节可能会提前完成。</li>
+<li>EOF 错误可用于区分流的末尾和大小为 0 的成功读取。</li>
+</ul>
+<h2 id="Reactor式操作（Reactor-Style-Operations）"><a href="#Reactor式操作（Reactor-Style-Operations）" class="headerlink" title="Reactor式操作（Reactor-Style Operations）"></a>Reactor式操作（Reactor-Style Operations）</h2><p>有时需要集成使用自定义I/0操作的第三方库。Boost.Asio 包括同步和异步操作，这些操作可用于等待socket准备好读取、准备写入或出现挂起的错误情况。下面是一个非阻塞读的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ip::tcp::socket socket(my_io_context);</span><br><span class="line">...</span><br><span class="line">socket.non_blocking(true);</span><br><span class="line">...</span><br><span class="line">socket.async_wait(ip::tcp::socket::wait_read, read_handler);</span><br><span class="line">...</span><br><span class="line">void read_handler(boost::system::error_code ec)</span><br><span class="line">&#123;</span><br><span class="line">  if (!ec)</span><br><span class="line">  &#123;</span><br><span class="line">    std::vector&lt;char&gt; buf(socket.available());</span><br><span class="line">    socket.read_some(buffer(buf));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些操作支持<strong>所有平台的socket</strong>，以及 POSIX 的面向流的描述符类。</p>
+<h2 id="基于行的操作-Line-Based-Operations"><a href="#基于行的操作-Line-Based-Operations" class="headerlink" title="基于行的操作(Line-Based Operations)"></a>基于行的操作(Line-Based Operations)</h2><p>许多常用的 internet 协议是基于行的，它们具有由<strong>字符序列“\r\n”分隔</strong>的元素，如 HTTP、SMTP 和 FTP。为了更容易地实现基于行的协议，Boost.Asio 提供了函数 read_until()和async_read_until()。<br>如下是在一个HTTP服务器使用 async_read_until() 的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">class http_connection</span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  void start()</span><br><span class="line">  &#123;</span><br><span class="line">    boost::asio::async_read_until(socket_, data_, &quot;\r\n&quot;,</span><br><span class="line">        boost::bind(&amp;http_connection::handle_request_line, this, _1));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void handle_request_line(boost::system::error_code ec)</span><br><span class="line">  &#123;</span><br><span class="line">    if (!ec)</span><br><span class="line">    &#123;</span><br><span class="line">      std::string method, uri, version;</span><br><span class="line">      char sp1, sp2, cr, lf;</span><br><span class="line">      std::istream is(&amp;data_);</span><br><span class="line">      is.unsetf(std::ios_base::skipws);</span><br><span class="line">      is &gt;&gt; method &gt;&gt; sp1 &gt;&gt; uri &gt;&gt; sp2 &gt;&gt; version &gt;&gt; cr &gt;&gt; lf;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  boost::asio::ip::tcp::socket socket_;</span><br><span class="line">  boost::asio::streambuf data_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>streambuf数据成员用作存储在搜索<strong>分隔符（delimiter）之前</strong>从套接字读取的数据的位置。<strong>分隔符后可能还有其他数据</strong>。剩余的数据应该<strong>留在streambuf中</strong>，以便后续的read_until()或async_read_until()处理。</p>
+<p><strong>分隔符</strong>可以指定为单个<strong>char、std::string或boost::regex</strong>。read_until()和async_read_until()函数还接受称为match condition的用户自定义函数对象的重载。例如，将数据读取到streambuf，直到遇到空白：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">typedef boost::asio::buffers_iterator&lt;</span><br><span class="line">    boost::asio::streambuf::const_buffers_type&gt; iterator;</span><br><span class="line"></span><br><span class="line">std::pair&lt;iterator, bool&gt; match_whitespace(iterator begin, iterator end)</span><br><span class="line">&#123;</span><br><span class="line">  iterator i &#x3D; begin;</span><br><span class="line">  while (i !&#x3D; end)</span><br><span class="line">    if (std::isspace(*i++))</span><br><span class="line">      return std::make_pair(i, true);</span><br><span class="line">  return std::make_pair(i, false);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">boost::asio::streambuf b;</span><br><span class="line">boost::asio::read_until(s, b, match_whitespace);</span><br></pre></td></tr></table></figure>
+<p>要将数据读取到streambuf中，直到找到匹配的字符：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class match_char</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">  explicit match_char(char c) : c_(c) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  template &lt;typename Iterator&gt;std::pair&lt;Iterator, bool&gt; operator()(</span><br><span class="line">      Iterator begin, Iterator end) const</span><br><span class="line">  &#123;</span><br><span class="line">    Iterator i &#x3D; begin;</span><br><span class="line">    while (i !&#x3D; end)</span><br><span class="line">      if (c_ &#x3D;&#x3D; *i++)</span><br><span class="line">        return std::make_pair(i, true);</span><br><span class="line">    return std::make_pair(i, false);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">  char c_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">namespace boost &#123; </span><br><span class="line">    namespace asio &#123;</span><br><span class="line">        template &lt;&gt; struct is_match_condition&lt;match_char&gt;: public boost::true_type &#123;&#125;;</span><br><span class="line">&#125; &#125; &#x2F;&#x2F; namespace boost::asio</span><br><span class="line">...</span><br><span class="line">boost::asio::streambuf b;</span><br><span class="line">boost::asio::read_until(s, b, match_char(&#39;a&#39;));</span><br></pre></td></tr></table></figure>
+<p>对于函数和typedef的嵌套<strong>result_type类型</strong>的函数对象，is_match_condition&lt;&gt;类型特征会自动计算为 true。对于其他类型的特征必须显示特化（explicitly specialised）。</p>
+<h2 id="自定义内存分配-Custom-Memory-Allocation"><a href="#自定义内存分配-Custom-Memory-Allocation" class="headerlink" title="自定义内存分配(Custom Memory Allocation)"></a>自定义内存分配(Custom Memory Allocation)</h2><p>许多异步操作需要分配一个对象去存储操作的状态。<br>另外，程序中包含了易于识别的异步操作链。 半双工协议（如HTTP服务器）对每个客户端连接维护一个有单向操作链（先接收后发送）。 全双工协议有两条并行的链。程序应该能够根据这些特性，为链中的所有异步操作重用这些内存。</p>
+<p>对于用户自定义的Handler对象的副本 h，若需要分配与该处理程序关联的内存，这将有一个使用<strong>get_associated_allocator</strong>的分配器（allocator）。例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::associated_allocator_t&lt;Handler&gt; a &#x3D; boost::asio::get_associated_allocator(h);</span><br></pre></td></tr></table></figure>
+<p>默认情况下，处理程序使用标准分配器（按照::operator new()和::operator delete()实现）。可以通过<strong>指定嵌套类型allocator_type</strong>和成员函数<strong>get_allocator()**，为特定处理程序类型</strong>自定义分配器**：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class my_handler</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">  &#x2F;&#x2F; Custom implementation of Allocator type requirements.</span><br><span class="line">  typedef my_allocator allocator_type;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Return a custom allocator implementation.</span><br><span class="line">  allocator_type get_allocator() const noexcept</span><br><span class="line">  &#123;</span><br><span class="line">    return my_allocator();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void operator()() &#123; ... &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在更复杂的情况下，associated_allocator模板可能直接偏特化(partially specialised)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">namespace boost &#123; namespace asio &#123;</span><br><span class="line">  template &lt;typename Allocator&gt; struct associated_allocator&lt;my_handler, Allocator&gt;</span><br><span class="line">  &#123;</span><br><span class="line">    &#x2F;&#x2F; Custom implementation of Allocator type requirements.</span><br><span class="line">    typedef my_allocator type;</span><br><span class="line">    &#x2F;&#x2F; Return a custom allocator implementation.</span><br><span class="line">    static type get(const my_handler&amp;, const Allocator&amp; a &#x3D; Allocator()) noexcept</span><br><span class="line">    &#123;</span><br><span class="line">      return my_allocator();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125; &#125; &#x2F;&#x2F; namespace boost::asio</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>这保证了释放将在调用associated handler之前发生，这意味着内存已经<strong>准备好被重用</strong>于handler启动的任何新的异步操作。</p>
+</li>
+<li><p>该实现保证，对于库中包含的异步操作，该实现<strong>不会对内存分配函数进行并发调用</strong>。如果需要从不同线程调用分配函数，将插入<strong>适当的内存屏障</strong>，以确保内存正确。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/26/boost-asio-3-Overview/" rel="prev" title="[boost.asio] 3.Overview (1)">
+                  <i class="fa fa-chevron-left"></i> [boost.asio] 3.Overview (1)
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '064f6a502adb3d8a67ef9e108972ae22',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

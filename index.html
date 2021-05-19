@@ -276,7 +276,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-05-19 19:46:46 / Modified: 20:15:17" itemprop="dateCreated datePublished" datetime="2021-05-19T19:46:46+08:00">2021-05-19</time>
+      <time title="Created: 2021-05-19 19:46:46 / Modified: 20:37:07" itemprop="dateCreated datePublished" datetime="2021-05-19T19:46:46+08:00">2021-05-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,7 +298,66 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>need to do</p>
+          <h2 id="what-is-rsnyc"><a href="#what-is-rsnyc" class="headerlink" title="what is rsnyc"></a>what is rsnyc</h2><p>rsync 其实就是”远程同步”（remote sync）的意思, rsync <strong>区别于FTP or scp</strong>的最大特点是会 <strong>检查</strong>发送方和接收方<strong>已有的文件</strong>，仅<strong>传输有变动</strong>的部分</p>
+<p>它可以在<strong>本地计算机与远程计算机</strong>之间，或者<strong>两个本地目录</strong>之间同步文件， 可替代<strong>cp和mv</strong>命令。</p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><ol>
+<li>-r 参数，表示递归（包括子目录）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -r source destination</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>若有多个文件或目录需要同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -r source1 source2 destination</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>-a 参数, 可以替代-r, 还可以同步元信息（比如修改时间、权限等）<br>由于 rsync <strong>默认使用文件大小和修改时间</strong>决定文件是否需要更新，所以-a比-r<strong>更有用</strong></p>
+</li>
+<li><p>-n 参数, 模拟执行的结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -anv source&#x2F; destination</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>-n参数模拟命令执行的结果，<strong>并不真的执行命令</strong>。-v参数则是<strong>将结果输出到终端</strong>，这样就<strong>可以看到哪些内容会被同步</strong>。</p>
+<ol start="4">
+<li>–delete 参数, <strong>删除</strong>只存在于<strong>目标目录、不存在于源目录的文件</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --delete source&#x2F; destination</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>–delete参数会<strong>使得destination成为source的一个镜像</strong></p>
+<ol start="5">
+<li>–exclude 参数, 同步时排除某些文件或目录</li>
+</ol>
+<p>排除了所有 TXT 文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --exclude&#x3D;&#39;*.txt&#39; source&#x2F; destination</span><br><span class="line"># 或者</span><br><span class="line">$ rsync -av --exclude &#39;*.txt&#39; source&#x2F; destination</span><br></pre></td></tr></table></figure>
+
+<p>要排除某个目录里面的所有文件，但不希望排除目录本身</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --exclude &#39;dir1&#x2F;*&#39; source&#x2F; destination</span><br></pre></td></tr></table></figure>
+
+<p>多个排除模式，可以用多个–exclude参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --exclude &#39;file1.txt&#39; --exclude &#39;dir1&#x2F;*&#39; source&#x2F; destination</span><br><span class="line">或者</span><br><span class="line">$ rsync -av --exclude&#x3D;&#123;&#39;file1.txt&#39;,&#39;dir1&#x2F;*&#39;&#125; source&#x2F; destination</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><p>–include 参数，指定必须同步的文件模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --include&#x3D;&quot;*.txt&quot; --exclude&#x3D;&#39;*&#39; source&#x2F; destination</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>SSH 协议远程同步<br>将本地内容，同步到远程服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av source&#x2F; username@remote_host:destination</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>将远程内容同步到本地</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av username@remote_host:source&#x2F; destination</span><br></pre></td></tr></table></figure>
+
+<p>如果 ssh 命令有附加的参数，则必须使用-e参数指定所要执行的 SSH 命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av -e &#39;ssh -p 2234&#39; source&#x2F; user@remote_host:&#x2F;destination</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li>增量备份</li>
+</ol>
+<p>rsync 的最大特点就是它可以完成增量备份，也就是默认只复制有变动的文件。</p>
+<p>除了源目录与目标目录直接比较，rsync 还支持使用基准目录，即将源目录与基准目录之间变动的部分，同步到目标目录。<br>第一次同步是全量备份，所有文件在基准目录里面同步一份。以后每一次同步都是增量备份，只同步源目录与基准目录之间有变动的部分，将这部分保存在一个新的目标目录。这个新的目标目录之中，也是包含所有文件，但实际上，只有那些变动过的文件是存在于该目录，其他没有变动的文件都是指向基准目录文件的硬链接。</p>
+<p>–link-dest参数用来指定<strong>同步时的基准目录</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -a --delete --link-dest &#x2F;compare&#x2F;path &#x2F;source&#x2F;path &#x2F;target&#x2F;path</span><br></pre></td></tr></table></figure>
+
+<p>–link-dest参数指定基准目录/compare/path，然后源目录/source/path跟基准目录进行比较，找出变动的文件，将它们拷贝到目标目录/target/path。那些没变动的文件则会生成硬链接。这个命令的第一次备份时是全量备份，后面就都是增量备份了。</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2020/08/rsync.html">rsync 用法教程</a></li>
+</ol>
 
       
     </div>
@@ -350,7 +409,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-05-19 19:45:07 / Modified: 20:14:38" itemprop="dateCreated datePublished" datetime="2021-05-19T19:45:07+08:00">2021-05-19</time>
+      <time title="Created: 2021-05-19 19:45:07 / Modified: 20:18:40" itemprop="dateCreated datePublished" datetime="2021-05-19T19:45:07+08:00">2021-05-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -403,6 +462,12 @@
 <h4 id="2-打印从n到最后"><a href="#2-打印从n到最后" class="headerlink" title="2. 打印从n到最后"></a>2. 打印从n到最后</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sed -n &#39;3,$&#39;p a.txt</span><br></pre></td></tr></table></figure>
 
 <h4 id="3-打印含有特定pattern的行"><a href="#3-打印含有特定pattern的行" class="headerlink" title="3. 打印含有特定pattern的行"></a>3. 打印含有特定pattern的行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sed -n &#x2F;every&#x2F;p a.txt</span><br></pre></td></tr></table></figure>
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/sed-command-linux-set-2/">SED command in Linux</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/linux/linux-comm-sed.html">Linux sed 命令</a></li>
+</ol>
+
       
     </div>
 

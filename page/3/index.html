@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,295 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/20/linux-6-awk%E6%8C%87%E4%BB%A4-linux%E4%B8%89%E5%89%91%E5%AE%A2boss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/20/linux-6-awk%E6%8C%87%E4%BB%A4-linux%E4%B8%89%E5%89%91%E5%AE%A2boss/" class="post-title-link" itemprop="url">[linux] 6.awk指令--linux三剑客boss</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-01-20 12:47:32" itemprop="dateCreated datePublished" datetime="2021-01-20T12:47:32+08:00">2021-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-04 18:04:54" itemprop="dateModified" datetime="2021-03-04T18:04:54+08:00">2021-03-04</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="江湖传言linux有三剑客-而awk-是三剑客的老大。利剑出鞘-潜龙升天。"><a href="#江湖传言linux有三剑客-而awk-是三剑客的老大。利剑出鞘-潜龙升天。" class="headerlink" title="江湖传言linux有三剑客, 而awk 是三剑客的老大。利剑出鞘,潜龙升天。"></a>江湖传言linux有三剑客, 而awk 是三剑客的老大。利剑出鞘,潜龙升天。</h2><h2 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h2><p>awk属于 <strong>一种编程语言</strong>，可以通过编程实现各种需要的<strong>文本处理需求</strong>。awk在其对 <strong>数据分析</strong>并生成报告时，显得尤为强大。简单来说awk就是把文件 <strong>逐行的读入</strong>，以 <strong>空格为默认分隔符</strong>将每行切片，切开的部分再进行各种分析处理。</p>
+<p>awk有3个不同版本: awk、nawk和gawk，未作特别说明，<strong>一般指gawk</strong>，gawk 是 AWK 的 GNU 版本。</p>
+<h3 id="awk工作流程："><a href="#awk工作流程：" class="headerlink" title="awk工作流程："></a>awk工作流程：</h3><p>读入有 <strong>‘\n’换行符分割的一条记录</strong>，然后将记录按指定的域<strong>分隔符划分域</strong>，填充域，**$0<strong>则表示</strong>所有域(原记录)<strong>,</strong>$1<strong>表示</strong>第一个域**,$n表示第n个域。<strong>默认</strong>域分隔符是 <strong>空白键 或 tab键</strong>。</p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法:"></a>基本用法:</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk [选项参数] &#39;BEGIN&#123;命令 &#125; pattern&#123; 命令 &#125; END&#123; 命令 &#125;&#39;  文件名    # 行匹配语句 awk &#39;&#39; 只能用单引号</span><br></pre></td></tr></table></figure>
+
+<h3 id="pattern模块"><a href="#pattern模块" class="headerlink" title="pattern模块"></a>pattern模块</h3><h4 id="打印某几列"><a href="#打印某几列" class="headerlink" title="打印某几列"></a>打印某几列</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &#39;i am so busy&#39; | awk &#39;&#123;print $1, $2 $3&#125;&#39;</span><br><span class="line">i amso</span><br></pre></td></tr></table></figure>
+
+<h4 id="选项参数"><a href="#选项参数" class="headerlink" title="选项参数"></a>选项参数</h4><p>-F参数：指定分隔符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &#39;192.168.1.1&#39; | awk -F &quot;.&quot; &#39;&#123;print $2&#125;&#39;</span><br><span class="line">168</span><br><span class="line"></span><br><span class="line">$ echo &#39;I am leo。my qq is xxxxxx&#39; |awk -F &#39;[ ,]+&#39; &#39;&#123;print $3&quot; &quot;$7&#125;&#39;    # 多个分隔符</span><br><span class="line">leo xxxxxx</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们将字符串 i am so busy 通过管道传递给awk命令，相当于awk处理一个文件，该文件的内容就是i am so busy,默认通过空格作为分隔符(不管列之间有多少个空格都将当作一个空格处理)i am so busy就分割成四列了。</li>
+<li>另外，我们发现pattern{ 命令 }中”,”输出时为空格” “。</li>
+</ul>
+<h3 id="BEGIN-定义表头"><a href="#BEGIN-定义表头" class="headerlink" title="BEGIN 定义表头"></a>BEGIN 定义表头</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat score.txt</span><br><span class="line">tom 60 60 60</span><br><span class="line">kitty 90 95 87</span><br><span class="line">jack 72 84 99</span><br><span class="line"></span><br><span class="line">$ awk &#39;BEGIN&#123;print &quot;姓名 语文 数学 英语&quot;&#125;&#123;printf &quot;%-8s%-5d%-5d%-5d\n&quot;,$1,$2,$3,$4&#125;&#39; score.txt     # 左对齐的操作(%-8s左对齐，宽8位)</span><br><span class="line"></span><br><span class="line">姓名 语文数学英语</span><br><span class="line">tom 60 60 60</span><br><span class="line">kitty 90 95 87</span><br><span class="line">jack 72 84 99</span><br></pre></td></tr></table></figure>
+
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;BEGIN&#123;print &quot;姓名 语文 数学 英语 总成绩&quot;; \</span><br><span class="line">sum1&#x3D;0;sum2&#x3D;0;sum3&#x3D;0;sumall&#x3D;0&#125; \              # 这里定义了初始值</span><br><span class="line">&#123;printf &quot;%5s%5d%5d%5d%5d\n&quot;,$1,$2,$3,$4,$2+$3+$4;\</span><br><span class="line">sum1+&#x3D;$2;sum2+&#x3D;$3;sum3+&#x3D;$4;sumall+&#x3D;$2+$3+$4&#125;\</span><br><span class="line">END&#123;printf &quot;%5s%5d%5d%5d%5d\n&quot;,&quot;总成绩&quot;,sum1,sum2,sum3,sumall&#125;&#39;\</span><br><span class="line"> score.txt</span><br><span class="line"></span><br><span class="line">姓名 语文 数学 英语 总成绩</span><br><span class="line">  tom 60 60 60 180</span><br><span class="line">kitty 90 95 87 272</span><br><span class="line"> jack 72 84 99 255</span><br><span class="line">总成绩 222 239 246 707</span><br></pre></td></tr></table></figure>
+
+<h2 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>= += -= *= /= %= ^= **=</td>
+<td>赋值</td>
+</tr>
+<tr>
+<td>?:</td>
+<td>C条件表达式</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>&amp;&amp;</td>
+<td>逻辑与</td>
+</tr>
+<tr>
+<td>~ 和 !~</td>
+<td>匹配正则表达式和不匹配正则表达式</td>
+</tr>
+<tr>
+<td>&lt; &lt;= &gt; &gt;= != ==</td>
+<td>关系运算符</td>
+</tr>
+<tr>
+<td>空格</td>
+<td>连接</td>
+</tr>
+<tr>
+<td>+ -</td>
+<td>加，减</td>
+</tr>
+<tr>
+<td>* / %</td>
+<td>乘，除与求余</td>
+</tr>
+<tr>
+<td>+ - !</td>
+<td>一元加，减和逻辑非</td>
+</tr>
+<tr>
+<td>^ ***</td>
+<td>求幂</td>
+</tr>
+<tr>
+<td>++ –</td>
+<td>增加或减少，作为前缀或后缀</td>
+</tr>
+<tr>
+<td>$</td>
+<td>字段引用</td>
+</tr>
+<tr>
+<td>in</td>
+<td>数组成员</td>
+</tr>
+</tbody></table>
+<h5 id="example1-过滤第一列大于2的行"><a href="#example1-过滤第一列大于2的行" class="headerlink" title="example1:过滤第一列大于2的行"></a>example1:过滤第一列大于2的行</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;$1&gt;2&#39; log.txt    #命令</span><br><span class="line">#输出</span><br><span class="line">3 Are you like awk</span><br><span class="line">This&#39;s a test</span><br><span class="line">10 There are orange,apple,mongo</span><br></pre></td></tr></table></figure>
+
+<h4 id="exmple2：输出奇数行"><a href="#exmple2：输出奇数行" class="headerlink" title="exmple2：输出奇数行"></a>exmple2：输出奇数行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ vim demo.txt</span><br><span class="line">root:x:0:0:root:&#x2F;root:&#x2F;usr&#x2F;bin&#x2F;zsh</span><br><span class="line">daemon:x:1:1:daemon:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">bin:x:2:2:bin:&#x2F;bin:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">sys:x:3:3:sys:&#x2F;dev:&#x2F;usr&#x2F;sbin&#x2F;nologin</span><br><span class="line">sync:x:4:65534:sync:&#x2F;bin:&#x2F;bin&#x2F;sync</span><br><span class="line"></span><br><span class="line">$ awk -F &#39;:&#39; &#39;NR % 2 &#x3D;&#x3D; 1 &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line">bin</span><br><span class="line">sync</span><br></pre></td></tr></table></figure>
+
+<h4 id="exmple3：输出第一个字段等于指定值的行"><a href="#exmple3：输出第一个字段等于指定值的行" class="headerlink" title="exmple3：输出第一个字段等于指定值的行"></a>exmple3：输出第一个字段等于指定值的行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F &#39;:&#39; &#39;$1 &#x3D;&#x3D; &quot;root&quot; &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line"></span><br><span class="line">$ awk -F &#39;:&#39; &#39;$1 &#x3D;&#x3D; &quot;root&quot; || $1 &#x3D;&#x3D; &quot;bin&quot; &#123;print $1&#125;&#39; demo.txt</span><br><span class="line">root</span><br><span class="line">bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h2><h5 id="example1-善用if-else判断语句"><a href="#example1-善用if-else判断语句" class="headerlink" title="example1:善用if else判断语句"></a>example1:善用if else判断语句</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;&#123;if($2&gt;&#x3D;90 )print $0&#125;&#39; score.txt</span><br><span class="line">kitty 90 95 87</span><br><span class="line">$ awk &#39;&#123;if($2&gt;&#x3D;90 )print $1,&quot;优秀&quot;; else print $1,&quot;良好&quot;&#125;&#39; score.txt</span><br><span class="line">tom 良好</span><br><span class="line">kitty 优秀</span><br><span class="line">jack 良好</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a>内置变量</h2><p>常用内置变量：</p>
+<ul>
+<li>FILENAME： 用于保存输入文件名称,<strong>当前文件名</strong>。</li>
+<li>NF： 一条记录的 <strong>字段的数目</strong>。</li>
+<li>NR：已经读出的记录数，就是 <strong>行号</strong>，<strong>从1开始</strong></li>
+<li>OFS：用于设置输出分隔字符字符，默认空格。</li>
+<li>FS：字段分隔符(默认是任何空格)。</li>
+<li>ORS：用于设置输出记录分隔符，默认为新的一行。</li>
+<li>RS：记录分隔符(默认是一个换行符)。</li>
+<li>OFMT：<strong>数字的输出格式</strong>(默认值是%.6g)。</li>
+<li>ENVIRON：读取环境变量。</li>
+</ul>
+<h5 id="example1-只查看test-txt文件第20到第30行"><a href="#example1-只查看test-txt文件第20到第30行" class="headerlink" title="example1:只查看test.txt文件第20到第30行"></a>example1:只查看test.txt文件第20到第30行</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;&#123;if(NR&gt;&#x3D;20 &amp;&amp; NR&lt;&#x3D;30) print $0&#125;&#39; test.txt </span><br></pre></td></tr></table></figure>
+
+<h4 id="example2-保留小数点后两位"><a href="#example2-保留小数点后两位" class="headerlink" title="example2:保留小数点后两位"></a>example2:保留小数点后两位</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#39;BEGIN&#123;OFMT&#x3D;&quot;%.2f&quot;;print 1.2567,12E-2&#125;&#39;</span><br><span class="line">1.26 0.12</span><br></pre></td></tr></table></figure>
+
+<h4 id="输出倒数第二个字段"><a href="#输出倒数第二个字段" class="headerlink" title="输出倒数第二个字段"></a>输出倒数第二个字段</h4><p>变量 <strong>NF</strong>表示当前行有多少个字段，因此 <strong>$NF</strong>就代表 <strong>最后一个字段</strong>。 <strong>$(NF-1)**代表 **倒数第二个字段</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F &#39;:&#39; &#39;&#123;print $1, $(NF-1)&#125;&#39; demo.txt</span><br><span class="line">root &#x2F;root</span><br><span class="line">daemon &#x2F;usr&#x2F;sbin</span><br><span class="line">bin &#x2F;bin</span><br><span class="line">sys &#x2F;dev</span><br><span class="line">sync &#x2F;bin</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35520021" title="awk 详解">awk 详解</a><br>2.<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70482897" title="Linux三剑客传 | 老大：AWK">ILinux三剑客传 | 老大：AWK</a><br>3.<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/11/awk.html" title="awk 入门教程">awk 入门教程</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/06/mongo-1-brief-introdution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/06/mongo-1-brief-introdution/" class="post-title-link" itemprop="url">[mongo] 1.brief introdution</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-01-06 13:04:57" itemprop="dateCreated datePublished" datetime="2021-01-06T13:04:57+08:00">2021-01-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-01-19 13:15:58" itemprop="dateModified" datetime="2021-01-19T13:15:58+08:00">2021-01-19</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="what-is-MongoDB"><a href="#what-is-MongoDB" class="headerlink" title="what is MongoDB"></a>what is MongoDB</h1><p>MongoDB 是一个 <strong>基于分布式文件存储</strong>的开源数据库系统。由 <strong>C++</strong> 语言编写。旨在为 <strong>WEB</strong> 应用提供可扩展的高性能数据存储解决方案。</p>
+<p>MongoDB 是一个 <strong>介于关系数据库和非关系数据库之间</strong>的产品，是非关系数据库当中功能最丰富，最像关系数据库的。</p>
+<p>在高负载的情况下，添加更多的节点，可以保证服务器性能。</p>
+<p>MongoDB 将数据存储为一个 <strong>文档</strong>，数据结构由 <strong>键值(key=&gt;value)对组成</strong>。MongoDB 文档类似于 <strong>JSON 对象</strong>。字段值 <strong>可以包含其他文档，数组及文档数组</strong>。</p>
+<h1 id="the-feature-of-MongoDB"><a href="#the-feature-of-MongoDB" class="headerlink" title="the feature of MongoDB"></a>the feature of MongoDB</h1><ol>
+<li>MongoDB 是一个<strong>面向文档存储的数据库</strong>，操作起来比较简单和容易。</li>
+<li>你可以在MongoDB记录中<strong>设置任何属性的索引</strong> (如：FirstName=”Sameer”,Address=”8 Gandhi Road”)来<strong>实现更快的排序</strong>。</li>
+<li>你可以通过本地或者网络<strong>创建数据镜像</strong>，这使得MongoDB有<strong>更强的扩展性</strong>。</li>
+<li>如果负载的增加（需要更多的存储空间和更强的处理能力） ，它可以<strong>分布在计算机网络中的其他节点</strong>上这就是所谓的<strong>分片</strong>。</li>
+<li>Mongo支持<strong>丰富的查询表达式</strong>。查询指令使用JSON形式的标记，可轻易查询文档中内嵌的对象及数组。</li>
+<li>MongoDb 使用<strong>update()命令</strong>可以实现<strong>替换完成的文档（数据）</strong>或者一些指定的数据字段 。</li>
+<li>Mongodb中的Map/reduce主要是用来<strong>对数据进行批量处理和聚合操作</strong>。</li>
+<li><strong>Map和Reduce</strong>。Map函数调用emit(key,value)遍历集合中所有的记录，将key与value传给Reduce函数进行处理。</li>
+<li>Map函数和Reduce函数是使用Javascript编写的，并可以<strong>通过db.runCommand或mapreduce命令来执行MapReduce操作</strong>。</li>
+<li><strong>GridFS</strong>是MongoDB中的一个内置功能，可以用于<strong>存放大量小文件</strong>。</li>
+<li><strong>允许在服务端执行脚本</strong>，可以用Javascript编写某个函数，直接在服务端执行，也可以把函数的定义存储在服务端，下次直接调用即可。</li>
+<li>支持 <strong>各种编程语言</strong>:RUBY，PYTHON，JAVA，C++，PHP，C#等多种语言。</li>
+</ol>
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><p>1.<a target="_blank" rel="noopener" href="https://www.runoob.com/mongodb/mongodb-intro.html" title="MongoDB 教程">MongoDB 教程</a><br>2.<a target="_blank" rel="noopener" href="https://docs.mongodb.com/manual/introduction/" title="Introduction to MongoDB">Introduction to MongoDB</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1449,349 +1738,6 @@ c)   关键字的个数n必须满足： [ceil(m / 2)-1]&lt;= n &lt;= m-1。</cod
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/" class="post-title-link" itemprop="url">[python源码分析] 7.可变容器list</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-14 13:05:51" itemprop="dateCreated datePublished" datetime="2020-12-14T13:05:51+08:00">2020-12-14</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-01-03 10:34:09" itemprop="dateModified" datetime="2021-01-03T10:34:09+08:00">2021-01-03</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h1><div style="width:95%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/memory_layout.png" class="" title="list_memory_layout图"></div>
-
-<p>list 对象是一种 <strong>变长对象</strong> ，因此包含变长对象公共头部。 除了公共头部， list 内部维护了一个动态数组，而 <strong>数组则依次保存元素对象的指针</strong>：</p>
-<ul>
-<li>**ob_item ，指向动态数组的指针，动态数组保存元素对象的指针；</li>
-<li>allocated ，动态数组 <strong>长度</strong>，即列表 <strong>容量</strong>；</li>
-<li>ob_size ，动态数组 <strong>当前保存元素个数</strong>，即列表 <strong>长度</strong> 。</li>
-</ul>
-<div style="width:95%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pylistObject.jpg" class="" title="pylistObject图"></div>
-
-<h1 id="对象操作"><a href="#对象操作" class="headerlink" title="对象操作"></a>对象操作</h1><h2 id="append"><a href="#append" class="headerlink" title="append"></a>append</h2><p>python中的list的实现非常像 <strong>C++ 中的Vector</strong> </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l &#x3D; list（） # 初始化一个空列表</span><br></pre></td></tr></table></figure>
-<p>字段 ob_size存储实际大小，其类型为Py_ssize_t，通常为64位，1 &lt;&lt; 64可以表示的数非常大，通常在ob_size字段 <strong>溢出之前会耗尽 RAM</strong></p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/list_empty.png" class="" title="list_empty图"></div>
-
-<p>如果我们append(‘a’) 1个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_a.png" class="" title="append_a图"></div>
-
-<p><strong>ob_size</strong> 变为 1, <strong>ob_item</strong> 指向一个 <strong>大小为4的新内存块</strong></p>
-<p>相继append三个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_d.png" class="" title="append_d图"></div>
-
-<p><strong>ob_size</strong> 变为 4, <strong>内存块满了</strong></p>
-<p>大多数情况下， append 方法性能都足够好，**时间复杂度是 O(1)**。</p>
-<h2 id="动态扩容"><a href="#动态扩容" class="headerlink" title="动态扩容"></a>动态扩容</h2><p>继续append一个元素：</p>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_e.png" class="" title="append_e图"></div>
-
-<p>这是resize相关代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* The growth pattern is:  0, 4, 8, 16, 25, 35, 46, 58, 72, 88, ... *&#x2F;</span><br><span class="line">&#x2F;* currently: new_allocated &#x3D; 5 + (5 &gt;&gt; 3) + 3 &#x3D; 8 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);  # 扩容时，预留一定的余量，(newsize &gt;&gt; 3)表明余量一般是 1&#x2F;8 左右</span><br></pre></td></tr></table></figure>
-
-<p>如果 list 对象内部数组已用满，再添加元素时则需要进行扩容。 append 等方法在操作时都会对内部数组进行检查，如需扩容则调用 list_resize 函数。在 list_resize 函数， <strong>Python 重新分配一个长度更大的数组并替换旧数组</strong>。 </p>
-<p>由于内部数组扩容时，需要将列表元素 <strong>从旧数组拷贝到新数组</strong>，时间复杂度为 <strong>O(n)</strong> ，开销较大。为此， Python 在为内部数组扩容时，会预留一定余量，一般是  <strong>1/8 左右</strong> 。</p>
-<h2 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;e&#39;</span><br></pre></td></tr></table></figure>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png" class="" title="pop_e图"></div>
-
-<p>我们可以看到这里只是简单将 元素e 弹出，内存布局并未发生变化。</p>
-<h2 id="动态减容"><a href="#动态减容" class="headerlink" title="动态减容"></a>动态减容</h2><p>实际上，每次pop，都会调用 <strong>resize</strong> 函数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* allocated: 8, newsize: 3, 8 &gt;&#x3D; 3 &amp;&amp; (3 &gt;&#x3D; 4?), no *&#x2F;</span><br><span class="line">if (allocated &gt;&#x3D; newsize &amp;&amp; newsize &gt;&#x3D; (allocated &gt;&gt; 1)) &#123;</span><br><span class="line">    &#x2F;* Do not realloc if the newsize deos not fall</span><br><span class="line">       lower than half the allocated size</span><br><span class="line">        不分配内存，仅改变ob_size的值    *&#x2F;</span><br><span class="line">    assert(self-&gt;ob_item !&#x3D; NULL || newsize &#x3D;&#x3D; 0);</span><br><span class="line">    &#x2F;* only change the ob_size field *&#x2F;</span><br><span class="line">    Py_SIZE(self) &#x3D; newsize;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;* newsize小于allocated的一半时，会重新分配内存 *&#x2F;</span><br><span class="line">&#x2F;* 3 + (3 &gt;&gt; 3) + 3 &#x3D; 6 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);</span><br></pre></td></tr></table></figure>
-<p>如果理解了pop 每次都会调用 resize 函数，下面情形就很容易理解了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;d&#39;</span><br></pre></td></tr></table></figure>
-<div style="width:100%;margin:auto"><img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png" class="" title="pop_d图"></div>
-
-
-
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/list/list.md" title="list">list</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1907" title="Python 源码深度剖析/11 list 对象，容量自适应的数组式容器">Python 源码深度剖析/11 list 对象，容量自适应的数组式容器</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/" class="post-title-link" itemprop="url">[python源码分析] 6.字符串str</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-12-06 16:29:51" itemprop="dateCreated datePublished" datetime="2020-12-06T16:29:51+08:00">2020-12-06</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-12-08 20:03:08" itemprop="dateModified" datetime="2020-12-08T20:03:08+08:00">2020-12-08</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="Unicode是什么"><a href="#Unicode是什么" class="headerlink" title="Unicode是什么"></a>Unicode是什么</h2><p>计算机存储的基本单位是 <strong>八位字节</strong> ，由 8 个比特位组成，简称 字节 。由于英文只由 26 个字母加若干符号组成，因此英文字符可以直接用 字节 来保存。其他诸如 <strong>中日韩等语言</strong>，由于字符众多，则不得不用多个字节来编码。</p>
-<p>随着计算机技术的传播，非拉丁文字符编码技术蓬勃发展，但存在两个比较大的局限性：</p>
-<ul>
-<li>不支持多语言 ，例如中文的编码方案不能表示日文；</li>
-<li>没有统一标准 ，例如中文有 <strong>GB2312 ，GBK 、 GB18030</strong> 等多种编码标准；<br>由于编码方式不统一，开发人员经常需要在不同编码间来回转化，错误频出。为了彻底解决这些问题， 统一码联盟 提出了 <strong>Unicode</strong> 标准。Unicode <strong>对世界上大部分文字系统进行整理、编码</strong>，让计算机可以用统一的方式处理文本。Unicode 目前已经收录了超过 <strong>13 万</strong>个字符，天然地支持多语言。</li>
-</ul>
-<h2 id="Python中的Unicode"><a href="#Python中的Unicode" class="headerlink" title="Python中的Unicode"></a>Python中的Unicode</h2><p>Python 在 3 之后，str 对象内部改用 Unicode 表示，因而被源码称为 Unicode 对象。这么做好处是显然易见的，程序核心逻辑统一用 Unicode ，只需在输入、输入层进行编码、解码。</p>
-<p>由于 Unicode 收录字符已经超过 13 万个，每个字符 <strong>至少需要 4 个字节</strong>来保存。英文字符用 ASCII 表示仅需 1 个字节，而用 Unicode 表示内存开销却增加 <strong>4</strong> 倍！</p>
-<p>Python 作者们肯定不允许这样的事情发生( getsizeof 获取对象内存大小)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line"># 英文字符还是1字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;ab&#39;) - sys.getsizeof(&#39;a&#39;)</span><br><span class="line">1</span><br><span class="line"># 中文字符需要2字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;中国&#39;) - sys.getsizeof(&#39;中&#39;)</span><br><span class="line">2</span><br><span class="line"># Emoji表情需要4字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;??&#39;) - sys.getsizeof(&#39;?&#39;)</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
-
-<p>由此可见，Python 内部对 Unicode 进行优化：根据文本内容，选择 <strong>底层存储单元</strong>。与 str 对象实现相关源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Include&#x2F;unicodeobject.h</span><br><span class="line">Objects&#x2F;unicodectype.c</span><br></pre></td></tr></table></figure>
-<p>在 Include/unicodeobject.h 头文件中，我们发现 str 对象底层存储根据文本字符 Unicode 码位范围分成几类：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PyUnicode_1BYTE_KIND ，所有字符码位均在 U+0000 到 U+00FF 之间；</span><br><span class="line">PyUnicode_2BYTE_KIND ，所有字符码位均在 U+0000 到 U+FFFF 之间，且至少一个大于 U+00FF；</span><br><span class="line">PyUnicode_4BYTE_KIND ，所有字符码位均在 U+0000 到 U+10FFFF 之间，且至少一个大于 U+FFFF；</span><br><span class="line">enum PyUnicode_Kind &#123;</span><br><span class="line">&#x2F;* String contains only wstr byte characters.  This is only possible</span><br><span class="line">   when the string was created with a legacy API and _PyUnicode_Ready()</span><br><span class="line">   has not been called yet.  *&#x2F;</span><br><span class="line">    PyUnicode_WCHAR_KIND &#x3D; 0,</span><br><span class="line">&#x2F;* Return values of the PyUnicode_KIND() macro: *&#x2F;</span><br><span class="line">    PyUnicode_1BYTE_KIND &#x3D; 1,</span><br><span class="line">    PyUnicode_2BYTE_KIND &#x3D; 2,</span><br><span class="line">    PyUnicode_4BYTE_KIND &#x3D; 4</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样一来，根据 <strong>文本码位范围</strong>，便可为字符选用 <strong>尽量小的</strong> 存储单元，以最大限度节约内存。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">typedef uint32_t Py_UCS4;</span><br><span class="line">typedef uint16_t Py_UCS2;</span><br><span class="line">typedef uint8_t Py_UCS1;</span><br></pre></td></tr></table></figure>
-
-<p>Unicode 内部存储结构因文本类型而异，因此类型 <strong>kind</strong> 必须作为 <strong>Unicode</strong> 对象公共字段保存。Python 内部定义了若干个 <strong>标志位</strong> ，作为 Unicode 公共字段，kind 便是其中之一：</p>
-<ul>
-<li>interned ，是否为 <strong>interned</strong> 机制维护， internel 机制在本节后半部分介绍；</li>
-<li>kind ，类型，用于区分字符 <strong>底层存储单元大小</strong>；</li>
-<li>compact ，内存分配方式，<strong>对象与文本缓冲区是否分离</strong>；</li>
-<li>ascii ，文本是否均为 <strong>纯 ASCII</strong> ；</li>
-</ul>
-<p>Objects/unicodectype.c 源文件中的 PyUnicode_New 函数，根据文本字符数 size 以及最大字符 maxchar 初始化 Unicode 对象。该函数根据 maxchar 为 Unicode 对象选择最紧凑的字符存储单元以及底层结构体：</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>maxchar &lt; 128</th>
-<th>maxchar &lt; 256</th>
-<th>maxchar &lt; 65536</th>
-<th>maxchar &lt; MAX_UNICODE</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>kind</td>
-<td>PyUnicode_1BYTE_KIND</td>
-<td>PyUnicode_1BYTE_KIND</td>
-<td>PyUnicode_2BYTE_KIND</td>
-<td>PyUnicode_4BYTE_KIND</td>
-</tr>
-<tr>
-<td>ascii</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>字符存储单元大小</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>4</td>
-</tr>
-<tr>
-<td>底层结构体</td>
-<td>PyASCIIObject</td>
-<td>PyCompactUnicodeObject</td>
-<td>PyCompactUnicodeObject</td>
-<td>PyCompactUnicodeObject</td>
-</tr>
-</tbody></table>
-<h2 id="PyASCIIObject"><a href="#PyASCIIObject" class="headerlink" title="PyASCIIObject"></a>PyASCIIObject</h2><p>如果 str 对象保存的文本均为 ASCII ，即 maxchar&lt;128maxchar&lt;128，则底层由 <strong>PyASCIIObject</strong> 结构存储：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* ASCII-only strings created through PyUnicode_New use the PyASCIIObject</span><br><span class="line">   structure. state.ascii and state.compact are set, and the data</span><br><span class="line">   immediately follow the structure. utf8_length and wstr_length can be found</span><br><span class="line">   in the length field; the utf8 pointer is equal to the data pointer. *&#x2F;</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    Py_ssize_t length;          &#x2F;* Number of code points in the string 文本长度*&#x2F;</span><br><span class="line">    Py_hash_t hash;             &#x2F;* Hash value; -1 if not set  文本哈希值*&#x2F;</span><br><span class="line">    struct &#123;</span><br><span class="line">        unsigned int interned:2;</span><br><span class="line">        unsigned int kind:3;</span><br><span class="line">        unsigned int compact:1;</span><br><span class="line">        unsigned int ascii:1;</span><br><span class="line">        unsigned int ready:1;</span><br><span class="line">        unsigned int :24;</span><br><span class="line">    &#125; state;                      &#x2F;*Unicode 对象标志位，包括 internel 、 kind 、 ascii 、 compact 等*&#x2F;</span><br><span class="line">    wchar_t *wstr;              &#x2F;* wchar_t representation (null-terminated) *&#x2F;</span><br><span class="line">&#125; PyASCIIObject;</span><br></pre></td></tr></table></figure>
-
-
-<p>ASCII 文本则紧接着位于 PyASCIIObject 结构体后面，以字符串对象 ‘abc’ 以及空字符串对象 ‘’ 为例：</p>
-<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/PyASCIIObject_sample.jpg" class="" title="PyASCIIObject_sample图"></div>
-
-<h3 id="state-字段后有一个-4-字节的空洞"><a href="#state-字段后有一个-4-字节的空洞" class="headerlink" title="state 字段后有一个 4 字节的空洞?"></a>state 字段后有一个 4 字节的空洞?</h3><p>这是结构体字段 <strong>内存对齐</strong> 造成的现象。在 64 位机器下，指针大小为 <strong>8</strong> 字节，为优化内存访问效率，wstr 必须 <strong>以 8 字节对齐</strong>；而 <strong>state 字段大小只是 4 字节</strong>，便留下 4 字节的空洞。PyASCIIObject 结构体大小在 64 位机器下为 48 字节，在 32 位机器下为 24 字节。</p>
-<p>与 bytes 对象一样，Python 也在 ASCII 文本末尾，额外添加一个 <strong>\0</strong> 字符，以兼容 C 字符串。</p>
-<p>如此一来，以 Unicode 表示的 <strong>ASCII</strong> 文本，额外内存开销仅为 <strong>PyASCIIObject</strong> 结构体加上末尾的 \0 字节而已。PyASCIIObject 结构体在 64 位机器下，<strong>大小为 48 字节</strong>。因此，长度为 n 的纯 ASCII 字符串对象，需要消耗 n+48+1，即 <strong>n+49</strong> 字节的内存空间。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;&#39;)</span><br><span class="line">49</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;abcdef&#39;)</span><br><span class="line">55</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;1&#39; * 10000)</span><br><span class="line">10049</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="PyCompactUnicodeObject"><a href="#PyCompactUnicodeObject" class="headerlink" title="PyCompactUnicodeObject"></a>PyCompactUnicodeObject</h2><p>PyCompactUnicodeObject 在 PyASCIIObject 基础上，增加 3 个字段：</p>
-<ul>
-<li>utf8_length : 文本 UTF8 编码长度；</li>
-<li>utf8 : 文本 UTF8 编码形式，<strong>缓存以避免重复编码运算</strong>；</li>
-<li>wstr_length；</li>
-</ul>
-<p>在 64 位机器，PyCompactUnicodeObject 结构体大小为 <strong>72</strong> 字节；在 32 位机器则是 <strong>36</strong> 字节。</p>
-<p>PyCompactUnicodeObject结构如下图:</p>
-<div style="width:80%;margin:auto"></div>
-
-<p>由于 <strong>ASCII</strong> 本身是 <strong>合法的 UTF8</strong> ，无须保存 UTF8 编码形式，这也是 ASCII 文本底层由 PyASCIIObject 保存的原因。在 64 位机器，PyCompactUnicodeObject 结构体大小为 72 字节；在 32 位机器则是 36 字节。</p>
-<h3 id="空字符串"><a href="#空字符串" class="headerlink" title="空字符串"></a>空字符串</h3><div style="width:80%;margin:auto"></div>
-
-
-
-<h3 id="interned机制"><a href="#interned机制" class="headerlink" title="interned机制"></a>interned机制</h3><p>如果 str 对象 <strong>interned</strong> 标识位为 1 ，Python 虚拟机将为其开启 interned 机制。那么，什么是 interned 机制？</p>
-<p>先考虑以下场景，如果程序中有大量 User 对象，有什么可优化的地方？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class User:</span><br><span class="line">...</span><br><span class="line">...     def __init__(self, name, age):</span><br><span class="line">...         self.name &#x3D; name</span><br><span class="line">...         self.age &#x3D; age</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; user &#x3D; User(name&#x3D;&#39;tom&#39;, age&#x3D;20)</span><br><span class="line">&gt;&gt;&gt; user.__dict__</span><br><span class="line">&#123;&#39;name&#39;: &#39;tom&#39;, &#39;age&#39;: 20&#125;</span><br></pre></td></tr></table></figure>
-<p>由于 <strong>对象的属性由 dict</strong> 保存，这意味着每个 User 对象都需要保存 str 对象 name 。换句话讲，1 亿个 User 对象需要重复保存 1 亿个同样的 str 对象，这将浪费多少内存！</p>
-<p>由于 <strong>str 是不可变对象</strong>，因此 Python 内部将有潜在重复可能的字符串都做成 <strong>单例模式</strong> ，这就是 interned 机制。Python 具体做法是 <strong>在内部维护一个全局 dict 对象</strong>，所有开启 <strong>interned 机制 str 对象</strong> 均保存在这里；后续需要用到相关对象的地方，则 <strong>优先到全局 dict 中取</strong>，避免重复创建。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *interned &#x3D; NULL;</span><br></pre></td></tr></table></figure>
-
-<p>sample 1 :<br>如果删除字符串并初始化一个新的相同字符串，则它们的ID相同，即首次创建时，它会存储在Interned词典中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; del s</span><br><span class="line">&gt;&gt;&gt; s &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; y &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(y)</span><br><span class="line">4314134768</span><br></pre></td></tr></table></figure>
-
-<p>sample 2: 虽然 str 对象 ‘abc’ 由不同的运算产生，但背后却是同一个对象：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; &#39;abc&#39;</span><br><span class="line">&gt;&gt;&gt; b &#x3D; &#39;ab&#39; + &#39;c&#39;</span><br><span class="line">&gt;&gt;&gt; id(a), id(b), a is b</span><br><span class="line">(4424345224, 4424345224, True)</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="kind"><a href="#kind" class="headerlink" title="kind"></a>kind</h3><p>在PyASCIIObject中总共有四个kind域的值，这意味着字符是如何在内部存储在unicode对象中的。</p>
-<ul>
-<li>PyUnicode_WCHAR_KIND</li>
-</ul>
-<p>我还没有找到一种方法来定义python层中 <strong>用PyUnicode_WCHAR_KIND表示的unicode对象</strong>，它可能在 **c / c ++**中使用</p>
-<h4 id="PyUnicode-1BYTE-KIND"><a href="#PyUnicode-1BYTE-KIND" class="headerlink" title="PyUnicode_1BYTE_KIND"></a>PyUnicode_1BYTE_KIND</h4><p>– 8位/字符<br>– ascii标志设置？<br>— ascii标志设置为true：U + 0000-U + 007F<br>— ascii标志设置为false：U + 0080-U + 00FF中至少一个字符<br><strong>utf8_length</strong>字段仍存储以null终止的c样式字符串，除了interned字段为0之外，只有特定范围内的字符才会存储在 <strong>Interned字典</strong>中。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s1 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s1)</span><br><span class="line">4472458224</span><br><span class="line">&gt;&gt;&gt; s2 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s2) # bacause &quot;interned&quot; field is 0, the unicode object will not be shared</span><br><span class="line">4472458608</span><br></pre></td></tr></table></figure>
-
-<p>字符存储单元还是 1 字节，跟 ASCII 文本一样。 因此，Python® 对象需要占用 80 字节的内存空间72+1*7+1=72+8=8072+1∗7+1=72+8=80：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;Python®&#39;)</span><br><span class="line">80</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s &#x3D; &quot;\u0088\u0011\u00f1&quot;</span><br><span class="line"></span><br><span class="line">由于第一个字符为U + 0088，ascii标志变为0，并且PyUnicode_UTF8（unicode）不再返回utf8_length字段的地址，而是返回 **char * utf8**字段中的值，即0</span><br></pre></td></tr></table></figure>
-
-<p>如果PyUnicode_UTF8（unicode）为零，则这三个字节位于何处？我们没有在PyUnicodeObject中使用数据字段，让我们找出源码进行print（不感兴趣的可以跳过）:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">unicode_repr(PyObject *unicode)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">        &#x2F;*</span><br><span class="line">        &#x2F;&#x2F; there exists official marco to get the char in exact index,</span><br><span class="line">        &#x2F;&#x2F; I use my own to have a better understanding of how things work internally</span><br><span class="line">        Py_ssize_t isize &#x3D; PyUnicode_GET_LENGTH(unicode);</span><br><span class="line">        Py_ssize_t idata &#x3D; PyUnicode_DATA(unicode);</span><br><span class="line">        int ikind &#x3D; PyUnicode_KIND(unicode);</span><br><span class="line">        &#x2F;&#x2F; no mattner what ikind is, use Py_UCS4(4 bytes) to catch the result</span><br><span class="line">        Py_UCS4 ch &#x3D; PyUnicode_READ(ikind, idata, i);</span><br><span class="line">        *&#x2F;</span><br><span class="line"></span><br><span class="line">        switch (_PyUnicode_STATE(unicode).kind)</span><br><span class="line">        &#123;</span><br><span class="line">            case (PyUnicode_1BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_1BYTE_KIND, &quot;);</span><br><span class="line">                if (PyUnicode_UTF8(unicode) &#x3D;&#x3D; 0)</span><br><span class="line">                &#123;</span><br><span class="line"></span><br><span class="line">                    char *value &#x3D; &amp;(((PyUnicodeObject *)unicode)-&gt;data);</span><br><span class="line">                    printf(&quot;\nPyUnicodeObject-&gt;latin1: &quot;);</span><br><span class="line">                    for (size_t i &#x3D; 0; i &lt; _PyUnicode_LENGTH(unicode); ++i)</span><br><span class="line">                    &#123;</span><br><span class="line">                        printf(&quot;%#hhx &quot;, *(value + i));</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    printf(&quot;\n&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_2BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_2BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_4BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_4BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                printf(&quot;unknown kind: %d, &quot;, _PyUnicode_STATE(unicode).kind);</span><br><span class="line">        &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>重新编译上面的代码后，我们可以在repr（）函数中跟踪latin1字段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">PyUnicode_1BYTE_KIND,</span><br><span class="line">PyUnicodeObject-&gt;latin1: 0x88 0x11 0xf1</span><br></pre></td></tr></table></figure>
-<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/1byte_kind.png" class="" title="1byte_kind图"></div>
-
-
-<h4 id="PyUnicode-2BYTE-KIND"><a href="#PyUnicode-2BYTE-KIND" class="headerlink" title="PyUnicode_2BYTE_KIND"></a>PyUnicode_2BYTE_KIND</h4><ul>
-<li>16位/字符</li>
-<li>所有字符都在U + 0000-U + FFFF范围内</li>
-<li>至少一个字符在U + 0100-U + FFFF范围内</li>
-</ul>
-<p>我们可以使用相同的代码来跟踪存储在数据字段中的字节，现在字段名称为ucs2（ucs2或latin1具有不同的名称，但是地址相同，它们位于相同的c并集结构中）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; s &#x3D; &quot;\u0011\u0111\u1111&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_2BYTE_KIND,  PyUnicodeObject-&gt;ucs2: 0x11 0x111 0x1111</span><br></pre></td></tr></table></figure>
-
-<p>现在，kind字段是PyUnicode_2BYTE_KIND，需要 <strong>2个字节</strong>来存储每个字符</p>
-<div style="width:80%;margin:auto"></div>
-
-
-<h4 id="PyUnicode-4BYTE-KIND"><a href="#PyUnicode-4BYTE-KIND" class="headerlink" title="PyUnicode_4BYTE_KIND"></a>PyUnicode_4BYTE_KIND</h4><ul>
-<li>32位/字符</li>
-<li>至少一个字符在U+10000-U+10FFFF范围内<br>现在，种类字段变为PyUnicode_4BYTE_KIND<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s &#x3D; &quot;\u00ff\U0010FFFF\U00100111\U0010FFF1&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_4BYTE_KIND, PyUnicodeObject-&gt;ucs4: 00xff 0x10ffff 0x100111 0x10fff1</span><br></pre></td></tr></table></figure>
-<div style="width:80%;margin:auto"></div>
-
-</li>
-</ul>
-<h4 id="Unicode内存使用情况摘要"><a href="#Unicode内存使用情况摘要" class="headerlink" title="Unicode内存使用情况摘要"></a>Unicode内存使用情况摘要</h4><p>我们现在知道存在 <strong>三种存储机制</strong>，CPython存储一个Unicode对象将消耗多少字节 <strong>取决于字符的最大范围</strong>。 unicode对象内的所有字符必须 <strong>具有相同的大小</strong>，如果CPython使用可变大小的表示形式（例如utf-8），则不可能在O（1）时间内进行索引操作</p>
-<div style="width:80%;margin:auto"><img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/kind_overview.png" class="" title="kind_overview图"></div>
-
-<h3 id="compact"><a href="#compact" class="headerlink" title="compact"></a>compact</h3><p>如果compact为1，则意味着无论哪种字段，所有字符都存储在 <strong>PyUnicodeObject</strong>中(上面的示例都将compact设置为1)。否则，数据块将不会直接存储在PyUnicodeObject对象内，该数据块将是 <strong>新分配的位置</strong>。compact=0和compact=1之间的差异与Redis字符串编码raw和embstr之间的差异相同。</p>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/str/str.md" title="str">str</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1906" title="Python 源码深度剖析/10 str 对象，统一的 Unicode 字符串">PPython 源码深度剖析/10 str 对象，统一的 Unicode 字符串</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1910,7 +1856,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'a676607444a8bc8b150c9a3aff884e61',
+      id          : 'f47af1d1eda4d807b02bba32be15120b',
         language: '',
       distractionFreeMode: true
     });

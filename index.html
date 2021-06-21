@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,231 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-3-what-is-dev-dm-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-3-what-is-dev-dm-0/" class="post-title-link" itemprop="url">[深入理解linux] 3. what is /dev/dm-0</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-10 10:07:58" itemprop="dateCreated datePublished" datetime="2021-06-10T10:07:58+08:00">2021-06-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-21 21:32:05" itemprop="dateModified" datetime="2021-06-21T21:32:05+08:00">2021-06-21</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>使用df -h 发现/dev/dm-0 已使用100%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0       7.8G  7.8G   20K 100% &#x2F;</span><br><span class="line">udev             10M     0   10M   0% &#x2F;dev</span><br><span class="line">tmpfs           3.2G  329M  2.9G  11% &#x2F;run</span><br><span class="line">tmpfs           7.9G   72K  7.9G   1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1       200G   46G  155G  23% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1       236M   34M  190M  15% &#x2F;boot</span><br></pre></td></tr></table></figure>
+
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li><p>dmsetup查看对应的设备</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# dmsetup info &#x2F;dev&#x2F;dm-0</span><br><span class="line">Name:              disk1-root</span><br><span class="line">State:             ACTIVE</span><br><span class="line">Read Ahead:        256</span><br><span class="line">Tables present:    LIVE</span><br><span class="line">Open count:        1</span><br><span class="line">Event number:      0</span><br><span class="line">Major, minor:      253, 0</span><br><span class="line">Number of targets: 1</span><br><span class="line">UUID: LVM-ytdyq65oG0cO4O95LsrZ1asrcdQSqvLBzepNHp4miyl5hLFuXzisTCvSzuUQihY5</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>lsblk查看disks树形结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# lsblk</span><br><span class="line"></span><br><span class="line">NAME           MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">vda            254:0    0    8G  0 disk</span><br><span class="line">├─vda1         254:1    0  243M  0 part &#x2F;boot</span><br><span class="line">└─vda2         254:2    0  7.8G  0 part</span><br><span class="line">  └─disk1-root 253:0    0  7.8G  0 lvm  &#x2F;      </span><br><span class="line">vdb            254:16   0    2G  0 disk [SWAP]</span><br><span class="line">vdc            254:32   0  200G  0 disk</span><br><span class="line">└─vdc1         254:33   0  200G  0 part &#x2F;home</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>lvdisplay显示lvm详细信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# lvdisplay</span><br><span class="line">  --- Logical volume ---</span><br><span class="line">  LV Path                &#x2F;dev&#x2F;disk1&#x2F;root</span><br><span class="line">  LV Name                root</span><br><span class="line">  VG Name                disk1</span><br><span class="line">  LV UUID                zepNHp-4miy-l5hL-FuXz-isTC-vSzu-UQihY5</span><br><span class="line">  LV Write Access        read&#x2F;write</span><br><span class="line">  LV Creation host, time debian-owncloud-opt, 2015-06-15 16:00:36 +0800</span><br><span class="line">  LV Status              available</span><br><span class="line">  # open                 1</span><br><span class="line">  LV Size                7.76 GiB</span><br><span class="line">  Current LE             1986</span><br><span class="line">  Segments               1</span><br><span class="line">  Allocation             inherit</span><br><span class="line">  Read ahead sectors     auto</span><br><span class="line">  - currently set to     256</span><br><span class="line">  Block device           253:0</span><br><span class="line"></span><br><span class="line">root@xxx-dev:# lvdisplay|awk  &#39;&#x2F;LV Name&#x2F;&#123;n&#x3D;$3&#125; &#x2F;Block device&#x2F;&#123;d&#x3D;$3; sub(&quot;.*:&quot;,&quot;dm-&quot;,d); print d,n;&#125;&#39;  (使用awk提取每个dm映射的地址)</span><br><span class="line">dm-0 root</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>iostat查看读写性能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# iostat</span><br><span class="line">Linux 3.16.0-4-amd64 (xxx-dev)         06&#x2F;10&#x2F;2021      _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">avg-cpu:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">           2.22    0.00    0.64    0.02    0.09   97.02</span><br><span class="line"></span><br><span class="line">Device:            tps    kB_read&#x2F;s    kB_wrtn&#x2F;s    kB_read    kB_wrtn</span><br><span class="line">vda               2.56         1.21        15.32   26871618  338839230</span><br><span class="line">vdb               0.14         0.21         0.71    4626304   15647968</span><br><span class="line">vdc               0.34         1.10         9.18   24298844  202995646</span><br><span class="line">dm-0              2.50         1.21        15.32   26828725  338839189</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dm对应的设备，一般都位于 /dev/mapper下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@xxx-dev:# ls -l &#x2F;dev&#x2F;mapper</span><br><span class="line">total 0</span><br><span class="line">crw------- 1 root root 10, 236 Sep 27  2020 control</span><br><span class="line">lrwxrwxrwx 1 root root       7 Sep 27  2020 disk1-root -&gt; ..&#x2F;dm-0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://superuser.com/questions/131519/what-is-this-dm-0-device/594011">What is this dm-0 device?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.linuxquestions.org/questions/linux-newbie-8/dm0-in-iostat-652771/">dm0 in iostat???</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/09/problems-solution-linux%EF%BC%9Acannot-create-temp-file-for-here-document-No-space-left-on-device/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/09/problems-solution-linux%EF%BC%9Acannot-create-temp-file-for-here-document-No-space-left-on-device/" class="post-title-link" itemprop="url">[problems solution] linux：cannot create temp file for here-document: No space left on device</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-09 10:02:10" itemprop="dateCreated datePublished" datetime="2021-06-09T10:02:10+08:00">2021-06-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-21 21:31:53" itemprop="dateModified" datetime="2021-06-21T21:31:53+08:00">2021-06-21</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/problems-solution/" itemprop="url" rel="index"><span itemprop="name">problems solution</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在linux系统下，用<strong>Tab键自动补全</strong>时，报如下错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sh dojo-bash: cannot create temp file for here-document: No space left on device</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h2><ol>
+<li>df -h查看磁盘空间<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0       7.8G  7.8G   20K 100% &#x2F;</span><br><span class="line">udev             10M     0   10M   0% &#x2F;dev</span><br><span class="line">tmpfs           3.2G  353M  2.8G  11% &#x2F;run</span><br><span class="line">tmpfs           7.9G   56K  7.9G   1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1       200G   47G  154G  24% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1       236M   34M  190M  15% &#x2F;boot</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>这里的/dev/dm-0 空间已满</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;dev&#x2F;dm-0       7.8G  7.8G   20K 100% &#x2F;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>df -i查看磁盘Inodes消耗 和 剩余量<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Filesystem        Inodes  IUsed     IFree IUse% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0         129312 127969      1343   99% &#x2F;</span><br><span class="line">udev             2056585    356   2056229    1% &#x2F;dev</span><br><span class="line">tmpfs            2058885    501   2058384    1% &#x2F;run</span><br><span class="line">tmpfs            2058885     15   2058870    1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs            2058885     13   2058872    1% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1      209713152 371880 209341272    1% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1          62248    328     61920    1% &#x2F;boot</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>这里的/dev/dm-0 Inodes已用99%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;dev&#x2F;dm-0         129312 127969      1343   99% &#x2F;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>分析 /dev/dm-0</li>
+</ol>
+<p>迅速查找 ‘/‘ 路径下 各文件占用大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">sudo du -h --max-depth&#x3D;1 &#x2F;</span><br><span class="line"></span><br><span class="line">32M     .&#x2F;boot</span><br><span class="line">4.0M    .&#x2F;etc</span><br><span class="line">0       .&#x2F;media</span><br><span class="line">3.6G    .&#x2F;var</span><br><span class="line">3.7G    .&#x2F;usr</span><br><span class="line">205M    .&#x2F;lib</span><br><span class="line">0       .&#x2F;lib64</span><br><span class="line">8.9M    .&#x2F;bin</span><br><span class="line">7.8M    .&#x2F;sbin</span><br><span class="line">du: cannot access ‘.&#x2F;proc&#x2F;12844&#x2F;task&#x2F;12844&#x2F;fd&#x2F;4’: No such file or directory</span><br><span class="line">du: cannot access ‘.&#x2F;proc&#x2F;12844&#x2F;task&#x2F;12844&#x2F;fdinfo&#x2F;4’: No such file or directory</span><br><span class="line">du: cannot access ‘.&#x2F;proc&#x2F;12844&#x2F;fd&#x2F;4’: No such file or directory</span><br><span class="line">du: cannot access ‘.&#x2F;proc&#x2F;12844&#x2F;fdinfo&#x2F;4’: No such file or directory</span><br><span class="line">0       .&#x2F;proc</span><br><span class="line">27M     .&#x2F;tmp</span><br><span class="line">0       .&#x2F;dev</span><br><span class="line">47G     .&#x2F;home</span><br><span class="line">341M    .&#x2F;root</span><br><span class="line">0       .&#x2F;sys</span><br><span class="line">337M    .&#x2F;run</span><br><span class="line">0       .&#x2F;mnt</span><br><span class="line">0       .&#x2F;srv</span><br><span class="line">0       .&#x2F;opt</span><br><span class="line">55G     .</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>定位/var 和 /usr<br>查看/var路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">du -lh --max-depth&#x3D;1 &#x2F;var</span><br><span class="line">349M    &#x2F;var&#x2F;lib</span><br><span class="line">65M     &#x2F;var&#x2F;cache</span><br><span class="line">3.2G    &#x2F;var&#x2F;log</span><br><span class="line">0       &#x2F;var&#x2F;tmp</span><br><span class="line">64K     &#x2F;var&#x2F;spool</span><br><span class="line">6.7M    &#x2F;var&#x2F;backups</span><br><span class="line">0       &#x2F;var&#x2F;local</span><br><span class="line">0       &#x2F;var&#x2F;opt</span><br><span class="line">144K    &#x2F;var&#x2F;mail</span><br><span class="line">192K    &#x2F;var&#x2F;initsh</span><br><span class="line">3.6G    &#x2F;var</span><br></pre></td></tr></table></figure>
+<p>这里/var/log有3.2G，可以删除一波</p>
+</li>
+<li><p>重新查看df -h 和 df -i</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0       7.8G  7.4G  368M  96% &#x2F;</span><br><span class="line">udev             10M     0   10M   0% &#x2F;dev</span><br><span class="line">tmpfs           3.2G  345M  2.9G  11% &#x2F;run</span><br><span class="line">tmpfs           7.9G   56K  7.9G   1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs           7.9G     0  7.9G   0% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1       200G   47G  154G  24% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1       236M   34M  190M  15% &#x2F;boot</span><br><span class="line"></span><br><span class="line">$df -i</span><br><span class="line">Filesystem        Inodes  IUsed     IFree IUse% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0        1619760 127756   1492004    8% &#x2F;</span><br><span class="line">udev             2056585    356   2056229    1% &#x2F;dev</span><br><span class="line">tmpfs            2058885    501   2058384    1% &#x2F;run</span><br><span class="line">tmpfs            2058885     15   2058870    1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs            2058885     13   2058872    1% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1      209713152 371880 209341272    1% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1          62248    328     61920    1% &#x2F;boot</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>磁盘占用还是很大</strong>，但是<strong>inodes数量降下来</strong>了。</p>
+<p>最后，kill掉启动的python进程后，随着时间推移，/dev/dm-0 几分钟内降到了53%。</p>
+<p>个人猜测是由于这些 <strong>python进程一直在写/var/lo</strong>g，虽然在系统上清空了/var/log下的文件，但是 <strong>这些进程还在占用这些log文件，linux未能及时回收</strong>。</p>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://superuser.com/questions/131519/what-is-this-dm-0-device/594011">What is this dm-0 device?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.reddit.com/r/linuxadmin/comments/80bi15/what_is_devdm0_that_is_100_used/">what is /dev/dm-0 that is 100% used?</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1148,150 +1373,10 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/13/c-11-3-std-move%E5%92%8Cstd-forward/" class="post-title-link" itemprop="url">[c++11] 3.std::move和std::forward</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-04-13 21:38:45" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:45+08:00">2021-04-13</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/07/ssh-%E5%A4%9A%E4%B8%AAssh%E5%AF%86%E9%92%A5-%E5%A6%82%E4%BD%95%E6%8C%87%E5%AE%9A/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/07/ssh-%E5%A4%9A%E4%B8%AAssh%E5%AF%86%E9%92%A5-%E5%A6%82%E4%BD%95%E6%8C%87%E5%AE%9A/" class="post-title-link" itemprop="url">[ssh] 多个ssh密钥,如何指定?</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-04-07 17:36:22 / Modified: 20:18:11" itemprop="dateCreated datePublished" datetime="2021-04-07T17:36:22+08:00">2021-04-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/ssh/" itemprop="url" rel="index"><span itemprop="name">ssh</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="如何生成密钥？"><a href="#如何生成密钥？" class="headerlink" title="如何生成密钥？"></a>如何生成密钥？</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh-keygen -t rsa -C ‘xxxxx@company.com’ -f ~&#x2F;.ssh&#x2F;id_rsa_gitlab</span><br></pre></td></tr></table></figure>
-<p><strong>-f</strong> : 指定生成密钥的位置 和 命名(可选)<br><strong>-t</strong> ：指定密钥生成的算法(可选)<br><strong>-C</strong> : 指定账号(可选)</p>
-<h2 id="多个ssh密钥-如何指定"><a href="#多个ssh密钥-如何指定" class="headerlink" title="多个ssh密钥,如何指定"></a>多个ssh密钥,如何指定</h2><p>windows下ssh密钥文件在 Users\xxx.ssh\路径下, 系统默认会取 <strong>id_rsa</strong> 作为密钥文件。</p>
-<p>对<strong>不同ip or 网址</strong>,如果需要指定使用 哪个密钥文件,只需要修改 <strong>Users\xxx.ssh\config文件</strong>, 如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host 192.168.xx.xx</span><br><span class="line">  HostName 192.168.xx.xx</span><br><span class="line">  User leo</span><br><span class="line">  Port 4000</span><br><span class="line">  IdentityFile &quot;C:\Users\liuwen03\.ssh\id_rsa_liuwen03&quot;</span><br><span class="line"></span><br><span class="line">Host github.com</span><br><span class="line">  HostName github.com</span><br><span class="line">  User liuwen</span><br><span class="line">  IdentityFile &quot;C:\Users\liuwen03\.ssh\id_rsa_github&quot;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1406,7 +1491,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

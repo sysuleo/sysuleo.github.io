@@ -188,7 +188,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,6 +243,216 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">[python]弱引用weakref介绍</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-11-16 20:19:27" itemprop="dateCreated datePublished" datetime="2020-11-16T20:19:27+08:00">2020-11-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-18 20:00:49" itemprop="dateModified" datetime="2020-11-18T20:00:49+08:00">2020-11-18</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>虽然一般情况下python无需像cpp一样需要手动 内存申请和释放，但是某些情况，我们需要自己去管理对象的销毁，让它的生命周期符合我们的预期。weakref就是一种方式。</p>
+<h2 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h2><p>首先需要了解的是在 Python 里每个对象都有一个 <strong>引用计数</strong>，当这个引用计数为<br>0 时，Python 的garbage collection(GC)是可以 <strong>安全销毁这个对象</strong>的，<br>比如对一个对象创建引用则计数加 1,删除引用则计数减 1 。</p>
+<p>weakref 模块允许 <strong>对一个对象创建弱引用</strong>，弱引用不像正常引用, <strong>弱引用不会增加引用计数</strong>，也就是说 <strong>当一个对象上只有弱引用时，GC是可以销毁该对象的</strong>。</p>
+<h2 id="2-weakref-ref"><a href="#2-weakref-ref" class="headerlink" title="2 weakref.ref"></a>2 weakref.ref</h2><h3 id="2-1-weakref-ref用法"><a href="#2-1-weakref-ref用法" class="headerlink" title="2.1 weakref.ref用法"></a>2.1 weakref.ref用法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import weakref</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; class DBO(object):</span><br><span class="line">...     pass</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dbo1 &#x3D; DBO()                    # 创建对象，引用+1</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 调用sys.getrefcount，该函数引用了dbo1，对象引用+1</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; weakref_dbo &#x3D; weakref.ref(dbo1) # 创建弱引用</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 弱引用没有增加引用计数</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; weakref_dbo                     # 弱引用指向的对象</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;DBO&#39; at 0x7f9b03166ed0&gt;</span><br><span class="line">&gt;&gt;&gt; dbo2 &#x3D; weakref_dbo()            # 获取弱引用指向的对象</span><br><span class="line">&gt;&gt;&gt; dbo1 is dbo2                    # dbo1和dbo2引用的是同一个对象</span><br><span class="line">True</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 对象上的引用计数加 1</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo2)</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; dbo1 &#x3D; None                     # 删除引用</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 这个数字是None对象的引用次数</span><br><span class="line">2545</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; weakref_dbo</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;DBO&#39; at 0x7f9b03166ed0&gt;</span><br><span class="line">&gt;&gt;&gt; dbo2 &#x3D; None                     # 删除引用</span><br><span class="line">&gt;&gt;&gt; weakref_dbo                     # 当对象引用计数为0时，弱引用失效</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; dead&gt;</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)</span><br><span class="line">2546</span><br><span class="line">&gt;&gt;&gt; </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-1-weakref-ref源码"><a href="#2-1-weakref-ref源码" class="headerlink" title="2.1 weakref.ref源码"></a>2.1 weakref.ref源码</h3><p>接下来我们看看它的源码套餐，定义在objects/weakrefObjects.c中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyWeakref_NewRef(PyObject *ob, PyObject *callback)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;*PyWeakReference是一个弱引用对象，result做临时存储*&#x2F;</span><br><span class="line">    PyWeakReference *result &#x3D; NULL;</span><br><span class="line">    PyWeakReference **list;</span><br><span class="line">    PyWeakReference *ref, *proxy;</span><br><span class="line">    &#x2F;*检查当前对象类型是否支持弱引用*&#x2F;</span><br><span class="line">    if (!PyType_SUPPORTS_WEAKREFS(Py_TYPE(ob))) &#123;</span><br><span class="line">        PyErr_Format(PyExc_TypeError,</span><br><span class="line">                     &quot;cannot create weak reference to &#39;%s&#39; object&quot;,</span><br><span class="line">                     Py_TYPE(ob)-&gt;tp_name);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;*获取弱引用链表指针*&#x2F;</span><br><span class="line">    list &#x3D; GET_WEAKREFS_LISTPTR(ob);</span><br><span class="line">    &#x2F;*根据*list，给 ref 和 proxy 赋值*&#x2F;</span><br><span class="line">    get_basic_refs(*list, &amp;ref, &amp;proxy);</span><br><span class="line">    if (callback &#x3D;&#x3D; Py_None)</span><br><span class="line">        callback &#x3D; NULL;</span><br><span class="line">    if (callback &#x3D;&#x3D; NULL)</span><br><span class="line">        &#x2F;* return existing weak reference if it exists *&#x2F;</span><br><span class="line">        result &#x3D; ref;</span><br><span class="line">    if (result !&#x3D; NULL)</span><br><span class="line">        &#x2F;*给当前weak reference引用加1*&#x2F;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">    else &#123;</span><br><span class="line">        &#x2F;* Note: new_weakref() can trigger cyclic GC, so the weakref</span><br><span class="line">           list on ob can be mutated.  This means that the ref and</span><br><span class="line">           proxy pointers we got back earlier may have been collected,</span><br><span class="line">           so we need to compute these values again before we use</span><br><span class="line">           them.</span><br><span class="line">            使用之前，先确认ob对象没有被析构</span><br><span class="line">            *&#x2F;</span><br><span class="line">        result &#x3D; new_weakref(ob, callback);</span><br><span class="line">        if (result !&#x3D; NULL) &#123;</span><br><span class="line">            get_basic_refs(*list, &amp;ref, &amp;proxy);</span><br><span class="line">            if (callback &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">                if (ref &#x3D;&#x3D; NULL)</span><br><span class="line">                    insert_head(result, list);</span><br><span class="line">                else &#123;</span><br><span class="line">                    &#x2F;* Someone else added a ref without a callback</span><br><span class="line">                       during GC.  Return that one instead of this one</span><br><span class="line">                       to avoid violating the invariants of the list</span><br><span class="line">                       of weakrefs for ob. *&#x2F;</span><br><span class="line">                    Py_DECREF(result);</span><br><span class="line">                    Py_INCREF(ref);</span><br><span class="line">                    result &#x3D; ref;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                PyWeakReference *prev;</span><br><span class="line"></span><br><span class="line">                prev &#x3D; (proxy &#x3D;&#x3D; NULL) ? ref : proxy;</span><br><span class="line">                if (prev &#x3D;&#x3D; NULL)</span><br><span class="line">                    insert_head(result, list);</span><br><span class="line">                else</span><br><span class="line">                    insert_after(result, prev);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return (PyObject *) result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>weakref.proxy<br>proxy 像是弱引用对象，它们的行为就是它们所引用的对象的行为，这样就 <strong>不必<br>首先调用弱引用对象来访问背后的对象</strong>。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from socket import *</span><br><span class="line">&gt;&gt;&gt; s &#x3D; socket(AF_INET, SOCK_STREAM)</span><br><span class="line">&gt;&gt;&gt; ref_s &#x3D; weakref.ref(s)</span><br><span class="line">&gt;&gt;&gt; ref_s</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; s</span><br><span class="line">&lt;socket._socketobject object at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; proxy_s &#x3D; weakref.proxy(s)</span><br><span class="line">&gt;&gt;&gt; proxy_s</span><br><span class="line">&lt;weakproxy at 0x7f9b03117208 to _socketobject at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; </span><br><span class="line">&gt;&gt;&gt; ref_s.close()               #  不能直接调用对象方法</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">AttributeError: &#39;weakref&#39; object has no attribute &#39;close&#39;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<pre><code>&gt;&gt;&gt; ref_s().close()              #  不能直接调用对象方法，要加上()
+&gt;&gt;&gt;
+&gt;&gt;&gt; proxy_s.close()              #  可以直接调用对象方法
+&gt;&gt;&gt; 
+&gt;&gt;&gt; sys.getrefcount(s)
+2
+&gt;&gt;&gt; ref_s
+&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;
+&gt;&gt;&gt; r = ref_s()
+&gt;&gt;&gt; r.close()
+&gt;&gt;&gt; sys.getrefcount(s)
+3
+&gt;&gt;&gt; ref_s
+&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;
+&gt;&gt;&gt; del ref_s
+&gt;&gt;&gt; ref_s
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+NameError: name &#39;ref_s&#39; is not defined
+&gt;&gt;&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">[TCP/IP卷一]1.Internet地址结构</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-11-15 23:01:21" itemprop="dateCreated datePublished" datetime="2020-11-15T23:01:21+08:00">2020-11-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-16 09:25:42" itemprop="dateModified" datetime="2020-11-16T09:25:42+08:00">2020-11-16</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近打算读一下计算机网路领域的圣经，并将一些重要知识点总结记录下来。</p>
+<h2 id="1-1-引言"><a href="#1-1-引言" class="headerlink" title="1.1 引言"></a>1.1 引言</h2><p>链接到Internet的设备都必须有一个 <strong>IP地址</strong>。基于TCP/IP协议的专用网络中 <strong>使用的设备</strong> 也具有IP地址。 <strong>IP路由器</strong>实现的转发程序使用IP地址来 <strong>识别流量去向</strong>；IP地址也表示流量的来源。 IP地址与电话号码类似，但人们知道电话号码，而 IP地址通常被Internet中的 <strong>DNS</strong>屏蔽在用户视野之外， DNS实现大多数人使用的是 <strong>名字</strong>而非数字化的IP地址。</p>
+<p>个人用户通常由Internet <strong>服务商（ISP）分配</strong> 地址，通过支付费用来获得地址和执行路由。</p>
+<h2 id="1-2-表示IP地址"><a href="#1-2-表示IP地址" class="headerlink" title="1.2 表示IP地址"></a>1.2 表示IP地址</h2><ul>
+<li><p>IPv4地址，通常采用 <strong>点分四组或者点分十进制表示法（192.168.0.1）</strong>。点分四组表示法由 四个用点分隔的十进制数组成。每个数字都是 **[0,255]的非负整数(8位二进制可以表示)**，代表整个IP地址的四分之一（共占32位大小）。</p>
+</li>
+<li><p>IPv6，地址长度为 <strong>128位</strong>，是IPv4的四倍，它通常采用成为<strong>块或者字段的四个十六进制数（一个块大小为16位）</strong>，这些数用冒号分隔。 例如一个包含8个块的IPv6可以写成  5f05:2000:80ad:5800:0058:0800:2023:1d71。虽然不像用户熟悉的十进制数，但将十六进制转换为二级制更容易。另外IPv6可以简化成标准化的 <strong>[RFC4291]</strong>:</p>
+</li>
+<li><ol>
+<li>一个块的前导零不必书写，如上面可以写成：5f05:2000:80ad:5800:58:800:2023:1d71</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>全零块可以省略，用::代替，例如 0：0：0：0：0：0：0：1可以写成 ::1。为了避免歧义，<strong>一个IPv6中::只能使用一次</strong>。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>IPv6格式嵌入IPv4地址可使用混合符号形式，如IPv6地址::ffff:10.0.0.1可以表示IPv4地址为10.0.0.1。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>IPv6的 <strong>低32位通常用点分四组法</strong>。Ipv6地址::0102::f001相当于地址::1.2.240.1。它被称为IPv4兼容的IPv6地址。</li>
+</ol>
+</li>
+</ul>
+<p>后面**[RFC5952]**做了命名新的优化，这里不细讲了。</p>
+<h2 id="1-3-基本的IP地址结构"><a href="#1-3-基本的IP地址结构" class="headerlink" title="1.3 基本的IP地址结构"></a>1.3 基本的IP地址结构</h2><p>IPv4 地址空间中有 4 294 967 296(2^32)个可能的地址，而 IPv6地址个数为(2^128)：(不列了，实在太大了，根本用不完)。由于拥有大量地址，可以方便将地址空间 <strong>分为一个一个块</strong>。</p>
+<h3 id="1-3-1-单播地址"><a href="#1-3-1-单播地址" class="headerlink" title="1.3.1 单播地址"></a>1.3.1 单播地址</h3><p>大多IPv4地址块被 <strong>最终细分为一个地址</strong>，用于 <strong>识别链接Internet或某些专用的内联网计算机网络接口</strong>。这些就是单播地址(IPv4 <strong>大部分都是单播地址空间</strong>)</p>
+<p>除了单播地址，还有 <strong>广播，组播和任播地址</strong>。</p>
+<h3 id="1-3-2-分类寻址"><a href="#1-3-2-分类寻址" class="headerlink" title="1.3.2 分类寻址"></a>1.3.2 分类寻址</h3><ul>
+<li>每个IP单播地址 =  <strong>网络部分(识别接口使用的iP地址在哪个网络可被发现) + 主机地址(识别网络部分下的特定主机)**。  因此地址中一些连续位称为 **网络号</strong>，其余称为 <strong>主机号</strong>。</li>
+<li>现实中 <strong>不同网络下主机数量不一</strong>， 每台主机都需要一个唯一IP。 </li>
+<li><ul>
+<li>方案1：基于当前或预计主机数量，将不同大小的IP地址空间分配给不同的站点。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1438,298 +1648,10 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/" class="post-title-link" itemprop="url">[python源码分析] 1.对象</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-10-11 14:03:26" itemprop="dateCreated datePublished" datetime="2020-10-11T14:03:26+08:00">2020-10-11</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-11-19 12:55:52" itemprop="dateModified" datetime="2020-11-19T12:55:52+08:00">2020-11-19</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>面向对象理论中 <strong>“ 类 ”和“ 对象 ”</strong> 这两个重要概念，在 Python 内部均 <strong>以对象的形式存在</strong>。 <strong>“类”是一种对象</strong>，称为 <strong>类型对象</strong> ；“类”实例化生成的“对象”也是对象，称为 <strong>实例对象</strong> 。</p>
-<p>根据对象不同特点还可进一步分类：</p>
-<table>
-<thead>
-<tr>
-<th>类别</th>
-<th>特点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>可变对象</td>
-<td>对象创建后可以修改</td>
-</tr>
-<tr>
-<td>不可变对象</td>
-<td>对象创建后不能修改</td>
-</tr>
-<tr>
-<td>定长对象</td>
-<td>对象大小固定</td>
-</tr>
-<tr>
-<td>变长对象</td>
-<td>对象大小不固定</td>
-</tr>
-</tbody></table>
-<p>那么，对象在 Python 内部到底长啥样呢？<br>由于 Python 是由 C 语言实现的，因此 Python 对象在 C 语言层面应该是一个 <strong>结构体</strong> ，组织对象占用的内存。 不同类型的对象，数据及行为均可能不同，因此可以大胆猜测：<strong>不同类型的对象由不同的结构体表示</strong>。<br>对象也有一些共性，比如每个对象都需要有一个 <strong>引用计数 ，用于实现 垃圾回收机制</strong> 。 因此，还可以进一步猜测：表示对象的结构体有一个 <strong>公共头部</strong> 。</p>
-<h2 id="PyObject，对象的基石"><a href="#PyObject，对象的基石" class="headerlink" title="PyObject，对象的基石"></a>PyObject，对象的基石</h2><p>在 Python 内部，对象都由 <strong>PyObject 结构体</strong>表示， 对象引用则是指针 PyObject * 。 PyObject 结构体定义于头文件 object.h ，路径为 Include/object.h ，代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _object &#123;</span><br><span class="line">    _PyObject_HEAD_EXTRA   &#x2F;&#x2F;公共头部</span><br><span class="line">    Py_ssize_t ob_refcnt;  &#x2F;&#x2F;引用计数</span><br><span class="line">    struct _typeobject *ob_type;  &#x2F;&#x2F;类型指针</span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
-<p>除了 _PyObject_HEAD_EXTRA 宏，结构体包含以下两个字段：</p>
-<ul>
-<li>引用计数 ( ob_refcnt )</li>
-<li>类型指针 ( ob_type )</li>
-</ul>
-<p><strong>引用计数</strong> 很好理解：对象被其他地方引用时加一，引用解除时减一； 当引用计数为零，便可将对象回收，这是最简单的垃圾回收机制。 类型指针 指向对象的 类型对象 ，类型对象 描述 实例对象 的数据及行为。</p>
-<p>回过头来看 _PyObject_HEAD_EXTRA 宏的定义，同样在 Include/object.h 头文件内：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#ifdef Py_TRACE_REFS</span><br><span class="line">&#x2F;* Define pointers to support a doubly-linked list of all live heap objects. *&#x2F;</span><br><span class="line">#define _PyObject_HEAD_EXTRA            \</span><br><span class="line">    struct _object *_ob_next;           \</span><br><span class="line">    struct _object *_ob_prev;</span><br><span class="line"></span><br><span class="line">#define _PyObject_EXTRA_INIT 0, 0,</span><br><span class="line"></span><br><span class="line">#else</span><br><span class="line">#define _PyObject_HEAD_EXTRA</span><br><span class="line">#define _PyObject_EXTRA_INIT</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
-
-<p>如果 <strong>Py_TRACE_REFS 有定义，宏展开为两个指针，看名字是用来实现 双向链表</strong> 的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">struct _object *_ob_next;</span><br><span class="line">struct _object *_ob_prev;</span><br></pre></td></tr></table></figure>
-<p>结合注释，双向链表用于 <strong>跟踪所有 活跃堆对象</strong> ，一般不启用，不深入介绍。<br>对于 变长对象 ，需要在 PyObject 基础上加入长度信息，这就是 <strong>PyVarObject</strong> ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject ob_base;</span><br><span class="line">    Py_ssize_t ob_size; &#x2F;* Number of items in variable part *&#x2F;</span><br><span class="line">&#125; PyVarObject;</span><br></pre></td></tr></table></figure>
-<p><strong>变长对象比普通对象多一个字段 ob_size ，用于记录元素个数</strong>：</p>
-<hr>
-<div style="width:100%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A11.png" class="" title="PyVarObject图"></div>
-
-<hr>
-<p>于具体对象，视其大小是否固定，需要包含头部 PyObject 或 PyVarObject 。 为此，头文件准备了两个宏定义，方便其他对象使用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_HEAD          PyObject ob_base;</span><br><span class="line">#define PyObject_VAR_HEAD      PyVarObject ob_base;</span><br></pre></td></tr></table></figure>
-<p>例如，对于大小固定的 浮点对象 ，只需在 PyObject 头部基础上， 用一个 双精度浮点数 double 加以实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD  &#x2F;&#x2F;浮点数是定长对象</span><br><span class="line"></span><br><span class="line">    double ob_fval;</span><br><span class="line">&#125; PyFloatObject;</span><br></pre></td></tr></table></figure>
-<hr>
-<div style="width:100%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A12.png" class="" title="PyVarFloat图"></div>
-
-<hr>
-<p>而对于大小不固定的 列表对象 ，则需要在 PyVarObject 头部基础上， 用一个动态数组加以实现，数组存储列表包含的对象，即 PyObject 指针：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_VAR_HEAD  &#x2F;&#x2F;list是可变长的</span><br><span class="line"></span><br><span class="line">    PyObject **ob_item;    &#x2F;&#x2F;对象指针</span><br><span class="line">    Py_ssize_t allocated;  &#x2F;&#x2F;分配的空间大小</span><br><span class="line">&#125; PyListObject;</span><br></pre></td></tr></table></figure>
-<hr>
-<div style="width:90%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A13.png" class="" title="PyListObject图"></div>
---------------------
-
-<p>如图， PyListObject 底层 <strong>由一个数组实现</strong>，关键字段是以下 3 个：<br>ob_item ，指向 <strong>动态数组 的指针</strong>，数组保存元素对象指针；<br>allocated ，<strong>动态数组总长度</strong>，即列表当前的 容量 ；<br>ob_size ，<strong>当前元素个数</strong>，即列表当前的 长度 ；<br>列表容量不足时，<strong>Python 会自动扩容</strong>，具体做法在讲解 list 源码时再详细介绍。<br>最后，介绍两个用于初始化对象头部的宏定义。 其中，PyObject_HEAD_INIT 一般用于 定长对象 ，将<strong>引用计数 ob_refcnt 设置为 1 并将对象类型 ob_type 设置成给定类型</strong>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_HEAD_INIT(type)        \</span><br><span class="line">    &#123; _PyObject_EXTRA_INIT              \</span><br><span class="line">    1, type &#125;,</span><br></pre></td></tr></table></figure>
-<p>PyVarObject_HEAD_INIT 在 PyObject_HEAD_INIT 基础上进一步设置 长度字段 ob_size ，一般用于 变长对象 ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyVarObject_HEAD_INIT(type, size)       \</span><br><span class="line">    &#123; PyObject_HEAD_INIT(type) size &#125;,</span><br></pre></td></tr></table></figure>
-<p>后续在研读源码过程中，将经常见到这两个宏定义。</p>
-<h1 id="PyTypeObject，类型的基石"><a href="#PyTypeObject，类型的基石" class="headerlink" title="PyTypeObject，类型的基石"></a>PyTypeObject，类型的基石</h1><p>在 PyObject 结构体，我们看到了 Python 中所有对象共有的信息。 对于内存中的任一个对象，不管是何类型，它刚开始几个字段肯定符合我们的预期： <strong>引用计数 、 类型指针 以及变长对象特有的 元素个数</strong> 。<br>随着研究不断深入，我们发现有一些棘手的问题没法回答：<br>不同类型的对象所需内存空间不同，创建对象时从哪得知内存信息呢？<br>对于给定对象，怎么判断它支持什么操作呢？<br>对于我们初步解读过的 PyFloatObject 和 PyListObject ，并不包括这些信息。 事实上，这些作为对象的 <strong>元信息</strong> ，应该由一个独立实体保存，与对象所属 类型 密切相关。<br>注意到， PyObject 中包含一个指针 ob_type ，指向一个 类型对象 ，秘密就藏在这里。类型对象 <strong>PyTypeObject</strong> 也在 Include/object.h 中定义，字段较多，只讨论关键部分：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _typeobject &#123;</span><br><span class="line">    PyObject_VAR_HEAD</span><br><span class="line">    const char *tp_name; &#x2F;* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; *&#x2F;</span><br><span class="line">    Py_ssize_t tp_basicsize, tp_itemsize; &#x2F;* For allocation *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Methods to implement standard operations *&#x2F;</span><br><span class="line">    destructor tp_dealloc;</span><br><span class="line">    printfunc tp_print;</span><br><span class="line"></span><br><span class="line">    getattrfunc tp_getattr;</span><br><span class="line">    setattrfunc tp_setattr;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Attribute descriptor and subclassing stuff *&#x2F;</span><br><span class="line">    struct _typeobject *tp_base;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ......</span><br><span class="line">&#125; PyTypeObject;</span><br></pre></td></tr></table></figure>
-<p>可见 类型对象 PyTypeObject 是一个 <strong>变长对象</strong> ，包含变长对象头部。 专有字段有：</p>
-<ul>
-<li>类型名称 ，即 tp_name 字段；</li>
-<li>类型的继承信息，例如 tp_base 字段指向基类对象；</li>
-<li>创建实例对象时所需的 内存信息 ，即 tp_basicsize 和 tp_itemsize 字段；</li>
-<li>该类型支持的相关 操作信息 ，即 tp_print 、 tp_getattr 等函数指针；</li>
-</ul>
-<p>PyTypeObject 就是 <strong>类型对象 在 Python 中的表现形式</strong>，对应着<strong>面向对象中“类”的概念</strong>。 PyTypeObject 结构很复杂，但是我们不必在此刻完全弄懂它。 先有个大概的印象，知道 PyTypeObject 保存着对象的 元信息 ，描述对象的 类型 即可。<br>接下来，以 浮点 为例，考察 类型对象 和 实例对象 在内存中的形态和关系：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; float</span><br><span class="line">&lt;class &#39;float&#39;&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; pi &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; e &#x3D; 2.71</span><br><span class="line">&gt;&gt;&gt; type(pi) is float</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
-<p>float 为 <strong>浮点类型对象，系统中只有唯一一个，保存了所有浮点实例对象的元信息</strong>。 而浮点实例对象就有很多了，圆周率 pi 是一个，自然对数 e 是另一个，当然还有其他。<br>代码中各个对象在内存的形式如下图所示：</p>
-<p>其中，两个浮点 实例对象 都是 <strong>PyFloatObject 结构体</strong>， 除了公共头部字段 ob_refcnt 和 ob_type ，专有字段 <strong>ob_fval</strong> 保存了对应的数值。 浮点 类型对象 是一个 PyTypeObject 结构体， 保存了类型名、内存分配信息以及浮点相关操作。 实例对象 ob_type 字段指向类型对象， Python 据此判断对象类型， 进而获悉关于对象的元信息，如操作方法等。 再次提一遍，float 、 pi 以及 e 等变量只是一个指向实际对象的指针。<br>由于浮点 <strong>类型对象 全局唯一</strong>，在 C 语言层面 <strong>作为一个全局变量静态定义</strong>即可，Python 的确就这么做。 浮点类型对象就藏身于 Object/floatobject.c 中， PyFloat_Type 是也：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line">    0,</span><br><span class="line">    (destructor)float_dealloc,                  &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_repr *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>其中，第 2 行初始化 ob_refcnt 、 ob_type 以及 ob_size 三个字段； 第 3 行将 tp_name 字段初始化成类型名称 float ；再往下是各种操作的函数指针。<br>注意到 ob_type 指针指向 PyType_Type ，这也是一个静态定义的全局变量。 由此可见，代表“ 类型的类型 ” 即 type 的那个对象应该就是 PyType_Type 了。</p>
-<h1 id="PyType-Type，类型的类型"><a href="#PyType-Type，类型的类型" class="headerlink" title="PyType_Type，类型的类型"></a>PyType_Type，类型的类型</h1><p>我们初步考察了 float 类型对象，知道它在 C 语言层面是 PyFloat_Type 全局静态变量。 类型是一种对象，它也有自己的类型，也就是 Python 中的 type ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; float.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
-<p>自定义类型也是如此：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class Foo(object):</span><br><span class="line">...     pass</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; Foo.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
-<p>那么， type 在 C 语言层面又长啥样呢？<br>围观 PyFloat_Type 时，我们通过 ob_type 字段揪住了 <strong>PyType_Type</strong> 。 的确，它就是 type 的肉身。 PyType_Type 在 Object/typeobject.c 中定义（也是 <strong>重写PyTypeObject结构体</strong>）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyType_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;type&quot;,                                     &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyHeapTypeObject),                   &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    sizeof(PyMemberDef),                        &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line">    (destructor)type_dealloc,                   &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (reprfunc)type_repr,                        &#x2F;* tp_repr *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>内建类型和自定义类对应的 <strong>PyTypeObject</strong> 对象都是这个通过 PyType_Type 创建的。 PyType_Type 在 Python 的类型机制中是一个至关重要的对象，它是所有类型的类型，称为 <strong>元类型 ( meta class )。 借助元类型</strong>，你可以实现很多神奇的高级操作。<br>注意到， <strong>PyType_Type 将自己的 ob_type 字段设置成它自己</strong>(第 2 行)，这跟我们在 Python 中看到的行为是吻合的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; type.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; type.__class__ is type</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
-<p>至此，元类型 type 在对象体系里的位置非常清晰了：</p>
-<hr>
-<div style="width:80%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A15.png" class="" title="PyType_Type图"></div>
-
-<hr>
-<h1 id="PyBaseObject-Type，类型之基"><a href="#PyBaseObject-Type，类型之基" class="headerlink" title="PyBaseObject_Type，类型之基"></a>PyBaseObject_Type，类型之基</h1><p>object 是另一个特殊的类型，它是 <strong>所有类型的基类</strong>。 那么，怎么找到它背后的实体呢？ 理论上，通过 PyFloat_Type 中 tp_base 字段顺藤摸瓜即可。<br>然而，我们发现这个字段在并没有初始化：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0,                                          &#x2F;* tp_base *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>这又是什么鬼？<br>接着查找代码中 PyFloat_Type 出现的地方，我们在 Object/object.c 发现了蛛丝马迹：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (PyType_Ready(&amp;PyFloat_Type) &lt; 0)</span><br><span class="line">    Py_FatalError(&quot;Can&#39;t initialize float type&quot;);</span><br></pre></td></tr></table></figure>
-<p>敢情 PyFloat_Type 静态定义后还是个半成品呀！ PyType_Ready 对它做进一步加工，将 PyFloat_Type 中 tp_base 字段初始化成 PyBaseObject_Type ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">int</span><br><span class="line">PyType_Ready(PyTypeObject *type)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    base &#x3D; type-&gt;tp_base;</span><br><span class="line">    if (base &#x3D;&#x3D; NULL &amp;&amp; type !&#x3D; &amp;PyBaseObject_Type) &#123;</span><br><span class="line">        base &#x3D; type-&gt;tp_base &#x3D; &amp;PyBaseObject_Type;</span><br><span class="line">        Py_INCREF(base);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>PyBaseObject_Type 就是 PyTypeObject 背后的实体：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyBaseObject_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;object&quot;,                                   &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyObject),                           &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line">    object_dealloc,                             &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    object_repr,                                &#x2F;* tp_repr *&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>注意到， ob_type 字段指向 PyType_Type 跟 object 在 Python 中的行为时相吻合的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; object.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
-<p>又注意到 PyType_Ready 函数初始化 PyBaseObject_Type 时，不设置 tp_base 字段。 因为继承链必须有一个终点，不然对象沿着继承链进行属性查找时便陷入死循环。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print(object.__base__)</span><br><span class="line">None</span><br></pre></td></tr></table></figure>
-<p>至此，我们完全弄清了 Python 对象体系中的所有实体以及关系，得到一幅完整的图画：</p>
-<hr>
-<div style="width:80%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A16.png" class="" title="PyBaseObejct_Type图"></div>
-
-<hr>
-<ol>
-<li><p>创建一个对象时, 先创建一个 <strong>类型对象PyTypeObject</strong>(类型对象自始至终都是 <strong>只要一个的, 在C源码中, 就是定义了一个全局的变量</strong>), 保存要创建对象的类型信息, 接着再在 <strong>该类型对象的方法中创建指定的对象</strong>, 并将类型对象 PyTypeObject 置为该对象的属性之一, 如创建一个int对象, 先在PyInt_Type对象创建封装了信息之后再创建PyIntObject对象。</p>
-</li>
-<li><p>Python相比较于其他语言的好处是 <strong>其doc文档就在程序之中</strong>, 通过<strong>PyTypeObject结构体中的doc属性</strong>可以看到。</p>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/" class="post-title-link" itemprop="url">[unity shader] 2.GPU渲染管线</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-18 18:35:10" itemprop="dateCreated datePublished" datetime="2020-08-18T18:35:10+08:00">2020-08-18</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="GPU渲染管线"><a href="#GPU渲染管线" class="headerlink" title="GPU渲染管线"></a>GPU渲染管线</h1><p>当GPU从CPU得到渲染命令后，就会进行一系列流水线操作，最终把图元渲染到屏幕上。</p>
-<p>对于<strong>几何阶段和光栅化阶段</strong>，开发者无法拥有绝对的控制权，其实现的载体是GPU。GPU通过<strong>实现流水线化，大大加快了渲染速度</strong>。</p>
-<p>几何阶段和光栅化阶段<strong>可以分成若干更小的流水线阶段</strong>，这些流水线阶段由GPU实现，每个阶段GPU提供了不同的可配置性或可编程性。</p>
-<div style="width:100%;margin:auto"><img src="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.png" class="" title="GPU渲染管线图"></div>
-
-<p>从图中可以看出，GPU的渲染流水线接收顶点数据作为输入。这些顶点数据是由应用阶段加载到显存中，再由DrawCall指定的。这些数据随后被传递给顶点着色器。</p>
-<h3 id="1-顶点着色器（Vertex-Shader）：完全可编程"><a href="#1-顶点着色器（Vertex-Shader）：完全可编程" class="headerlink" title="1.顶点着色器（Vertex Shader）：完全可编程"></a>1.顶点着色器（Vertex Shader）：完全可编程</h3><p>通常用于实现顶点的空间变换、顶点着色等功能。</p>
-<p>顶点着色器是流水线的第一个阶段，它的输入来自于CPU。顶点着色器的处理单位是顶点，输入进来的每个顶点都会调用一次顶点着色器。顶点着色器本身并不会创建或者销毁顶点，而且无法得到顶点与顶点之间的关系。</p>
-<p>例如：我们无法得知两个顶点是否属于一个三角网格。正因为这样的相互独立性，GPU可以利用本身的特性并行化处理每一个顶点。</p>
-<p>顶点着色器需要完成的工作主要有：坐标变换和顶点光照。当然还可以输出后续阶段所需的数据。</p>
-<h3 id="2-裁剪（Clipping）：可配置"><a href="#2-裁剪（Clipping）：可配置" class="headerlink" title="2.裁剪（Clipping）：可配置"></a>2.裁剪（Clipping）：可配置</h3><p>这一阶段的目的是将那些不再摄像机视野内的顶点裁减掉，并剔除某些三角图元的面片。</p>
-<p>目的：处理不在摄像机视野范围内的物体。</p>
-<p>一个图元和摄像机视野有三种关系：完全在视野内、部分在视野内、完全在视野外。完全在视野内的图元即系传递给下一个流水线阶段，完全在视野外的图元就不会向下传递，因为不需要被渲染。而那些部分在视野内的图元就需要进行一个处理，那就是裁剪。</p>
-<p>和顶点着色器不同，这一步是不可编程的。无法通过编程来控制裁剪的过程，是硬件上的固定操作</p>
-<p>但是可以自定义一个剪裁操作来对这一步进行配置</p>
-<h3 id="3-屏幕映射（Screen-Mapping）：不可配置和编程的"><a href="#3-屏幕映射（Screen-Mapping）：不可配置和编程的" class="headerlink" title="3.屏幕映射（Screen Mapping）：不可配置和编程的"></a>3.屏幕映射（Screen Mapping）：不可配置和编程的</h3><p>这一步输入的坐标仍然是三维坐标系下的坐标。</p>
-<p>负责把每个图元的坐标转换到屏幕坐标系中。</p>
-<h3 id="4-三角形设置（Triangle-Setup）和三角形变量（Triangle-Traversal）阶段都是固定函数（Fixed-Function）的阶段"><a href="#4-三角形设置（Triangle-Setup）和三角形变量（Triangle-Traversal）阶段都是固定函数（Fixed-Function）的阶段" class="headerlink" title="4.三角形设置（Triangle Setup）和三角形变量（Triangle Traversal）阶段都是固定函数（Fixed-Function）的阶段"></a>4.三角形设置（Triangle Setup）和三角形变量（Triangle Traversal）阶段都是固定函数（Fixed-Function）的阶段</h3><p>这一阶段开始进入光栅化阶段。从上一个阶段输出的信息是屏幕坐标系下的顶点位置以及和它们相关的额外信息，如：深度值（Z）、法线方向、视角方向等。</p>
-<p>光栅化阶段有两个重要的目标：计算每个图元的覆盖了哪些像素，以及为这些像素计算颜色。</p>
-<p>三角形设置：计算光栅化一个三角网格所需的信息。具体来讲，上一个阶段输出的都是三角网格的顶点，即我们得到的是三角网格每条边的两个顶点。但是如果要得到整个三角形网格对像素的覆盖情况，我们就必须计算每条边上的像素坐标。为了能够计算边界像素的坐标信息，我们就需要得到三角形边界的表示方式。这样一个计算三角形网格表示数据的过程叫做三角形设置。</p>
-<p>三角形遍历：检查每个像素是否被一个三角网格所覆盖。如果覆盖的话，就会生成一个片段（fragment）。这样一个找到哪些像素被三角网格覆盖的过程就是三角形遍历，这个阶段也被称为扫描变换（Scan Conversion）。</p>
-<p>片段并不是真正意义上的像素，而是包含了很多状态的集合，这些状态用于计算每个像素的最终颜色。</p>
-<h3 id="5-片段着色器（Fragment-Shader）：完全可编程"><a href="#5-片段着色器（Fragment-Shader）：完全可编程" class="headerlink" title="5.片段着色器（Fragment Shader）：完全可编程"></a>5.片段着色器（Fragment Shader）：完全可编程</h3><p>用于实现逐片元（Per-Fragment）的着色操作。</p>
-<p>片段着色器的输入是上一个阶段对顶点信息插值得到的结果，更具体来说，是根据那些从顶点着色器中输出的数据插值得到的。输出的是一个或者多个颜色值。</p>
-<p>这一个阶段可以完成很多重要的渲染技术，其中最重要的技术之一就是纹理采样。为了在片段着色器中进行纹理采样，通常会在顶点着色器阶段输出每个顶点对应的纹理坐标，然后经过光栅化阶段对三角网格的3个顶点对应的纹理进行插值后，就可以得到其覆盖的片段的纹理坐标了。</p>
-<h3 id="6-逐片元操作（Per-Fragment-Operations）：不可编程，但具有很高的可配置性"><a href="#6-逐片元操作（Per-Fragment-Operations）：不可编程，但具有很高的可配置性" class="headerlink" title="6.逐片元操作（Per-Fragment Operations）：不可编程，但具有很高的可配置性"></a>6.逐片元操作（Per-Fragment Operations）：不可编程，但具有很高的可配置性</h3><p>负责执行很多重要的操作，例如：修改颜色、深度缓冲、进行混合等。</p>
-<p>这一阶段OpenGL-逐片元操作 DirectX-输出合并阶段</p>
-<p>这一阶段有几个重要的任务：</p>
-<p>（1） 决定每个片元的可见性：这涉及了很多测试工作，例如：深度测试、模板测试</p>
-<p>（2） 如果一个片元通过了所有的测试，就需要把这个片元的颜色值和已经储存在颜色缓冲区中的颜色进行合并，混合</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1844,7 +1766,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

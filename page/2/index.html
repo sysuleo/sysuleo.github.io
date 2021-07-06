@@ -188,20 +188,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -243,6 +243,297 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/" class="post-title-link" itemprop="url">[boost.asio] 1.basic introduction of boost asio</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-22 16:30:54" itemprop="dateCreated datePublished" datetime="2021-04-22T16:30:54+08:00">2021-04-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-23 15:42:34" itemprop="dateModified" datetime="2021-04-23T15:42:34+08:00">2021-04-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Boost.Asio 可在I/O对象(如socket)中进行同步(synchronous)和异步(asynchronous)操作。<br>接下来，以一个基于同步的I/O socket连接操作为例：</p>
+<div style="width:100%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/sync_op.png" class="" title="同步连接"></div>
+
+<p>在program中,至少需要有一个 I/0 execution context,如<strong>boost::asio::io_context, boost::asio::thread_pool, or boost::asio::system_context</strong></p>
+<p>该boost::asio::io_context表明已经<strong>连接到</strong>了 <strong>操作系统的 I/O services</strong>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::io_context io_context;</span><br></pre></td></tr></table></figure>
+
+<p>program进行I/O操作，必须有一个 I/O object 如 TCP socket：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::ip::tcp::socket socket(io_context);</span><br></pre></td></tr></table></figure>
+
+<h4 id="同步连接操作相关事件"><a href="#同步连接操作相关事件" class="headerlink" title="同步连接操作相关事件"></a>同步连接操作相关事件</h4><p>进行同步连接操作是，如下事件<strong>按顺序</strong>触发</p>
+<ol>
+<li>通过调用  I/O object，进行初始化连接<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.connect(server_endpoint);</span><br></pre></td></tr></table></figure></li>
+<li>I/O object <strong>请求 I/O execution context</strong></li>
+<li>I/O execution context <strong>调用操作系统</strong>，进行<strong>连接操作</strong>。</li>
+<li>操作系统<strong>返回 操作返回值</strong> 给 I/O execution context</li>
+<li>I/O execution context将 操作系统返回的结果 转换为boost::system::error_code 对象。然后返回该结果给  I/O object。</li>
+<li>若操作失败, I/O object 抛出 boost::system::system_error类型的异常。 若初始化操作的code 为：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boost::system::error_code ec;</span><br><span class="line">socket.connect(server_endpoint, ec);</span><br></pre></td></tr></table></figure>
+返回结果设置到 类型为error_code的变量ec, I/O object不会抛出异常。</li>
+</ol>
+<h4 id="异步连接操作相关事件"><a href="#异步连接操作相关事件" class="headerlink" title="异步连接操作相关事件"></a>异步连接操作相关事件</h4><div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op1.png" class="" title="异步连接"></div>
+
+<ol>
+<li><p>通过调用  I/O object，进行初始化连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.async_connect(server_endpoint, your_completion_handler);</span><br></pre></td></tr></table></figure>
+<p>其中 <strong>_completion_handler</strong> 是一个**带有签名(signature)**的函数 or 函数对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void your_completion_handler(const boost::system::error_code&amp; ec);</span><br></pre></td></tr></table></figure>
+<p>这个签名(signature) 取决于正在进行的 异步操作。</p>
+</li>
+<li><p>I/O object <strong>请求 I/O execution context</strong>。</p>
+</li>
+<li><p>I/O execution context 给<strong>操作系统</strong>发signals，通知操作系统进行异步连接。</p>
+</li>
+<li><p><strong>操作系统</strong>完成连接操作后，将结果加入到队列，等待<strong>I/O execution context</strong>处理。</p>
+</li>
+<li><p>当使用 io_context 作为 I/O execution context时, 需要运行io_context::run()，获取返回的结果。当有未完成的异步操作时，不能运行 io_context::run()。因此需要在首次进行异步连接操作时，就运行io_context::run()。</p>
+</li>
+<li><p>在 io_context::run() 里，<strong>I/O execution context</strong> 将处理队列中的返回结果，将其翻译成 error_code，然后传给 <strong>completion handler(回调)</strong></p>
+</li>
+</ol>
+<div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op2.png" class="" title="异步连接2"></div>
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li>(Basic Boost.Asio Anatomy)[<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]">https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/problems-solution-windows-cmd-cd%E6%97%A0%E6%95%88%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/22/problems-solution-windows-cmd-cd%E6%97%A0%E6%95%88%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">[problems solution] windows cmd cd无效问题</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-04-22 11:36:10 / Modified: 13:22:03" itemprop="dateCreated datePublished" datetime="2021-04-22T11:36:10+08:00">2021-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/problems-solution/" itemprop="url" rel="index"><span itemprop="name">problems solution</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在windows下， 打开cmd.exe, 默认进入到当前用户主目录下， 发现除了C:\盘， 可以通过 <strong>cd、dir</strong> 指令 去到C:\盘的各个目录外， <strong>不能通过 cd e: 进入到其他盘</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuwen03&gt;cd ..</span><br><span class="line"></span><br><span class="line">C:\Users&gt;cd e:</span><br><span class="line">E:\</span><br><span class="line"></span><br><span class="line">C:\Users&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="solution"><a href="#solution" class="headerlink" title="solution"></a>solution</h2><ol>
+<li>在 cd 和盘符<strong>之间</strong>加上 <strong>/d</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuwen03&gt;cd &#x2F;d e:</span><br><span class="line"></span><br><span class="line">E:\&gt;</span><br></pre></td></tr></table></figure></li>
+<li>直接用 盘符 e:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users&gt;e:</span><br><span class="line"></span><br><span class="line">E:\&gt;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/" class="post-title-link" itemprop="url">[c++11] 2.可变参数模板</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-04-13 21:38:56 / Modified: 23:05:18" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:56+08:00">2021-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/c-11/" itemprop="url" rel="index"><span itemprop="name">c++11</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h2><p>C++11的新特性–<strong>可变模版参数（variadic templates）</strong>是C++11新增的最强大的特性之一，它对参数进行了高度泛化,表示<strong>0到任意个数、任意类型的参数</strong>. </p>
+<h2 id="可变模版参数函数"><a href="#可变模版参数函数" class="headerlink" title="可变模版参数函数"></a>可变模版参数函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class... T&gt;</span><br><span class="line">void f(T... args) </span><br><span class="line">&#123; &#x2F;&#x2F;可以传任意类型和个数的参数给函数f  </span><br><span class="line">    cout &lt;&lt; sizeof...(args) &lt;&lt; endl; &#x2F;&#x2F;打印变参的个数</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f();        &#x2F;&#x2F;0</span><br><span class="line">f(1, 2);    &#x2F;&#x2F;2</span><br><span class="line">f(1, 2.5, &quot;&quot;);    &#x2F;&#x2F;3</span><br></pre></td></tr></table></figure>
+
+<h4 id="递归函数方式展开参数包"><a href="#递归函数方式展开参数包" class="headerlink" title="递归函数方式展开参数包"></a>递归函数方式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">&#x2F;&#x2F;递归终止函数</span><br><span class="line">void print()</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;empty&quot; &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;展开函数</span><br><span class="line">template &lt;class T, class ...Args&gt;</span><br><span class="line">void print(T head, Args... rest)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;parameter &quot; &lt;&lt; head &lt;&lt; endl;</span><br><span class="line">   print(rest...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">   print(1,2,3,4);</span><br><span class="line">   return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="逗号表达式展开参数包"><a href="#逗号表达式展开参数包" class="headerlink" title="逗号表达式展开参数包"></a>逗号表达式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">void printarg(T t)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; t &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class ...Args&gt;</span><br><span class="line">void expand(Args... args)</span><br><span class="line">&#123;</span><br><span class="line">   int arr[] &#x3D; &#123;(printarg(args), 0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">expand(1,2,3,4);</span><br></pre></td></tr></table></figure>
+<p>这种展开参数包的方式，<strong>不需要通过递归终止函数</strong>，是直接在expand函数体中展开的, printarg不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式实现的关键是<strong>逗号表达式</strong>。我们知道逗号表达式会按顺序执行逗号前面的表达式，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d &#x3D; (a &#x3D; b, c); </span><br></pre></td></tr></table></figure>
+<p>这个表达式会按顺序执行：<strong>b会先赋值给a</strong>，接着括号中的<strong>逗号表达式返回c的值</strong>，因此<strong>d将等于c</strong>。</p>
+<p>expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)…}将会展开成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((printarg(arg1),0), (printarg(arg2),0), (printarg(arg3),0),  etc... )</span><br></pre></td></tr></table></figure>
+<p>最终会创建一个元素值 <strong>都为0的数组int arr[sizeof…(Args)]**。由于是逗号表达式，在创建数组的过程中会</strong>先执行逗号表达式前面的部分printarg(args)<strong>打印出参数，也就是说</strong>在构造int数组的过程中就将参数包展开了<strong>，这个数组的目的</strong>纯粹是为了在数组构造的过程展开参数包**。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class F, class... Args&gt;</span><br><span class="line">void expand(const F&amp; f, Args&amp;&amp;...args) </span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;这里用到了完美转发，关于完美转发，读者可以参考笔者在上一期程序员中的文章《通过4行代码看右值引用》</span><br><span class="line">  initializer_list&lt;int&gt;&#123;(f(std::forward&lt; Args&gt;(args)),0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line">expand([](int i)&#123;cout&lt;&lt;i&lt;&lt;endl;&#125;, 1,2,3);</span><br></pre></td></tr></table></figure>
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/parameter_pack">type … Args(optional)</a><br>2.<a target="_blank" rel="noopener" href="https://www.cnblogs.com/qicosmos/p/4325949.html">泛化之美–C++11可变模版参数的妙用</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1039,395 +1330,6 @@ $$P(A|B) = \frac {P(B|A) P(A)} {P(B)}$$
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/25/c-%E6%8E%A5%E5%8F%A3-1-boost%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/" class="post-title-link" itemprop="url">[c++接口] 1.boost常用接口</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-02-25 13:00:44" itemprop="dateCreated datePublished" datetime="2021-02-25T13:00:44+08:00">2021-02-25</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-02-26 14:36:22" itemprop="dateModified" datetime="2021-02-26T14:36:22+08:00">2021-02-26</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/c-%E6%8E%A5%E5%8F%A3/" itemprop="url" rel="index"><span itemprop="name">c++接口</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="1-enable-shared-from-this"><a href="#1-enable-shared-from-this" class="headerlink" title="1. enable_shared_from_this"></a>1. enable_shared_from_this</h2><p><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/enable_shared_from_this.html">enable_shared_from_this</a><T>定义了 <strong>shared_from_this</strong>和 <strong>weak_from_this</strong>成员函数，它们分别返回自身的<strong>share_ptr</strong>的<strong>weak_ptr</strong>。<br>如何在对象中获得一个指向当前对象的 shared_ptr 对象</p>
-<h4 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h4><ul>
-<li>当类对象被 shared_ptr 管理时</li>
-<li>需要在类自己定义的函数里 <strong>把当前类对象作为参数</strong>传给其他函数时（将对象的 this 指针[raw pointer]作为返回值返回给了调用者时可能会造成的 core dump）</li>
-</ul>
-<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">namespace boost</span><br><span class="line">&#123;</span><br><span class="line">template&lt;class T&gt; class enable_shared_from_this</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    shared_ptr&lt;T&gt; shared_from_this();      </span><br><span class="line">    shared_ptr&lt;T const&gt; shared_from_this() const;</span><br><span class="line"></span><br><span class="line">    weak_ptr&lt;T&gt; weak_from_this() noexcept;</span><br><span class="line">    weak_ptr&lt;T const&gt; weak_from_this() const noexcept;</span><br><span class="line"></span><br><span class="line">    template&lt;class X, class Y&gt; void _internal_accept_owner( shared_ptr&lt;X&gt; const * ppx, Y * py ) const</span><br><span class="line">    &#123;</span><br><span class="line">        if( weak_this_.expired() )</span><br><span class="line">        &#123;</span><br><span class="line">            weak_this_ &#x3D; shared_ptr&lt;T&gt;( *ppx, py );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">private:</span><br><span class="line">    mutable weak_ptr&lt;T&gt; weak_this_; &#x2F;&#x2F;弱引用指针数组（不能用shared_ptr，否则shared_ptr的引用永远也不为零）</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取当前对象的shared_ptr指针就是从该weak_ptr提升而来</span><br><span class="line">shared_ptr&lt;T&gt; shared_from_this()</span><br><span class="line">&#123;</span><br><span class="line">    shared_ptr&lt;T&gt; p( weak_this_ );</span><br><span class="line">    BOOST_ASSERT( p.get() &#x3D;&#x3D; this );</span><br><span class="line">    return p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;而weak_ptr的则是在构造的时候初始化的</span><br><span class="line">explicit shared_ptr( Y * p ): px( p ), pn( p ) &#x2F;&#x2F; Y must be complete</span><br><span class="line">&#123;</span><br><span class="line">    boost::detail::sp_enable_shared_from_this( this, p, p );</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">template&lt; class X, class Y, class T &gt;</span><br><span class="line">inline void sp_enable_shared_from_this( boost::shared_ptr&lt;X&gt; const * ppx, Y const * py, </span><br><span class="line">boost::enable_shared_from_this&lt; T &gt; const * pe )</span><br><span class="line">&#123;</span><br><span class="line">    if( pe !&#x3D; 0 )</span><br><span class="line">    &#123;</span><br><span class="line">        pe-&gt;_internal_accept_owner( ppx, const_cast&lt; Y* &gt;( py ) );</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="example"><a href="#example" class="headerlink" title="example"></a>example</h4><p>对一个类 Y ，当我们希望使用 shared_ptr 来管理其类对象时，可以让类 Y <strong>从 enable_shared_from_this 继承</strong>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;boost&#x2F;enable_shared_from_this.hpp&gt;</span><br><span class="line">#include &lt;boost&#x2F;shared_ptr.hpp&gt;</span><br><span class="line">#include &lt;cassert&gt;</span><br><span class="line">class Y: public boost::enable_shared_from_this&lt;Y&gt;</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; f()</span><br><span class="line">    &#123;</span><br><span class="line">        return shared_from_this();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; 正确的使用方法</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; p(new Y);</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; q &#x3D; p-&gt;f();   &#x2F;&#x2F; 调用f获得shared_ptr</span><br><span class="line">    assert(p &#x3D;&#x3D; q);</span><br><span class="line">    assert(!(p &lt; q || q &lt; p)); &#x2F;&#x2F; p and q must share ownership</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 错误的使用方法，因为Y的成员weak_ptr 根本就没有得到初始化</span><br><span class="line">    Y  yy;</span><br><span class="line">    boost::shared_ptr&lt;Y&gt; q &#x3D; yy.f();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>另外可见<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_39_0/doc/html/boost_asio/tutorial/tutdaytime3/src.html">boost官方的详细例子</a></p>
-<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><ul>
-<li>限制：<ul>
-<li>在类对象 <strong>本身</strong>当中 <strong>不能存储</strong>类对象<strong>本身的 shared_ptr</strong> ，否则类对象 shared_ptr 永远也不会为0了，资源永远不会释放，除非程序结束。</li>
-<li>类对象肯定是 外部函数通过某种机制分配的，而且 <strong>一经分配立即交给 shared_ptr 管理</strong>，而且以后凡是需要共享使用类对象的地方必须 <strong>使用这个 shared_ptr 当作右值</strong>来构造产生或者<strong>拷贝产生另一个 shared_ptr</strong> 从而达到共享使用的目的。</li>
-</ul>
-</li>
-<li>方案<ul>
-<li>类对象的<strong>外部 shared_ptr</strong> 作为<strong>函数参数</strong>传给需要<strong>引用类对象自身的函数</strong> 【这种方法很丑陋，而且并不是所有的情况都可行（如在外部 shared_ptr 不可见的作用域中就不行）】</li>
-<li>类对象<strong>自身存储某种信息</strong>，在<strong>需要</strong>自身 shared_ptr 时来<strong>产生一个临时的 shared_ptr</strong> 。</li>
-</ul>
-</li>
-</ul>
-<h4 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h4><ol>
-<li><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/enable_shared_from_this.html">boost/enable_shared_from_this</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiezhw3/p/4099948.html">如何用enable_shared_from_this 来得到指向自身的shared_ptr 及对enable_shared_from_this 的理解</a></li>
-</ol>
-<h2 id="2-noncopyable-不可拷贝类"><a href="#2-noncopyable-不可拷贝类" class="headerlink" title="2. noncopyable 不可拷贝类"></a>2. noncopyable 不可拷贝类</h2><p><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_65_0/libs/core/doc/html/core/noncopyable.html">&lt;boost/core/noncopyable.hpp&gt;</a>定义了 boost::noncopyable(不可拷贝) 类。 boost::noncopyable 使用 <strong>private</strong> (C++03版) 或者 <strong>deleted</strong> (C++11版)字段 来限制拷贝构造函数。一个类继承自它也是不可拷贝的.</p>
-<h4 id="大致实现"><a href="#大致实现" class="headerlink" title="大致实现"></a>大致实现</h4><p>namespace boost<br>{<br>    class noncopyable{<br>    # ================  c++03版本 ================<br>    private:  // emphasize the following members are private<br>        noncopyable( const noncopyable&amp; );<br>        noncopyable&amp; operator=( const noncopyable&amp; );</p>
-<pre><code># ================ c++11版本 ================
-public:
-    noncopyable(const noncopyable&amp;) = delete;
-    noncopyable&amp; operator=( const noncopyable&amp; ) = delete;
-&#125;</code></pre>
-<p>}</p>
-<h4 id="example-1"><a href="#example-1" class="headerlink" title="example"></a>example</h4><p><strong>private继承</strong>boost::noncopyable, 使自定义类不能被拷贝</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;boost&#x2F;core&#x2F;noncopyable.hpp&gt;</span><br><span class="line"></span><br><span class="line">class X: private boost::noncopyable</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/" class="post-title-link" itemprop="url">[python源码分析] 9.执行过程和字节码</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-02-23 12:54:42 / Modified: 19:15:46" itemprop="dateCreated datePublished" datetime="2021-02-23T12:54:42+08:00">2021-02-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>.py文件是如何转换为机器指令被CPU执行呢？.pyc文件作用是什么？</p>
-<h2 id="执行原理"><a href="#执行原理" class="headerlink" title="执行原理"></a>执行原理</h2><p>C/C++之类的编译性语言编写的程序，是需要从源文件转换成计算机使用的机器语言，经过 <strong>链接器链接之后形成了二进制的可执行文件</strong>。运行该程序的时候，就可以把 <strong>二进制程序从硬盘载入到内存</strong>中并运行。</p>
-<p>但是对于Python而言，python源码 <strong>不需要编译成二进制代码</strong>，它可以<strong>直接从源代码运行程序</strong>。</p>
-<p>从程序执行时的基本表示是 <strong>实际计算机上的机器语言</strong> 还是 <strong>虚拟机的机器语言</strong>维度，可以将程序设计语言划分为两大类：<strong>编译型语言和解释型语言</strong>。</p>
-<ul>
-<li><p>编译实现的语言，如：C、C++、Fortran、Pascal、Ada。由编译型语言编写的源程序需要经过 <strong>编译,汇编和链接</strong>才能输出目标代码，然后 <strong>由机器执行目标代码</strong>。目标代码是由 <strong>机器指令</strong>组成，不能独立运行，因为源程序中可能使用了一些汇编程序不能解释引用的库函数，而库函数又不在源程序中，此时还需要链接程序完成外部引用和目标模板调用的链接任务，最后才能输出可执行代码。</p>
-</li>
-<li><p>解释型语言，解释器 <strong>不产生目标机器代码</strong>，而是 <strong>产生中间代码</strong>，这种中间代码与机器代码不同，中间代码的解释是 <strong>由软件支持的</strong>，<strong>不能直接使用在硬件上</strong>。该软件解释器通常会 <strong>导致执行效率较低</strong>，用解释型语言编写的程序是由另一个可以理解中间代码的解释程序执行的。和编译的程序不同的是, 解释程序的任务是 <strong>逐一将源代码的语句解释成可执行的机器指令</strong>，不需要将源程序翻译成目标代码再执行。对于解释型语言，需要一个<strong>专门的解释器</strong> 来执行该程序，每条语句只有在执行是才能被翻译，这种解释型语言每执行一次就翻译一次，因而<strong>效率低下</strong>。</p>
-</li>
-<li><p>Java解释器，java很特殊，java是需要编译的，但是没有直接编译成机器语言，而是编译成字节码，然后在Java虚拟机上用解释的方式执行字节码。Python也使用了类似的方式，先将python编译成 <strong>python字节码</strong>，然后由一个专门的python字节码解释器负责解释执行字节码。</p>
-</li>
-<li><p>python是一门解释语言，但是出于效率的考虑，提供了一种<strong>编译的方法</strong>。编译之后就得到<strong>pyc</strong>文件，存储了<strong>字节码</strong>。python这点和java很类似，但是java与python不同的是，python是一个解释型的语言，所以编译字节码<strong>不是一个强制的操作</strong>，事实上，编译是一个自动的过程，一般不会在意它的存在。编译成字节码可以<strong>节省加载模块的时间，提高效率</strong>。除了效率之外，字节码的形式也<strong>增加了反向工程的难度，可以保护源代码</strong>。这个只是一定程度上的保护，反编译还是可以的。</p>
-</li>
-</ul>
-<h2 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h2><p>Python 更像 Shell 脚本这样的解释性语言,实际上执行原理本质同Java一样，都可以归纳为 <strong>虚拟机</strong> 和 <strong>字节码</strong></p>
-<div style="width:100%;margin:auto"><img src="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/python_process.jpg" class="" title="python_process图"></div>
-
-<p>虽然 python 命令也叫做 <strong>Python 解释器 ( Interpreter )**，但跟其他脚本语言解释器</strong>有本质区别<strong>。实际上， Python 解释器包含 **编译器</strong> 以及 <strong>虚拟机</strong> 两部分。当 Python 解释器启动后，主要执行以下两个步骤：</p>
-<ol>
-<li>编译器 将 .py 文件中的 Python 源码 <strong>编译成 字节码</strong></li>
-<li>虚拟机 <strong>逐行执行</strong>编译器生成的 字节码</li>
-</ol>
-<p>因此， <strong>.py</strong> 文件中的 Python 语句 <strong>并没有直接转换成机器指令</strong>，而是转换成 Python 字节码 。</p>
-<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>Python中有一个内置函数 <strong>compile()**，可以将源文件 **编译成codeobject</strong>，首先看这个函数的说明：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile(source, filename, mode[, flags[, dont_inherit]]) -&gt; code object</span><br></pre></td></tr></table></figure>
-<ul>
-<li>source ，源文件的内容字符串</li>
-<li>filename ，源文件名称</li>
-<li>mode  编译模式 ：<strong>exec</strong>-编译module，<strong>single</strong>-编译一个声明，<strong>eval</strong>-编译一个表达式</li>
-</ul>
-<h3 id="PyCodeObject"><a href="#PyCodeObject" class="headerlink" title="PyCodeObject"></a>PyCodeObject</h3><p>定义 test.py文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PI &#x3D; 3.14</span><br><span class="line"></span><br><span class="line">def circle_area(r):</span><br><span class="line">    return PI * r ** 2</span><br><span class="line"></span><br><span class="line">class Dog(object):</span><br><span class="line">  </span><br><span class="line">    def __init__(self, name):</span><br><span class="line">        self.name &#x3D; name</span><br><span class="line">  </span><br><span class="line">    def yelp(self):</span><br><span class="line">        print(&#39;woof, i am&#39;, self.name)</span><br></pre></td></tr></table></figure>
-<p>调用 compile 函数编译源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; compile(open(&#39;C:\\Users\\liuwen03\\Desktop\\test.py&#39;).read(), &#39;test.py&#39;, &#39;exec&#39;)</span><br><span class="line">&gt;&gt;&gt; result</span><br><span class="line">&lt;code object &lt;module&gt; at 00000000036E27B0, file &quot;test.py&quot;, line 1&gt;</span><br><span class="line">&gt;&gt;&gt; result.__class__</span><br><span class="line">&lt;type &#39;code&#39;&gt;</span><br></pre></td></tr></table></figure>
-<p>看上去我们得到了一个 <strong>code对象</strong> 。 在 Include/code.h 中，可以找到代表代码对象的 C 结构体 <strong>PyCodeObject</strong> 。 PyCodeObject 定义如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Bytecode object *&#x2F;</span><br><span class="line">struct PyCodeObject &#123;</span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    int co_argcount;            &#x2F;* #arguments, except *args 参数个数*&#x2F;</span><br><span class="line">    int co_posonlyargcount;     &#x2F;* #positional only arguments *&#x2F;</span><br><span class="line">    int co_kwonlyargcount;      &#x2F;* #keyword only arguments 关键字参数个数*&#x2F;</span><br><span class="line">    int co_nlocals;             &#x2F;* #local variables 局部变量个数*&#x2F;</span><br><span class="line">    int co_stacksize;           &#x2F;* #entries needed for evaluation stack     执行代码所需栈空间*&#x2F;</span><br><span class="line">    int co_flags;               &#x2F;* CO_..., see below 标识*&#x2F;</span><br><span class="line">    int co_firstlineno;         &#x2F;* first source line number 代码块首行行号*&#x2F;</span><br><span class="line">    PyObject *co_code;          &#x2F;* instruction opcodes 指令操作码，也就是字节码*&#x2F;</span><br><span class="line">    PyObject *co_consts;        &#x2F;* list (constants used) 常量列表*&#x2F;</span><br><span class="line">    PyObject *co_names;         &#x2F;* list of strings (names used)     名字列表*&#x2F;</span><br><span class="line">    PyObject *co_varnames;      &#x2F;* tuple of strings (local variable names) 局部变量名列表*&#x2F;</span><br><span class="line">    PyObject *co_freevars;      &#x2F;* tuple of strings (free variable names) *&#x2F;</span><br><span class="line">    PyObject *co_cellvars;      &#x2F;* tuple of strings (cell variable names) *&#x2F;</span><br><span class="line">    &#x2F;* The rest aren&#39;t used in either hash or comparisons, except for co_name,</span><br><span class="line">       used in both. This is done to preserve the name and line number</span><br><span class="line">       for tracebacks and debuggers; otherwise, constant de-duplication</span><br><span class="line">       would collapse identical functions&#x2F;lambdas defined on different lines.</span><br><span class="line">    *&#x2F;</span><br><span class="line">    Py_ssize_t *co_cell2arg;    &#x2F;* Maps cell vars which are arguments. *&#x2F;</span><br><span class="line">    PyObject *co_filename;      &#x2F;* unicode (where it was loaded from) *&#x2F;</span><br><span class="line">    PyObject *co_name;          &#x2F;* unicode (name, for reference) *&#x2F;</span><br><span class="line">    PyObject *co_linetable;     &#x2F;* string (encoding addr&lt;-&gt;lineno mapping) See</span><br><span class="line">                                   Objects&#x2F;lnotab_notes.txt for details. *&#x2F;</span><br><span class="line">    void *co_zombieframe;       &#x2F;* for optimization only (see frameobject.c) *&#x2F;</span><br><span class="line">    PyObject *co_weakreflist;   &#x2F;* to support weakrefs to code objects *&#x2F;</span><br><span class="line">    &#x2F;* Scratch space for extra data relating to the code object.</span><br><span class="line">       Type is a void* to keep the format private in codeobject.c to force</span><br><span class="line">       people to go through the proper APIs. *&#x2F;</span><br><span class="line">    void *co_extra;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Per opcodes just-in-time cache</span><br><span class="line">     *</span><br><span class="line">     * To reduce cache size, we use indirect mapping from opcode index to</span><br><span class="line">     * cache object:</span><br><span class="line">     *   cache &#x3D; co_opcache[co_opcache_map[next_instr - first_instr] - 1]</span><br><span class="line">     *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; co_opcache_map is indexed by (next_instr - first_instr).</span><br><span class="line">    &#x2F;&#x2F;  * 0 means there is no cache for this opcode.</span><br><span class="line">    &#x2F;&#x2F;  * n &gt; 0 means there is cache in co_opcache[n-1].</span><br><span class="line">    unsigned char *co_opcache_map;</span><br><span class="line">    _PyOpcache *co_opcache;</span><br><span class="line">    int co_opcache_flag;  &#x2F;&#x2F; used to determine when create a cache.</span><br><span class="line">    unsigned char co_opcache_size;  &#x2F;&#x2F; length of co_opcache.</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>从源码可以看出, 代码对象 <strong>PyCodeObject</strong> 用于<strong>存储编译结果</strong>，包括 <strong>字节码</strong> 以及代码涉及的 <strong>常量</strong> <strong>名字</strong> 等等。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_code</span><br><span class="line">&#39;d\x00\x00Z\x00\x00d\x01\x00\x84\x00\x00Z\x01\x00d\x02\x00e\x02\x00f\x01\x00d\x03\x00\x84\x00\x00\x83\x00\x00YZ\x03\x00d\x04\x00S&#39;</span><br></pre></td></tr></table></figure>
-<p>字节码现在看上去如同天书一般。看看代码对象涉及的所有名字 和 常量列表：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_names</span><br><span class="line">(&#39;PI&#39;, &#39;circle_area&#39;, &#39;object&#39;, &#39;Dog&#39;)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; result.co_consts</span><br><span class="line">(3.14, &lt;code object circle_area at 00000000036DBEB0, file &quot;test.py&quot;, line 3&gt;, &#39;Dog&#39;, &lt;code object Dog at 00000000036E2A30, file &quot;test.py&quot;, line 6&gt;, None)</span><br></pre></td></tr></table></figure>
-
-<p>常量列表里 <strong>还有两个代码对象</strong>！其中一个是 <strong>circle_area 函数体</strong>，另一个是 <strong>Dog 类定义体</strong>。回忆一下 <strong>Python 作用域</strong> 的划分方式： <strong>每个作用域</strong>对应着一个<strong>代码对象</strong> ！若假设成立， <strong>Dog 代码对象</strong>的常量列表应该<strong>还藏着两个代码对象</strong>，分别代表 <em>init</em> 方法和 yelp 方法的函数体：</p>
-<div style="width:100%;margin:auto"><img src="/2021/02/23/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-9-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%92%8C%E5%AD%97%E8%8A%82%E7%A0%81/pycodeobject.jpg" class="" title="pycodeobject图"></div>
-
-<p>事实确实如此：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dog_code &#x3D; result.co_consts[3]</span><br><span class="line">&gt;&gt;&gt; dog_code.co_consts</span><br><span class="line">(&lt;code object __init__ at 00000000036D48B0, file &quot;test.py&quot;, line 8&gt;, &lt;code object yelp at 00000000036D49B0, file &quot;test.py&quot;, line 11&gt;)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<p>因此，我们得到以下结论： Python 源码编译后，<strong>每个作用域</strong>都对应着<strong>一个代码对象</strong>，<strong>子作用域</strong>代码对象位于<strong>父作用域代码对象</strong>的<strong>常量列表</strong>里，层级一一对应。</p>
-<h3 id="反编译"><a href="#反编译" class="headerlink" title="反编译"></a>反编译</h3><p>从上面我们可以看到，字节码是一堆长得跟天书一样的<strong>不可读的字节序列</strong>，跟<strong>二进制机器码</strong>一样。<br>用<strong>dis</strong>反编译字节码，让它变得可读</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import dis</span><br><span class="line">&gt;&gt;&gt; dis.dis(result.co_code)</span><br><span class="line">          0 LOAD_CONST          0 (0)</span><br><span class="line">          3 STORE_NAME          0 (0)</span><br><span class="line">          6 LOAD_CONST          1 (1)</span><br><span class="line">          9 MAKE_FUNCTION       0</span><br><span class="line">         12 STORE_NAME          1 (1)</span><br><span class="line">         15 LOAD_CONST          2 (2)</span><br><span class="line">         18 LOAD_NAME           2 (2)</span><br><span class="line">         21 BUILD_TUPLE         1</span><br><span class="line">         24 LOAD_CONST          3 (3)</span><br><span class="line">         27 MAKE_FUNCTION       0</span><br><span class="line">         30 CALL_FUNCTION       0</span><br><span class="line">         33 BUILD_CLASS</span><br><span class="line">         34 STORE_NAME          3 (3)</span><br><span class="line">         37 LOAD_CONST          4 (4)</span><br><span class="line">         40 RETURN_VALUE</span><br></pre></td></tr></table></figure>
-<p>第一列是<strong>字节码偏移量</strong> ，第二列是 <strong>指令</strong> ，第三列是  <strong>操作数</strong> 。</p>
-<p>以第一条字节码为例， LOAD_CONST 指令将常量加载进栈，常量下标由操作数给出。而下标为 0 的常量是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result.co_consts[0]</span><br><span class="line">3.14</span><br></pre></td></tr></table></figure>
-<p>因此，第一条字节码就是将常量 3.14 加载到栈。</p>
-<p>由于代码对象 保存了 <strong>常量、名字</strong>等上下文信息，因此直接对代码对象进行反编译可以得到更为清晰的结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dis.dis(result)</span><br><span class="line">  1           0 LOAD_CONST               0 (3.14)</span><br><span class="line">              3 STORE_NAME               0 (PI)</span><br><span class="line"></span><br><span class="line">  3           6 LOAD_CONST               1 (&lt;code object circle_area at 00000000036DBEB0, file &quot;test.py&quot;, line 3&gt;)</span><br><span class="line">              9 MAKE_FUNCTION            0</span><br><span class="line">             12 STORE_NAME               1 (circle_area)</span><br><span class="line"></span><br><span class="line">  6          15 LOAD_CONST               2 (&#39;Dog&#39;)</span><br><span class="line">             18 LOAD_NAME                2 (object)</span><br><span class="line">             21 BUILD_TUPLE              1</span><br><span class="line">             24 LOAD_CONST               3 (&lt;code object Dog at 00000000036E2A30, file &quot;test.py&quot;, line 6&gt;)</span><br><span class="line">             27 MAKE_FUNCTION            0</span><br><span class="line">             30 CALL_FUNCTION            0</span><br><span class="line">             33 BUILD_CLASS</span><br><span class="line">             34 STORE_NAME               3 (Dog)</span><br><span class="line">             37 LOAD_CONST               4 (None)</span><br></pre></td></tr></table></figure>
-<p>注意到，操作数 指定的 常量或名字的 <strong>实际值</strong>在旁边的<strong>括号内列出</strong>。另外，字节码<strong>以语句为单位进行分组</strong>，中间以<strong>空行隔开</strong>，<strong>语句行号</strong>在字节码前面给出。 PI = 3.14 这个语句编译成以下两条字节码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1           0 LOAD_CONST               0 (3.14)</span><br><span class="line">            3 STORE_NAME               0 (PI)</span><br></pre></td></tr></table></figure>
-
-<h2 id="pyc"><a href="#pyc" class="headerlink" title="pyc"></a>pyc</h2><p>如果将 test 作为模块导入， Python 将在 test.py 文件所在目录下生成 .pyc 文件：</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import test<br>pyc 文件保存 <strong>经过序列化处理的代码对象 PyCodeObject</strong> 。这样一来， Python 后续导入 test 模块时，<strong>直接读取 pyc 文件并反序列化即可得到代码对象</strong> ，避免了重复编译导致的开销。只有 test.py **有新修改(时间戳比 pyc 文件新)**， Python 才会重新编译。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/helloxiaozhe/article/details/78104975">python编译过程和执行原理</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1915">Python 源码深度剖析/18 Python 程执行过程与字节码</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/" class="post-title-link" itemprop="url">[深入理解linux] 2. soft link/hard link</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-02-21 12:45:01 / Modified: 13:12:49" itemprop="dateCreated datePublished" datetime="2021-02-21T12:45:01+08:00">2021-02-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="What-is-Soft-Link-And-Hard-Link"><a href="#What-is-Soft-Link-And-Hard-Link" class="headerlink" title="What is Soft Link And Hard Link?"></a>What is Soft Link And Hard Link?</h2><ul>
-<li><strong>硬链接(Hard Link)</strong> 充当所选文件的<strong>副本（镜像）</strong>。它访问原始文件中的可用数据。如果删除了先前选择的文件，则指向该文件的硬链接<strong>仍将包含该文件的数据</strong>。</li>
-<li><strong>软链接(Soft Link)</strong> 充当文件名的 <strong>指针或引用</strong>。它不会访问原始文件中的可用数据。如果删除了先前的文件，则软链接将 <strong>指向不再存在的文件</strong>。</li>
-</ul>
-<h4 id="图解Soft-Link-和-Hard-Link"><a href="#图解Soft-Link-和-Hard-Link" class="headerlink" title="图解Soft Link 和 Hard Link"></a>图解Soft Link 和 Hard Link</h4><div style="width:100%;margin:auto"><img src="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/forgfgarticle-snip.png" class="" title="图解软链接&#x2F;硬链接"></div>
-
-<h2 id="Difference"><a href="#Difference" class="headerlink" title="Difference"></a>Difference</h2><table>
-<thead>
-<tr>
-<th>参数</th>
-<th>Hard link</th>
-<th>Soft link</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a target="_blank" rel="noopener" href="http://liuw.tech/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">Inode</a> number*</td>
-<td>相同</td>
-<td>不同</td>
-</tr>
-<tr>
-<td>Directories 目录</td>
-<td>不能链接目录(超级用户可以链接目录)</td>
-<td>可以链接目录</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>Data 数据</td>
-<td>不能跨文件系统</td>
-<td>可以跨文件系统</td>
-</tr>
-<tr>
-<td>File system 文件系统</td>
-<td>保留原始数据文件</td>
-<td>仅指向文件名，不保留文件的数据</td>
-</tr>
-<tr>
-<td>permissions文件权限</td>
-<td>与原始文件 <strong>始终保持</strong>相同权限</td>
-<td>权限不同</td>
-</tr>
-<tr>
-<td>Original file’s deletion 原始文件的删除</td>
-<td>该链接仍可访问原始文件的数据</td>
-<td>该链接无法使用，因为它无法访问原始文件的数据</td>
-</tr>
-<tr>
-<td>Speed 访问速度</td>
-<td>相对快</td>
-<td>相对慢</td>
-</tr>
-</tbody></table>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/difference-between-hard-link-and-soft-link/" title="Difference between Hard link and Soft link">Difference between Hard link and Soft link</a></li>
-<li><a target="_blank" rel="noopener" href="https://ostechnix.com/explaining-soft-link-and-hard-link-in-linux-with-examples/">Explaining Soft Link And Hard Link In Linux With Examples</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1546,7 +1448,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

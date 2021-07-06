@@ -188,20 +188,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -243,6 +243,504 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">[Protobuf&gRPC] 2.gRPC简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-10-18 15:49:34" itemprop="dateCreated datePublished" datetime="2020-10-18T15:49:34+08:00">2020-10-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="RPC-框架原理"><a href="#RPC-框架原理" class="headerlink" title="RPC 框架原理"></a>RPC 框架原理</h2><p>RPC 框架的目标就是让远程服务调用更加简单、透明，RPC 框架负责<strong>屏蔽底层的传输方式（TCP 或者 UDP）、序列化方式（XML/Json/ 二进制）和通信细节</strong>。服务<strong>调用者可以像调用本地接口一样调用远程的服务提供者</strong>，而不需要关心底层通信细节和调用过程。</p>
+<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/rpc%E7%AE%80%E4%BB%8B.png" class="" title="rpc简介图"></div>
+
+<p>业界主流的 RPC 框架整体上分为三类：</p>
+<ul>
+<li>支持多语言的 RPC 框架，比较成熟的有 <strong>Google 的 gRPC、Apache（Facebook）的 Thrift</strong>；</li>
+<li>只支持<strong>特定语言的 RPC 框架</strong>，例如新浪微博的 <strong>Motan</strong>；</li>
+<li>支持<strong>服务治理等服务化特性的分布式服务框架</strong>，其底层内核仍然是 RPC 框架, 例如阿里的 Dubbo。</li>
+</ul>
+<h2 id="gRPC-简介"><a href="#gRPC-简介" class="headerlink" title="gRPC 简介"></a>gRPC 简介</h2><p>gRPC 是一个高性能、开源和通用的 RPC 框架，面向服务端和移动端，基于 HTTP/2 设计。</p>
+<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/grpc%E7%AE%80%E4%BB%8B.png" class="" title="grpc简介图"></div>
+
+<p>gRPC 客户端和服务端<strong>可以在多种环境中运行和交互</strong> - 从 google 内部的服务器到你自己的笔记本，并且可以用任何 gRPC 支持的语言来编写。所以，你可以很容易地用 Java 创建一个 gRPC 服务端，用 Go、Python、Ruby 来创建客户端。此外，<strong>Google 最新 API 将有 gRPC 版本的接口</strong>，使你很容易地将 Google 的功能集成到你的应用里。</p>
+<p>gRPC 特点</p>
+<ul>
+<li>语言中立，支持多种语言；</li>
+<li>基于 IDL 文件定义服务，通过 proto3 工具生成指定语言的数据结构、服务端接口以及客户端 Stub；</li>
+<li>通信协议基于标准的 HTTP/2 设计，支持双向流、消息头压缩、单 TCP 的多路复用、服务端推送等特性，这些特性使得 gRPC 在移动端设备上更加省电和节省网络流量；</li>
+<li>序列化支持 PB（Protocol Buffer）和 JSON，PB 是一种语言无关的高性能序列化框架，基于 HTTP/2 + PB, 保障了 RPC 调用的高性能。</li>
+</ul>
+<h2 id="gRPC有什么好处以及在什么场景下需要用gRPC"><a href="#gRPC有什么好处以及在什么场景下需要用gRPC" class="headerlink" title="gRPC有什么好处以及在什么场景下需要用gRPC"></a>gRPC有什么好处以及在什么场景下需要用gRPC</h2><p>gRPC vs. Restful API<br>gRPC和restful API都提供了一套通信机制，用于server/client模型通信，而且它们都使用http作为底层的传输协议(严格地说, gRPC使用的http2.0，而restful api则不一定)。不过gRPC还是有些特有的优势，如下：</p>
+<ul>
+<li>gRPC可以通过protobuf来定义接口，从而可以有更加严格的接口约束条件。</li>
+<li>通过protobuf可以将数据<strong>序列化为二进制编码</strong>，这会<strong>大幅减少需要传输的数据量，从而大幅提高性能</strong>。</li>
+<li>gRPC可以方便地<strong>支持流式通信</strong>(理论上通过http2.0就可以使用streaming模式, 但是通常web服务的restful api似乎很少这么用，通常的流式数据应用如视频流，一般都会使用专门的协议如HLS，RTMP等，这些就不是我们通常web服务了，而是有专门的服务器应用。）</li>
+<li>proto文件生成目标代码，简单易用</li>
+<li>序列化反序列化直接对应程序中的数据类，不需要解析后在进行映射(XML,JSON都是这种方式)</li>
+<li>支持向前兼容（新加字段采用默认值）和向后兼容（忽略新加字段），简化升级</li>
+<li>Netty等一些框架集成</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>1、GRPC尚未提供连接池，需要自行实现</li>
+<li>2、尚未提供“服务发现”、“负载均衡”机制</li>
+<li>3、因为基于HTTP2，绝大部多数HTTP Server、Nginx都尚不支持，即Nginx不能将GRPC请求作为HTTP请求来负载均衡，而是作为普通的TCP请求。（nginx1.9版本已支持）</li>
+<li>4、Protobuf二进制可读性差（貌似提供了Text_Fromat功能）</li>
+<li>5、默认不具备动态特性（可以通过动态定义生成消息类型或者动态编译支持）</li>
+</ul>
+<h3 id="使用-protocol-buffers"><a href="#使用-protocol-buffers" class="headerlink" title="使用 protocol buffers"></a>使用 protocol buffers</h3><p>gRPC 默认使用 protocol buffers（protobuf），这是 Google 开源的一套成熟的结构数据序列化机制（当然也可以使用其他数据格式如 JSON）。正如你将在下方例子里所看到的，你用 proto files 创建 gRPC 服务，用 protobuf 消息类型来定义方法参数和返回类型。protobuf相关可以看 <a target="_blank" rel="noopener" href="http://liuw.tech/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/" title="[Protobuf&amp;gRPC] 1.protobuf简介">protobuf简介</a></p>
+<h3 id="基于HTTP-2-0标准设计"><a href="#基于HTTP-2-0标准设计" class="headerlink" title="基于HTTP 2.0标准设计"></a>基于HTTP 2.0标准设计</h3><p>由于gRPC<strong>基于HTTP 2.0</strong>标准设计，带来了更多强大功能，如<strong>多路复用、二进制帧、头部压缩、推送机制</strong>。这些功能给设备带来重大益处，如<strong>节省带宽、降低TCP连接次数、节省CPU使用</strong>等。gRPC既能够在客户端应用，也能够在服务器端应用，从而<strong>以透明的方式实现两端的通信和简化通信系统的构建</strong>。</p>
+<p>HTTP 版本分为HTTP 1.X、 HTTP 2.0，其中HTTP 1.X是当前使用最广泛的HTTP协议，<strong>HTTP 2.0称为超文本传输协议第二代</strong>。HTTP 1.X定义了四种与服务器交互的方式，分别为：<strong>GET、POST、PUT、DELETE</strong>，这些在HTTP 2.0中均保留。我们再来看看HTTP 2.0的新特性：</p>
+<h4 id="1-双向流、多路复用"><a href="#1-双向流、多路复用" class="headerlink" title="1.双向流、多路复用"></a>1.双向流、多路复用</h4><p>在HTTP 1.X协议中，客户端在同一时间访问同一域名的请求数量是有限制的，当超过阈值时请求会被阻断，但是这种情况在HTTP 2.0中将被忽略。由于HTTP 1.X传输的是纯文本数据，传输体积较大，而HTTP 2.0传输的基本单元为帧，每个帧都包含消息，并且由于HTTP 2.0允许同时通过一条连接发起多个“请求-响应”消息，无需建立多个TCP链接的同时实现多条流并行，提高吞吐性能，并且在一个连接内对多个消息进行优先级的管理和流控。</p>
+<h4 id="2-二进制帧"><a href="#2-二进制帧" class="headerlink" title="2.二进制帧"></a>2.二进制帧</h4><p>相对于<strong>HTTP 1.X的纯文本传输</strong>，HTTP 2.0传输的是<strong>二进制数据</strong>，与Protocol Buffers相辅相成。使得<strong>传输数据体积小、负载低</strong>，保持<strong>更加紧凑和高效</strong>。</p>
+<h4 id="3-头部压缩"><a href="#3-头部压缩" class="headerlink" title="3.头部压缩"></a>3.头部压缩</h4><p>因为HTTP是<strong>无状态协议</strong>，对于业务的处理没有记忆能力，每一次请求都需要携带设备的所有细节，特别是<strong>在头部都会包含大量的重复数据</strong>，对于设备来说就是在不断地做无意义的重复性工作。HTTP 2.0中<strong>使用“头表”来跟踪之前发送的数据</strong>，对于<strong>相同的数据将不再使用重复请求和发送</strong>，进而<strong>减少数据的体积</strong>。</p>
+<hr>
+<h2 id="gRPC有四种通信方式"><a href="#gRPC有四种通信方式" class="headerlink" title="gRPC有四种通信方式:"></a>gRPC有四种通信方式:</h2><h3 id="1、-Simple-RPC"><a href="#1、-Simple-RPC" class="headerlink" title="1、 Simple RPC"></a>1、 Simple RPC</h3><p>简单rpc<br>这就是一般的rpc调用，一个请求对象对应一个返回对象<br>proto语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc simpleHello(Person) returns (Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、-Server-side-streaming-RPC"><a href="#2、-Server-side-streaming-RPC" class="headerlink" title="2、 Server-side streaming RPC"></a>2、 Server-side streaming RPC</h3><p>服务端流式rpc<br>一个请求对象，服务端可以传回多个结果对象<br>proto语法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc serverStreamHello(Person) returns (stream Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3、-Client-side-streaming-RPC"><a href="#3、-Client-side-streaming-RPC" class="headerlink" title="3、 Client-side streaming RPC"></a>3、 Client-side streaming RPC</h3><p>客户端流式rpc<br>客户端传入多个请求对象，服务端返回一个响应结果<br>proto语法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc clientStreamHello(stream Person) returns (Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4、-Bidirectional-streaming-RPC"><a href="#4、-Bidirectional-streaming-RPC" class="headerlink" title="4、 Bidirectional streaming RPC"></a>4、 Bidirectional streaming RPC</h3><p>双向流式rpc<br>结合客户端流式rpc和服务端流式rpc，可以传入多个对象，返回多个响应对象<br>proto语法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc biStreamHello(stream Person) returns (stream Result) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="服务端创建流程"><a href="#服务端创建流程" class="headerlink" title="服务端创建流程"></a>服务端创建流程</h2><p>gRPC 服务端创建采用 <strong>Build 模式</strong>，对<strong>底层服务绑定、transportServer 和 NettyServer 的创建和实例化</strong>做了<strong>封装和屏蔽</strong>，让服务调用者不用关心 RPC 调用细节，整体上分为三个过程：</p>
+<ul>
+<li>创建 Netty HTTP/2 服务端；</li>
+<li>将需要调用的服务端接口实现类注册到内部的 Registry 中，RPC 调用时，可以根据 RPC 请求消息中的服务定义信息查询到服务接口实现类；</li>
+<li>创建 gRPC Server，它是 gRPC 服务端的抽象，聚合了各种 Listener，用于 RPC 消息的统一调度和处理。</li>
+</ul>
+<div style="width:90%;margin:auto"><img src="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/grpc%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%88%9B%E5%BB%BA.png" class="" title="grpc服务端创建图"></div>
+
+<h2 id="gRPC-服务端创建关键流程分析："><a href="#gRPC-服务端创建关键流程分析：" class="headerlink" title="gRPC 服务端创建关键流程分析："></a>gRPC 服务端创建关键流程分析：</h2><ul>
+<li>NettyServer 实例创建：gRPC 服务端创建，首先需要<strong>初始化 NettyServer</strong>，它是 gRPC 基于 <strong>Netty 4.1 HTTP/2 协议栈之上封装的 HTTP/2 服务端</strong>。NettyServer 实例<strong>由 NettyServerBuilder 的 buildTransportServer 方法构建</strong>，NettyServer 构建完成之后，<strong>监听指定的 Socket 地址，即可实现基于 HTTP/2 协议的请求消息接入</strong>。</li>
+<li>绑定 IDL 定义的服务接口实现类：gRPC 与其它一些 RPC 框架的差异点是<strong>服务接口实现类的调用并不是通过动态代理和反射机制</strong>，而是通过 <strong>proto 工具生成代码，在服务端启动时，将服务接口实现类实例注册到 gRPC 内部的服务注册中心上</strong>。请求消息接入之后，可以<strong>根据服务名和方法名，直接调用启动时注册的服务实例</strong>，而不需要通过反射的方式进行调用，性能更优。</li>
+<li>gRPC 服务实例（ServerImpl）构建：<strong>ServerImpl 负责整个 gRPC 服务端消息的调度和处理</strong>，创建 ServerImpl 实例过程中，会<strong>对服务端依赖的对象进行初始化</strong>，例如 <strong>Netty 的线程池资源、gRPC 的线程池、内部的服务注册类（InternalHandlerRegistry）</strong>等，ServerImpl 初始化完成之后，就可以<strong>调用 NettyServer 的 start 方法启动 HTTP/2 服务端</strong>，接收 gRPC 客户端的服务调用请求</li>
+</ul>
+<h2 id="gRPC-HelloWorld实例详解"><a href="#gRPC-HelloWorld实例详解" class="headerlink" title="gRPC HelloWorld实例详解"></a>gRPC HelloWorld实例详解</h2><p>gRPC的使用通常包括如下几个步骤：</p>
+<ol>
+<li>通过protobuf来定义接口和数据类型</li>
+<li>使用gRPC protobuf生成工具生成对应语言的库函数</li>
+<li>编写gRPC server端代码</li>
+<li>编写gRPC client端代码<br>下面来通过一个实例来详细讲解上述的三步。<br>下边的hello world实例完成之后，其目录结果如下：</li>
+</ol>
+<h3 id="1-定义接口和数据类型"><a href="#1-定义接口和数据类型" class="headerlink" title="1. 定义接口和数据类型"></a>1. 定义接口和数据类型</h3><p>通过protobuf定义接口和数据类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">package rpc_package;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 客户端发送rpc方法，response &#x3D; stub.SayHello(HelloRequest(name&#x3D;&#39;eric&#39;))</span><br><span class="line">&#x2F;&#x2F; 服务端返回response，是HelloReply类型</span><br><span class="line"></span><br><span class="line">service HelloWorldService &#123;</span><br><span class="line">    &#x2F;&#x2F; define the interface and data type</span><br><span class="line">    rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; define the data type of request</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">    string name &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; define the data type of response</span><br><span class="line">message HelloReply &#123;</span><br><span class="line">    string message &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-使用gRPC-protobuf生成工具生成对应语言的库函数"><a href="#2-使用gRPC-protobuf生成工具生成对应语言的库函数" class="headerlink" title="2.使用gRPC protobuf生成工具生成对应语言的库函数"></a>2.使用gRPC protobuf生成工具生成对应语言的库函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m grpc_tools.protoc -I&#x3D;.&#x2F;protos --python_out&#x3D;.&#x2F;rpc_package --grpc_python_out&#x3D;.&#x2F;rpc_package</span><br></pre></td></tr></table></figure>
+<p>这个指令会自动生成rpc_package文件夹中的<strong>helloworld_pb2.py和helloworld_pb2_grpc.py</strong>，但是不会自动生成<strong>init</strong>.py文件，需要我们手动添加</p>
+<h3 id="3-编写gRPC-server端代码"><a href="#3-编写gRPC-server端代码" class="headerlink" title="3. 编写gRPC server端代码"></a>3. 编写gRPC server端代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*-coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from concurrent import futures</span><br><span class="line">import grpc</span><br><span class="line">import logging</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">from rpc_package.helloworld_pb2_grpc import add_HelloWorldServiceServicer_to_server, \ </span><br><span class="line">    HelloWorldServiceServicer</span><br><span class="line">from rpc_package.helloworld_pb2 import HelloRequest, HelloReply</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Hello(HelloWorldServiceServicer):</span><br><span class="line"></span><br><span class="line">    # 这里实现我们定义的接口</span><br><span class="line">    def SayHello(self, request, context):</span><br><span class="line">        return HelloReply(message&#x3D;&#39;Hello, %s!&#39; % request.name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def serve():</span><br><span class="line">    # 这里通过thread pool来并发处理server的任务</span><br><span class="line">    server &#x3D; grpc.server(futures.ThreadPoolExecutor(max_workers&#x3D;10))</span><br><span class="line"></span><br><span class="line">    # 将对应的任务处理函数添加到rpc server中</span><br><span class="line">    add_HelloWorldServiceServicer_to_server(Hello(), server)</span><br><span class="line"></span><br><span class="line">    # 这里使用的非安全接口，世界gRPC支持TLS&#x2F;SSL安全连接，以及各种鉴权机制</span><br><span class="line">    server.add_insecure_port(&#39;[::]:50000&#39;)</span><br><span class="line">    server.start()</span><br><span class="line">    try:</span><br><span class="line">        while True:</span><br><span class="line">            time.sleep(60 * 60 * 24)</span><br><span class="line">    except KeyboardInterrupt:</span><br><span class="line">        server.stop(0)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    logging.basicConfig()</span><br><span class="line">    serve()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4-gRPC-client端代码"><a href="#4-gRPC-client端代码" class="headerlink" title="4.gRPC client端代码"></a>4.gRPC client端代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from __future__ import print_function</span><br><span class="line">import logging</span><br><span class="line"></span><br><span class="line">import grpc</span><br><span class="line">from rpc_package.helloworld_pb2 import HelloRequest, HelloReply</span><br><span class="line">from rpc_package.helloworld_pb2_grpc import HelloWorldServiceStub</span><br><span class="line"></span><br><span class="line">def run():</span><br><span class="line">    # 使用with语法保证channel自动close</span><br><span class="line">    with grpc.insecure_channel(&#39;localhost:50000&#39;) as channel:</span><br><span class="line">        # 客户端通过stub来实现rpc通信</span><br><span class="line">        # 传入通信channel</span><br><span class="line">        stub &#x3D; HelloWorldServiceStub(channel)</span><br><span class="line"></span><br><span class="line">        # 客户端必须使用定义好的类型，这里是HelloRequest类型</span><br><span class="line">        # 客户端发&#x2F;请求</span><br><span class="line">        response &#x3D; stub.SayHello(HelloRequest(name&#x3D;&#39;eric&#39;))</span><br><span class="line">    print (&quot;hello client received: &quot; + response.message)</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    logging.basicConfig()</span><br><span class="line">    run()</span><br></pre></td></tr></table></figure>
+
+<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h3><p>运行server端代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python hello_server.py</span><br></pre></td></tr></table></figure>
+<p>接着执行client端代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  grpc_test python hello_client.py</span><br><span class="line">hello client received: Hello, eric!</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://grpc.io/" title="gRPC官网">gRPC官网</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9e57da13b737" title="grpc原理">grpc原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1633335936037018920&wfr=spider&for=pc" title="grpc特性分析">grpc特性分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/linuxarmsummary/article/details/79467412" title="gRPC 官方文档中文版">gRPC 官方文档中文版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7392406e2450" title="grpc应用详解与实例剖析">grpc应用详解与实例剖析</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">[Protobuf&gRPC] 1.protobuf简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-10-17 21:21:34" itemprop="dateCreated datePublished" datetime="2020-10-17T21:21:34+08:00">2020-10-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Protobuf是什么"><a href="#Protobuf是什么" class="headerlink" title="Protobuf是什么"></a>Protobuf是什么</h2><p>Protobuf全称是Google Protocol Buffer，是一种高效轻便的<strong>结构化数据存储方式</strong>，可用于网络通信、数据存储等。</p>
+<p>其具有以下优点：</p>
+<ul>
+<li>平台无关、语言无关</li>
+<li>支持Java, C++, Python等多种语言，支持多平台。</li>
+<li>轻便高效，比XML更小（3~10倍），更快（20 ~ 100倍），更为简单。</li>
+<li>扩展性，兼容性好</li>
+<li>序列化数据结构的协议，可以更新数据结构，而不影响和破坏原有的旧程序。</li>
+</ul>
+<div style="width:90%;margin:auto"><img src="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/protobuf%E7%AE%80%E4%BB%8B.png" class="" title="protobuf简介图"></div>
+
+<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>将数据结构或对象转换成能够被存储和传输（例如网络传输）的格式（网络传输传输的是<strong>二进制数据</strong>），同时应当要保证这个序列化结果在之后（可能是另一个计算环境中）能够<strong>被重建回原来的数据结构或对象</strong>。</p>
+<h2 id="protobuf语法介绍"><a href="#protobuf语法介绍" class="headerlink" title="protobuf语法介绍"></a>protobuf语法介绍</h2><p>目前有Protobuf2和Protobuf3。</p>
+<h3 id="protobuf2语法简介"><a href="#protobuf2语法简介" class="headerlink" title="protobuf2语法简介"></a>protobuf2语法简介</h3><p>.proto文件中数据类型可以分为两大类:<br>复合数据类型包括：<strong>枚举和message类型</strong><br>标准数据类型包含：<strong>整型，浮点，字符串</strong>等</p>
+<p>数据类型前面修饰词：</p>
+<ul>
+<li><p>①required: 必须赋值，不能为空，否则该条message会被认为是“uninitialized”。除此之外，“required”字段跟“optional”字段并无差别。</p>
+</li>
+<li><p>②optional:字段可以赋值，也可以不赋值。假如没有赋值的话，会被赋上默认值。</p>
+</li>
+<li><p>③repeated: 该字段可以重复任意次数，包括0次。重复数据的顺序将会保存在protocol buffer中，将这个字段想象成一个可以自动设置size的数组就可以了。</p>
+</li>
+</ul>
+<p>注：<strong>每个字段要给数字</strong><br><strong>该Number是用来标记该字段在序列化后的二进制数据中所在的field</strong>，每个字段的<strong>Number在message内部都是独一无二的</strong>。也<strong>不能进行改变</strong>，否则数据就不能正确的解包</p>
+<p>关于 proto2 定义 message 消息的更多语法细节，例如具有支持哪些类型，字段编号分配、import<br>导入定义，reserved 保留字段等知识请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6f68fb2c7d19" title="ProtoBuf 官方文档（二）- 语法指引（proto2）">ProtoBuf 官方文档（二）- 语法指引（proto2）</a></p>
+<p>关于定义时的一些规范请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8c55fb0a09b5" title="[翻译] ProtoBuf 官方文档（四）- 规范指引">[翻译] ProtoBuf 官方文档（四）- 规范指引</a></p>
+<h3 id="protobuf3语法介绍"><a href="#protobuf3语法介绍" class="headerlink" title="protobuf3语法介绍"></a>protobuf3语法介绍</h3><ul>
+<li><p>字段前取消了required和optional两个关键字，目前可用的只有repeated关键字。</p>
+</li>
+<li><p>不可以现设置默认值了。</p>
+<ol>
+<li>string默认为空串</li>
+<li>枚举默认为第一个枚举定义的第一个值。并且必须是0,必须有有一个0值，我们可以用这个0值作为默认值。这个零值必须为第一个元素，为了兼容proto2语义，枚举类的第一个值总是默认值。</li>
+<li>bytes默认为空bytes</li>
+<li>bool默认为false</li>
+<li>数字类型默认为0</li>
+</ol>
+</li>
+<li><p>protoType类型如下：<br>double、float、int32、int64、uint32、uint64、sint32、sint64、fixed32、fixed64、sfixed32、sfixed64、bool、string、bytes</p>
+</li>
+<li><p>分配标识号<br>正如你所见，在消息定义中，每个字段都有唯一的一个数字标识符。这些标识符是用来在消息的二进制格式中识别各个字段的，一旦开始使用就不能够再改变。注：[1,15]之内的标识号在编码的时候会占用一个字节。[16,2047]之内的标识号则占用2个字节。所以应该为那些频繁出现的消息元素保留 [1,15]之内的标识号。切记：要为将来有可能添加的、频繁出现的标识号预留一些标识号。</p>
+</li>
+<li><p>最小的标识号可以从1开始，最大到2^29 - 1, or 536,870,911。不可以使用其中的[19000－19999]（ (从FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber)）的标识号， Protobuf协议实现中对这些进行了预留。如果非要在.proto文件中使用这些预留标识号，编译时就会报警。同样你也不能使用早期保留的标识号。</p>
+</li>
+<li><p>指定字段规则<br>所指定的消息字段修饰符必须是如下之一：</p>
+</li>
+</ul>
+<p><strong>singular</strong>：一个格式良好的消息应该有0个或者1个这种字段（但是不能超过1个）。<br><strong>repeated</strong>：在一个格式良好的消息中，这种字段可以重复任意多次（包括0次）。重复的值的顺序会被保留。<br>在proto3中，repeated的标量域默认情况下使用packed。</p>
+<p>##安装<br>使用Python的话简便的安装方法如下（linux）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install protobuf    # 安装protobuf库</span><br><span class="line">sudo apt-get install protobuf-compiler  # 安装protobuf编译器</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何使用protobuf"><a href="#如何使用protobuf" class="headerlink" title="如何使用protobuf"></a>如何使用protobuf</h2><p>目前有Protobuf2和Protobuf3，本文以Protobuf3为例。</p>
+<h3 id="第一步，创建-proto文件，定义数据结构"><a href="#第一步，创建-proto文件，定义数据结构" class="headerlink" title="第一步，创建.proto文件，定义数据结构"></a>第一步，创建.proto文件，定义数据结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;指定正在使用proto3语法：如果没有指定这个，编译器会使用proto2</span><br><span class="line">&#x2F;&#x2F;这个指定语法行必须是文件的非空非注释的第一个行</span><br><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="第二步，protoc-编译-proto-文件生成读写接口"><a href="#第二步，protoc-编译-proto-文件生成读写接口" class="headerlink" title="第二步，protoc 编译 .proto 文件生成读写接口"></a>第二步，protoc 编译 .proto 文件生成读写接口</h3><p>我们在 .proto 文件中定义了数据结构，这些数据结构是<strong>面向开发者和业务程序的</strong>，并不面向存储和传输。</p>
+<p>当需要把这些数据进行存储或传输时，就需要<strong>将这些结构数据进行序列化、反序列化以及读写</strong>。那么如何实现呢？答案就是通过 <strong>protoc</strong> 这个编译器。</p>
+<p>利用protoc.exe编译proto文件，cmd切换到当前目录，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; $SRC_DIR: .proto 所在的源目录</span><br><span class="line">&#x2F;&#x2F; --python_out: 生成 python 代码</span><br><span class="line">&#x2F;&#x2F; $DST_DIR: 生成代码的目标目录</span><br><span class="line">&#x2F;&#x2F; xxx.proto: 要针对哪个 proto 文件生成接口代码</span><br><span class="line">protoc -I&#x3D;$SRC_DIR --python_out&#x3D;$DST_DIR xxx.proto</span><br></pre></td></tr></table></figure>
+<p>这里我们使用如下编译语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I&#x3D;. --python_out&#x3D;.&#x2F; addressbook.proto</span><br></pre></td></tr></table></figure>
+
+<p>编译好之后你就会在目标目录里面看到输出的结果文件，如下：addressbook_pb2.py</p>
+<h3 id="第三步，编译-py文件，进行序列化和凡序列化"><a href="#第三步，编译-py文件，进行序列化和凡序列化" class="headerlink" title="第三步，编译.py文件，进行序列化和凡序列化"></a>第三步，编译.py文件，进行序列化和凡序列化</h3><p>add_person.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for key in person.maps.mapfield:</span><br><span class="line">    print(key,person.maps.mapfield[key])</span><br></pre></td></tr></table></figure>
+<p>编译该py文件，输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">b&#39;\n6\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line"></span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">1 1</span><br><span class="line">2 2</span><br></pre></td></tr></table></figure>
+<p>我们就看到了序列化和反序列化的结果</p>
+<p>这篇简介就介绍到这，后期会继续</p>
+<h2 id="进阶使用"><a href="#进阶使用" class="headerlink" title="进阶使用"></a>进阶使用</h2><p>addressbook.proto内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line">&#x2F;&#x2F;引入外部proto</span><br><span class="line">import &quot;emu.proto&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  &#x2F;&#x2F;外部引用map</span><br><span class="line">  repeated MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;内部嵌套message</span><br><span class="line">  repeated Hobby hobby &#x3D; 8;</span><br><span class="line">  message Hobby&#123;</span><br><span class="line">    string interest &#x3D; 1;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们将addressbook.proto中的repeated MyMessage maps = 7;进行了外部引用，<br>emu.proto如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后首先对emu.proto进行编译，<br>protoc ./emu.proto –python_out=./</p>
+<p>然后会addressbook.proto进行编译<br>protoc ./addressbook.proto –python_out=./<br>然后会默认生成上述截图中的emu_pb2.py、addressbook_pb2.py文件</p>
+<p>我们接下来看看add_person.py代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line"></span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps.add()</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">hobby &#x3D; person.hobby.add()</span><br><span class="line">hobby.interest &#x3D; &quot;python&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line">  print(person.phones[0].number)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for map in person.maps:</span><br><span class="line">    for key in map.mapfield:</span><br><span class="line">      print(key,&#39;-------&#39;,map.mapfield[key])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for hobby in person.hobby:</span><br><span class="line">    print(hobby.interest)</span><br></pre></td></tr></table></figure>
+<p>最后输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;Users&#x2F;zhiliao&#x2F;miniconda3&#x2F;bin&#x2F;python &#x2F;Users&#x2F;zhiliao&#x2F;zhiliao&#x2F;untitled1&#x2F;tutorial&#x2F;add_person.py</span><br><span class="line">b&#39;\n@\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02B\x08\n\x06python&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">123456</span><br><span class="line">2 ------- 2</span><br><span class="line">1 ------- 1</span><br><span class="line">python</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+<p>参考文章：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013210620/article/details/81317731" title="python基础--protobuf的使用(一)">python基础–protobuf的使用(一)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2265f56805fa" title="Protobuf学习">Protobuf学习</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/31a6b4b2c3ab" title="Protobuf Python 示例">Protobuf Python 示例</a></li>
+</ol>
+<p>拓展阅读：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/73c9ed3a4877" title="深入 ProtoBuf - 编码">深入 ProtoBuf - 编码</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/62f0238beec8" title="深入 ProtoBuf - 序列化源码解析">深入 ProtoBuf - 序列化源码解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ddc1aaca3691" title="深入 ProtoBuf - 反射原理解析">深入 ProtoBuf - 反射原理解析</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" class="post-title-link" itemprop="url">[python源码分析] 2.对象的生命周期</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-10-11 14:13:31" itemprop="dateCreated datePublished" datetime="2020-10-11T14:13:31+08:00">2020-10-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-12 14:52:17" itemprop="dateModified" datetime="2020-11-12T14:52:17+08:00">2020-11-12</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="C-API"><a href="#C-API" class="headerlink" title="C API"></a>C API</h1><p>开始讨论对象创建前，先介绍 Python 提供的 C API 。<br>Python 是用 C 写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python 内部也大量使用这些 API ，为了更好研读源码，先系统了解 API 组成结构很有必要。 C API 分为两类： <strong>泛型 API 以及 特型 API</strong>。</p>
+<h2 id="泛型-API"><a href="#泛型-API" class="headerlink" title="泛型 API"></a>泛型 API</h2><p>泛型 API 与类型无关，属于 抽象对象层 ( Abstract Object Layer )，简称 AOL 。 这类 API 参数是 PyObject* ，<strong>可处理任意类型的对象</strong>， API 内部根据对象类型区别处理。<br>以对象打印函数为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int PyObject_Print(PyObject *op, FILE *fp, int flags)</span><br></pre></td></tr></table></figure>
+
+<p>接口第一个参数为待打印对象，可以是任意类型的对象，因此参数类型是 PyObject* 。 Python 内部一般都是通过 PyObject* 引用对象，以达到泛型化的目的。<br><strong>对于任意类型的对象，均可调用 PyObject_Print 将其打印出来</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 打印浮点对象</span><br><span class="line">PyObject *fo &#x3D; PyFloatObject_FromDouble(3.14);</span><br><span class="line">PyObject_Print(fo, stdout, 0);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 打印整数对象</span><br><span class="line">PyObject *lo &#x3D; PyFloatObject_FromLong(100);</span><br><span class="line">PyObject_Print(lo, stdout, 0);</span><br><span class="line">PyObject_Print 接口内部根据对象类型，决定如何输出对象。</span><br></pre></td></tr></table></figure>
+
+<h2 id="特型-API"><a href="#特型-API" class="headerlink" title="特型 API"></a>特型 API</h2><p>特型 API 与类型相关，属于 具体对象层 ( Concrete Object Layer )，简称 COL 。 这类 API 只能作用于某种类型的对象，例如浮点对象 PyFloatObject 。 Python 内部为每一种内置对象提供了这样一组 API ，举例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyObject * PyFloat_FromDouble(double fval)</span><br></pre></td></tr></table></figure>
+<p>PyFloat_FromDouble 创建一个浮点对象，并将它初始化为给定值 fval 。</p>
+<h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><p>经过前面的理论学习，我们知道对象的 <strong>元数据</strong> 保存在对应的 <strong>类型对象</strong> 中，元数据当然也包括 <strong>对象如何创建 的信息</strong>。 因此，有理由相信 <strong>实例对象 由 类型对象</strong> 创建。<br>不管创建对象的流程如何，最终的关键步骤都是 <strong>分配内存</strong> 。 Python 对 内建对象 是无所不知的，因此可以提供 C API ，直接分配内存并执行初始化。 以 PyFloat_FromDouble 为例，在接口内部为 PyFloatObject 结构体分配内存，并初始化相关字段即可。<br>对于用户自定义的类型 class Dog(object) ， Python 就无法事先提供 PyDog_New 这样的 C API 了。 这种情况下，就只能通过 Dog 所对应的类型对象创建实例对象了。 至于需要分配多少内存，如何进行初始化，答案就需要在 <strong>类型对象</strong> 中找了。<br>总结起来，Python 内部一般通过这两种方法创建对象：</p>
+<ul>
+<li>通过 <strong>C API</strong> ，例如 PyFloat_FromDouble ，多用于内建类型；</li>
+<li>通过<strong>类型对象</strong>，例如 Dog ，多用于自定义类型；<br>通过类型对象创建实例对象，是一个更通用的流程，<strong>同时支持内置类型和自定义类型</strong>。 以创建浮点对象为例，我们还可以通过浮点类型 PyFloat_Type 来创建：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; pi &#x3D; float(&#39;3.14&#39;)</span><br><span class="line">&gt;&gt;&gt; pi</span><br><span class="line">3.14</span><br></pre></td></tr></table></figure>
+例子中我们通过调用类型对象 float ，实例化了一个浮点实例 pi ，<strong>对象居然还可以调用！</strong>在 Python 中，可以被调用的对象就是 <strong>可调用对象</strong> 。</li>
+</ul>
+<p>问题来了，可调用对象被调用时，执行什么函数呢？ 由于类型对象保存着实例对象的元信息， float 类型对象的类型是 type ，因此秘密应该就隐藏在 type 中。<br>再次考察 PyType_Type ，我们找到了 <strong>tp_call 字段</strong>，这是一个 <strong>函数指针</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyType_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;type&quot;,                                     &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyHeapTypeObject),                   &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    sizeof(PyMemberDef),                        &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (ternaryfunc)type_call,                     &#x2F;* tp_call *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当实例对象被调用时，便执行 tp_call 字段保存的处理函数。<br>因此， float(‘3.14’) 在 C 层面等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyFloat_Type.ob_type.tp_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+<p>即：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyType_Type.tp_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+<p>最终执行， type_call 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+<p>调用参数通过 args 和 kwargs 两个对象传递，先不展开，留到函数机制中详细介绍。<br>接着围观 type_call 函数，定义于 Include/typeobject.c ，关键代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)</span><br><span class="line">&#123;</span><br><span class="line">    PyObject *obj;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    obj &#x3D; type-&gt;tp_new(type, args, kwds);   &#x2F;&#x2F;为对象分配内存</span><br><span class="line">    obj &#x3D; _Py_CheckFunctionResult((PyObject*)type, obj, NULL);</span><br><span class="line">    if (obj &#x3D;&#x3D; NULL)</span><br><span class="line">        return NULL;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    type &#x3D; Py_TYPE(obj);                     &#x2F;&#x2F;获取PyType_Type</span><br><span class="line">    if (type-&gt;tp_init !&#x3D; NULL) &#123;</span><br><span class="line">        int res &#x3D; type-&gt;tp_init(obj, args, kwds);   &#x2F;&#x2F;初始化对象</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            assert(PyErr_Occurred());</span><br><span class="line">            Py_DECREF(obj);                  &#x2F;&#x2F;引用减一</span><br><span class="line">            obj &#x3D; NULL;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            assert(!PyErr_Occurred());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，关键的步骤有两个：</p>
+<ol>
+<li>调用类型对象 tp_new 函数指针 申请内存 (第 7 行)；</li>
+<li>必要时调用类型对象 tp_init 函数指针对对象进行 初始化 (第 15 行)；<br>至此，对象的创建过程已经非常清晰了：</li>
+</ol>
+<div style="width:80%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F1.png" class="" title="PyVarObject图"></div>
+
+<hr>
+<p>总结一下，float 类型对象是 可调用对象 ，调用 float 即可创建实例对象：</p>
+<ol>
+<li>调用 float ， Python 最终执行其类型对象 type 的 tp_call 函数；</li>
+<li>tp_call 函数调用 float 的 tp_new 函数为实例对象分配 内存空间 ；</li>
+<li>tp_call 函数必要时进一步调用 tp_init 函数对实例对象进行 初始化 ；</li>
+</ol>
+<h1 id="对象的多态性"><a href="#对象的多态性" class="headerlink" title="对象的多态性"></a>对象的多态性</h1><p>Python 创建一个对象，比如 PyFloatObject ，会分配内存，并进行初始化。 此后， Python 内部 *<em>统一通过一个 PyObject</em> 变量来保存和维护这个对象<strong>，而不是通过 PyFloatObject* 变量。<br>通过 PyObject* 变量保存和维护对象，可以 **实现更抽象的上层逻辑</strong>，而不用关心对象的实际类型和实现细节。 以对象哈希值计算为例，假设有这样一个函数接口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Py_hash_t PyObject_Hash(PyObject *v);</span><br></pre></td></tr></table></figure>
+<p>该函数可以计算任意对象的哈希值，不管对象类型是啥。 例如，计算浮点对象哈希值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PyObject *fo &#x3D; PyFloatObject_FromDouble(3.14);</span><br><span class="line">PyObject_Hash(fo);</span><br></pre></td></tr></table></figure>
+<p>对于其他类型，例如整数对象，也是一样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PyObject *lo &#x3D; PyLongObject_FromLong(100);</span><br><span class="line">PyObject_Hash(lo);</span><br></pre></td></tr></table></figure>
+<p>然而，对象类型不同，其行为也千差万别，哈希值计算方法便是如此。 PyObject_Hash 函数如何解决这个问题呢？ 到 Object/object.c 中寻找答案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Py_hash_t</span><br><span class="line">PyObject_Hash(PyObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;类似强制类型转换，但是不像c++一样，用父类指针调用子类就行</span><br><span class="line">    &#x2F;&#x2F;这里的结构体里面指针有ob_type和tp_hash，标记了类型和哈希函数</span><br><span class="line">    PyTypeObject *tp &#x3D; Py_TYPE(v);</span><br><span class="line">    if (tp-&gt;tp_hash !&#x3D; NULL)</span><br><span class="line">        return (*tp-&gt;tp_hash)(v);</span><br><span class="line">    &#x2F;* To keep to the general practice that inheriting</span><br><span class="line">    * solely from object in C code should work without</span><br><span class="line">    * an explicit call to PyType_Ready, we implicitly call</span><br><span class="line">    * PyType_Ready here and then check the tp_hash slot again</span><br><span class="line">    * 隐式调用PyType_Ready，然后再次检查tp_hash插槽</span><br><span class="line">    *&#x2F;</span><br><span class="line">    if (tp-&gt;tp_dict &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">        if (PyType_Ready(tp) &lt; 0)</span><br><span class="line">            return -1;</span><br><span class="line">        if (tp-&gt;tp_hash !&#x3D; NULL)</span><br><span class="line">            return (*tp-&gt;tp_hash)(v);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;* Otherwise, the object can&#39;t be hashed *&#x2F;</span><br><span class="line">    return PyObject_HashNotImplemented(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数先通过 <strong>ob_type 指针找到对象的类型</strong> (第 4 行)； 然后通过类型对象的 <strong>tp_hash 函数指针，调用对应的哈希值计算函数</strong> (第 6 行)。 换句话讲， PyObject_Hash 根据对象的类型，调用不同的函数版本。 这不就是 多态 吗？<br>通过 ob_type 字段， <strong>Python 在 C 语言层面实现了对象的 多态 特性</strong>， 思路跟 C++ 中的 虚表指针 有异曲同工之妙。</p>
+<h1 id="对象的行为"><a href="#对象的行为" class="headerlink" title="对象的行为"></a>对象的行为</h1><p>不同对象的行为不同，比如哈希值计算方法就不同，由类型对象中 tp_hash 字段决定。 除了 tp_hash ，我们看到 PyTypeObject 结构体还定义了很多函数指针，这些指针最终都会指向某个函数，或者为空。 这些函数指针可以看做是 <strong>类型对象（PyTypeObject）</strong> 中定义的 操作 ，这些操作决定对应 <strong>实例对象 在运行时的 行为</strong> 。<br>尽管如此，不同对象也有一些共性。 举个例子，整数对象 和 浮点对象 都支持加减乘除等 数值型操作 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; 1 + 2</span><br><span class="line">3</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; 3.14 * 3.14</span><br><span class="line">9.8596</span><br></pre></td></tr></table></figure>
+<p>元组对象 tuple 和 列表对象 list 都支持下标操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t &#x3D; (&#39;apple&#39;, &#39;banana&#39;, &#39;car&#39;, &#39;dog&#39;)</span><br><span class="line">&gt;&gt;&gt; t[-1]</span><br><span class="line">&#39;dog&#39;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; l &#x3D; [&#39;alpha&#39;, &#39;beta&#39;]</span><br><span class="line">&gt;&gt;&gt; l[-1]</span><br><span class="line">&#39;beta&#39;</span><br></pre></td></tr></table></figure>
+<p>因此，以对象行为为依据，可以 <strong>对对象进行分类</strong>：</p>
+<div style="width:80%;margin:auto"><img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F2.png" class="" title="PyVarObject图"></div>
+
+<hr>
+<p>Python 便以此为依据，为每个类别都定义了一个 标准操作集 ：</p>
+<ul>
+<li>PyNumberMethods 结构体定义了 数值型 操作；</li>
+<li>PySequenceMethods 结构体定义了 序列型 操作；</li>
+<li>PyMappingMethods 结构体定义了 关联型 操作；</li>
+</ul>
+<p>只要 类型对象 提供相关 操作集 ， 实例对象 便具备对应的 行为 。 操作集字段如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _typeobject &#123;</span><br><span class="line">    PyObject_VAR_HEAD</span><br><span class="line">    const char *tp_name; &#x2F;* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; *&#x2F;</span><br><span class="line">    Py_ssize_t tp_basicsize, tp_itemsize; &#x2F;* For allocation *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Method suites for standard classes *&#x2F;</span><br><span class="line"></span><br><span class="line">    PyNumberMethods *tp_as_number;</span><br><span class="line">    PySequenceMethods *tp_as_sequence;</span><br><span class="line">    PyMappingMethods *tp_as_mapping;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Functions to access object as input&#x2F;output buffer *&#x2F;</span><br><span class="line">    PyBufferProcs *tp_as_buffer;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125; PyTypeObject;</span><br></pre></td></tr></table></figure>
+<p>以 float 为例，类型对象 PyFloat_Type 相关字段是这样初始化的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods float_as_number &#x3D; &#123;</span><br><span class="line">    float_add,          &#x2F;* nb_add *&#x2F;</span><br><span class="line">    float_sub,          &#x2F;* nb_subtract *&#x2F;</span><br><span class="line">    float_mul,          &#x2F;* nb_multiply *&#x2F;</span><br><span class="line">    float_rem,          &#x2F;* nb_remainder *&#x2F;</span><br><span class="line">    float_divmod,       &#x2F;* nb_divmod *&#x2F;</span><br><span class="line">    float_pow,          &#x2F;* nb_power *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;PyFloat_Type是PyTypeObject结构体类型，只是重写了</span><br><span class="line">&#x2F;&#x2F;注意与c++父类区分开，这里只是重定义了一些具体参数</span><br><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &amp;float_as_number,                           &#x2F;* tp_as_number *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>字段 <strong>tp_as_number 非空</strong>，因此 float 对象 <strong>支持数值型操作</strong> ；</li>
+<li>字段 <strong>tp_as_sequence 为空</strong>，因此 float 对象 <strong>不支持序列型操作</strong> ；</li>
+<li>字段 tp_as_mapping 为空，因此 float 对象 <strong>不支持关联型操作</strong> ；<br>注意到， float_as_number 变量中相关函数指针都初始化为对应的 float 版本操作函数。</li>
+</ul>
+<h1 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h1><p>C/C++ 赋予程序员极大的自由，可以任意申请内存，并按自己的意图灵活管理。 然而，权利的另一面则对应着 责任 ，一旦内存不再使用，程序员必须将其释放。 这给程序员带来极大的 工作负担 ，并导致大量问题： <strong>内存泄露 、 野指针 、 越界访问</strong> 等。<br>许多后来兴起的开发语言，如 Java 、 Golang 等，选择 由语言本身负责内存的管理 。 垃圾回收机制 的引入，程序员摆脱了内存管理的噩梦，可以更专注于业务逻辑。 于此同时，开发人员失去了灵活使用内存的机会，也牺牲了一定的执行效率。<br>随着垃圾回收机制日益完善，可在大部分对性能要求不苛刻的场景中引入，利大于弊。 Python 也采用垃圾回收机制，代替程序员进行繁重的内存管理，提升开发效率 的同时，降低 bug 发生的几率。<br>Python 垃圾回收机制的关键是对象的 <strong>引用计数</strong> ，它决定了一个对象的生死。 我们知道每个 Python 对象都有一个 <strong>ob_refcnt</strong> 字段，记录着对象当前的引用计数。 当对象被其他地方引用时， ob_refcnt 加一； 当引用解除时， ob_refcnt 减一。 当 ob_refcnt 为零，说明对象已经没有任何引用了，这时便可将其回收。<br>Python 对象创建后，引用计数设为 1 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<p><strong>这里引用计数为啥是 2 呢</strong>？<br>对象 <strong>作为函数参数传递，需要将引用计数加一(重)，避免对象被提前销毁</strong>；函数返回时，再将引用计数减一。 因此，例子中 getrefcount 函数看到的对象引用计数为 2 。<br>接着，变量赋值让对象多了一个引用，这很好理解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b &#x3D; a</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>将对象放在容器对象中，引用计数也增加了，符合预期：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l &#x3D; [a]</span><br><span class="line">&gt;&gt;&gt; l</span><br><span class="line">[3.14]</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+<p>我们将 b 变量删除，引用计数减少了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; del b</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>接着，将列表清空，引用计数进一步下降：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.clear()</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<p>最后，将变量 a 删除后，引用计数降为 0 ，便不复存在了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; del a</span><br></pre></td></tr></table></figure>
+<p>在 Python 中，很多场景都涉及引用计数的调整，例如：</p>
+<ul>
+<li><strong>容器操作</strong>；</li>
+<li><strong>变量赋值</strong>；</li>
+<li><strong>函数参数传递</strong>；</li>
+<li><strong>属性操作</strong>；</li>
+</ul>
+<p>为此， Python 定义了两个非常重要的宏，用于维护对象应用计数。 其中， Py_INCREF 将对象应用计数加一 ( 3 行)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define Py_INCREF(op) (                         \</span><br><span class="line">    _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA       \</span><br><span class="line">    ((PyObject *)(op))-&gt;ob_refcnt++)</span><br></pre></td></tr></table></figure>
+<p>Py_DECREF 将引用计数减一 ( 5 行)，并在引用计数为 0 是回收对象 ( 8 行)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#define Py_DECREF(op)                                   \</span><br><span class="line">    do &#123;                                                \</span><br><span class="line">        PyObject *_py_decref_tmp &#x3D; (PyObject *)(op);    \</span><br><span class="line">        if (_Py_DEC_REFTOTAL  _Py_REF_DEBUG_COMMA       \</span><br><span class="line">        --(_py_decref_tmp)-&gt;ob_refcnt !&#x3D; 0)             \</span><br><span class="line">            _Py_CHECK_REFCNT(_py_decref_tmp)            \</span><br><span class="line">        else</span><br><span class="line">            \\ 调用对象对应的析构函数销毁对象 </span><br><span class="line">            _Py_Dealloc(_py_decref_tmp);                \</span><br><span class="line">    &#125; while (0)</span><br></pre></td></tr></table></figure>
+<p>当一个对象引用计数为 0 ， Python 便调用对象对应的析构函数销毁对象，但这并不意味着对象内存一定会回收。 为了提高内存分配效率， Python 为一些 <strong>常用对象维护了内存池</strong>， <strong>对象回收后内存进入内存池中</strong>，以便下次使用，由此 避免频繁申请、释放内存 。<br>内存池 技术作为程序开发的高级话题，需要更大的篇幅，放在后续章节中介绍。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1072,7 +1570,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-08-13 12:09:00" itemprop="dateModified" datetime="2020-08-13T12:09:00+08:00">2020-08-13</time>
+        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
       </span>
 
   
@@ -1152,7 +1650,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-08-13 12:09:00" itemprop="dateModified" datetime="2020-08-13T12:09:00+08:00">2020-08-13</time>
+        <time title="Modified: 2020-10-22 10:48:53" itemprop="dateModified" datetime="2020-10-22T10:48:53+08:00">2020-10-22</time>
       </span>
 
   
@@ -1167,402 +1665,6 @@
     <div class="post-body" itemprop="articleBody">
           <h2 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h2><p><strong>内存池，对象池的实现</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;基本类</span><br><span class="line">class Font &#123;</span><br><span class="line">private:</span><br><span class="line">    &#x2F;&#x2F;unique object key</span><br><span class="line">    string key;</span><br><span class="line">    &#x2F;&#x2F;object state</span><br><span class="line">    &#x2F;&#x2F;....</span><br><span class="line">    </span><br><span class="line">public:</span><br><span class="line">    Font(const string&amp; key)&#123;</span><br><span class="line">        &#x2F;&#x2F;...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">ß</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;建立一个工厂</span><br><span class="line">class FontFactory&#123;</span><br><span class="line">private:</span><br><span class="line">    map&lt;string,Font* &gt; fontPool;</span><br><span class="line">    </span><br><span class="line">public:</span><br><span class="line">    Font* GetFont(const string&amp; key)&#123;</span><br><span class="line"></span><br><span class="line">        map&lt;string,Font*&gt;::iterator item&#x3D;fontPool.find(key);</span><br><span class="line">        </span><br><span class="line">        if(item!&#x3D;footPool.end())&#123;</span><br><span class="line">            return fontPool[key];</span><br><span class="line">        &#125;</span><br><span class="line">        else&#123;</span><br><span class="line">            Font* font &#x3D; new Font(key);</span><br><span class="line">            fontPool[key]&#x3D; font;</span><br><span class="line">            return font;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    void clear()&#123;</span><br><span class="line">        &#x2F;&#x2F;...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-2-1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">[游戏编程模式]2.1设计模式之命令模式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-10 20:23:04" itemprop="dateCreated datePublished" datetime="2020-08-10T20:23:04+08:00">2020-08-10</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-08-13 12:09:00" itemprop="dateModified" datetime="2020-08-13T12:09:00+08:00">2020-08-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p><strong>命令就是面向对象化的回调。</strong></p>
-<p>示例代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;基类</span><br><span class="line">class Command</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void execute() &#x3D; 0;</span><br><span class="line">    virtual ~Command()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class ConcreteCommand1 : public Command</span><br><span class="line">&#123;</span><br><span class="line">    string arg;</span><br><span class="line">public:</span><br><span class="line">    ConcreteCommand1(const string &amp; a) : arg(a) &#123;&#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        cout&lt;&lt; &quot;#1 process...&quot;&lt;&lt;arg&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class ConcreteCommand2 : public Command</span><br><span class="line">&#123;</span><br><span class="line">    string arg;</span><br><span class="line">public:</span><br><span class="line">    ConcreteCommand2(const string &amp; a) : arg(a) &#123;&#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        cout&lt;&lt; &quot;#2 process...&quot;&lt;&lt;arg&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">class MacroCommand : public Command</span><br><span class="line">&#123;</span><br><span class="line">    vector&lt;Command*&gt; commands;</span><br><span class="line">public:</span><br><span class="line">    void addCommand(Command *c) &#123; commands.push_back(c); &#125;</span><br><span class="line">    void execute() override</span><br><span class="line">    &#123;</span><br><span class="line">        for (auto &amp;c : commands)</span><br><span class="line">        &#123;</span><br><span class="line">            c-&gt;execute();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    ConcreteCommand1 command1(receiver, &quot;Arg ###&quot;);</span><br><span class="line">    ConcreteCommand2 command2(receiver, &quot;Arg $$$&quot;);</span><br><span class="line"></span><br><span class="line">    MacroCommand macro;</span><br><span class="line">    macro.addCommand(&amp;command1);</span><br><span class="line">    macro.addCommand(&amp;command2);</span><br><span class="line">    </span><br><span class="line">    macro.execute();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>命令模式很容易实现撤销和重做</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-1-%E6%9E%B6%E6%9E%84%E3%80%81%E6%80%A7%E8%83%BD%E5%92%8C%E6%B8%B8%E6%88%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/10/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F-1-%E6%9E%B6%E6%9E%84%E3%80%81%E6%80%A7%E8%83%BD%E5%92%8C%E6%B8%B8%E6%88%8F/" class="post-title-link" itemprop="url">[游戏编程模式]1.架构、性能和游戏</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-10 20:03:12" itemprop="dateCreated datePublished" datetime="2020-08-10T20:03:12+08:00">2020-08-10</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-01-06 13:33:42" itemprop="dateModified" datetime="2021-01-06T13:33:42+08:00">2021-01-06</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h3 id="软件架构"><a href="#软件架构" class="headerlink" title="软件架构"></a>软件架构</h3><ol>
-<li>衡量一个设计的好坏的方法就是 <strong>看它应对变化的灵活性</strong></li>
-<li>许多模式让代码更灵活，但它依赖于虚函数派发，接口，指针，消息以及其它一些至少有一些运行成本的机制。</li>
-<li>保持代码的灵活性，直到设计稳定下来，然后去除一些抽象，提高游戏性能。</li>
-</ol>
-<p><strong>开发中的考虑因素</strong></p>
-<ol>
-<li>良好的框架，更容易理解代码</li>
-<li>快速的运行时性能</li>
-<li>快速完成今天的功能</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/10/Unity%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/10/Unity%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">Unity项目架构设计与开发管理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-10 15:00:06" itemprop="dateCreated datePublished" datetime="2020-08-10T15:00:06+08:00">2020-08-10</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-08-13 12:09:00" itemprop="dateModified" datetime="2020-08-13T12:09:00+08:00">2020-08-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="1-常见架构"><a href="#1-常见架构" class="headerlink" title="1.常见架构"></a>1.常见架构</h2><ul>
-<li>EmptyGo</li>
-<li>simple GameManager</li>
-<li>Manager of Managers</li>
-<li>MVCS</li>
-<li>MVVM:UFRAME</li>
-</ul>
-<h2 id="2-EmptyGo"><a href="#2-EmptyGo" class="headerlink" title="2.EmptyGo"></a>2.EmptyGo</h2><ul>
-<li>Put all the code without visual representation in the world onto an empty game object.</li>
-<li>use GameObject.Find() or inspector target references to communicate with each other.<strong>GameObject.Find()不解耦合</strong></li>
-</ul>
-<h2 id="3-simple-GameManager"><a href="#3-simple-GameManager" class="headerlink" title="3.simple GameManager"></a>3.simple GameManager</h2><ul>
-<li>改为一个singleton</li>
-<li>包括UI设计，包括模块的访问</li>
-<li><strong>全部塞进去，会发生混乱</strong></li>
-</ul>
-<h2 id="4-Manager-of-Managers-中型游戏非常常用"><a href="#4-Manager-of-Managers-中型游戏非常常用" class="headerlink" title="4.Manager of Managers(中型游戏非常常用)"></a>4.Manager of Managers(中型游戏非常常用)</h2><ul>
-<li>MainManager（<strong>customizes and managers all the submanagers</strong>）（<strong>submanagers operate as singletons and can easily address each other to collaborate</strong>）<ol>
-<li>EventManager:集中管理UI到各个模块之间的消息，以及各个模块相互访问的传递</li>
-<li>AudioManager:在场景中任何一个地方播放音乐，都用它来管理</li>
-<li>GUIManager:管理所有UI发生的click的事件</li>
-<li>PoolManager:把已经初始化，但暂不使用的gameobject放入pool(非常重要)</li>
-<li>LevelManager:关卡管理(非常重要)</li>
-<li>GameManager:</li>
-<li>SaveManager:load page，游戏退出后，进入还想在原处(非常重要)</li>
-<li>MenuManager:管理Menu上的动画，外观上的东西（严格与GUIManager事件管理区分开来）</li>
-</ol>
-</li>
-</ul>
-<h3 id="4-1-level-manager"><a href="#4-1-level-manager" class="headerlink" title="4.1 level manager"></a>4.1 level manager</h3><h4 id="4-1-1-Unity-自带-Application-loadLevel"><a href="#4-1-1-Unity-自带-Application-loadLevel" class="headerlink" title="4.1.1 Unity 自带 Application.loadLevel();"></a>4.1.1 Unity 自带 Application.loadLevel();</h4><p><strong>ISSUE 1:</strong> you need to know the scene name or the index of the scene you want to load,but most probably <strong>the name or order will be changed later</strong>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Application.loadLevel(&quot;FirstLevel&quot;);</span><br><span class="line">Application.loadLevel(1);</span><br></pre></td></tr></table></figure>
-
-<p><strong>ISSUE 2:</strong> there’s no simple method of passing arguments to a scene , e.g., assuming you’re <strong>resuing one scene for many different levels.</strong></p>
-<p><strong>ISSUE 3:**managing multiple level work flows is not a simple task. suppose you want to **create two versions of your game</strong>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Application.loadLevel(1);</span><br><span class="line">Application.loadLevel(2);</span><br><span class="line">Application.loadLevel(3);</span><br><span class="line">---</span><br><span class="line">VS</span><br><span class="line">---</span><br><span class="line">Application.loadLevel(1);</span><br><span class="line">Application.loadLevel(3);</span><br><span class="line">Application.loadLevel(2);</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-2-level-manager设计"><a href="#4-2-level-manager设计" class="headerlink" title="4.2 level manager设计"></a>4.2 level manager设计</h4><ol>
-<li>Compose a configuration table.(需要变换加载场景顺序，仅需要在表内变换)</li>
-<li>create a new API<ul>
-<li>LevelManager.LoadNext();</li>
-</ul>
-</li>
-<li>In the configuration table, it also should <strong>be allowed to set an argument line for each level</strong>.</li>
-<li>It should be allowed to create multiple configuration tables,and before building your appliaction switch between them.(示例：Unity商店MadLevelManager)</li>
-</ol>
-<h4 id="4-3-pool-manager设计"><a href="#4-3-pool-manager设计" class="headerlink" title="4.3 pool manager设计"></a>4.3 pool manager设计</h4><ol>
-<li>Maintain a list of dormant objects in the pool class:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private List&lt;GameObject&gt; dormantObjects &#x3D; new List &lt;GameObject&gt;();</span><br></pre></td></tr></table></figure></li>
-<li>the list contains all different types of game objects / prefabs</li>
-</ol>
-<p><strong>SPAWN()</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public GameObject Spawn(GameObject go)&#123;</span><br><span class="line">    GameObject temp &#x3D; null;</span><br><span class="line">    if (dormantObjects.count&gt;0)&#123;</span><br><span class="line">        foreach(GameObject dob in dormantObjects)&#123;</span><br><span class="line">            if(dob.name &#x3D;&#x3D; go.name)&#123;</span><br><span class="line">                temp &#x3D; dob;</span><br><span class="line">                dormantObjects.remove(temp);</span><br><span class="line">                return temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    temp &#x3D; GameObejct.Instantiate(go) as GameObejct;</span><br><span class="line">    temp.name &#x3D; go.name;</span><br><span class="line">    return temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>DESPAWN()</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public GameObject Despawn(GameObject go)&#123;</span><br><span class="line">    go.transform.parent &#x3D; PoolManager.transform;</span><br><span class="line">    go.SetActive(false);</span><br><span class="line">    dormantObjects.Add(go);</span><br><span class="line">    Trim();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>TRIM</strong>（超过限制就删除）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void Trim()&#123;</span><br><span class="line">    while(dormantObjects.Count&gt;Capacity)&#123;</span><br><span class="line">        GameObject dob &#x3D; dormantObjects[0];</span><br><span class="line">        dormantObjects.RemoveAt(0);</span><br><span class="line">        Destory(dob);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>PROBLEMS</strong></p>
-<ol>
-<li>This pool is <strong>not able to manage the Load/Unload of prefabs</strong>.</li>
-<li>Only dormant objects are managed in the pool, <strong>active objects must be managed out of pool separately</strong>.</li>
-<li>The total number of dormant objects can be controlled, rather than the instances of each prefabs.（总物体有数量限制，而不是每中类型没有限制）</li>
-</ol>
-<p><strong>better design</strong><br>PoolManager:<strong>Singleton,Manage multiple SpawnPools</strong></p>
-<ul>
-<li>SpawnPool1<ul>
-<li>prefabPool1—Prefab1</li>
-<li>prefabPool2—Prefab2</li>
-</ul>
-</li>
-<li>SpawnPool2<ul>
-<li>prefabPool3—Prefab3</li>
-<li>prefabPool4—Prefab4</li>
-</ul>
-</li>
-</ul>
-<p><strong>Spawnpool</strong>：design rules for spawnpool</p>
-<ol>
-<li>define an empty object,set its transform as the parent of all the instances in the pool.（空物体）</li>
-<li>manager multiple prefabpools via a dictionary</li>
-</ol>
-<p><strong>prefabPool</strong></p>
-<ol>
-<li>create a prefabPool for each prefab.</li>
-<li>maintains a list of activated objects and another list of deactive objects.</li>
-<li>centrally manage the load/unload process here.</li>
-</ol>
-<h4 id="4-4-save-manager设计"><a href="#4-4-save-manager设计" class="headerlink" title="4.4 save manager设计"></a>4.4 save manager设计</h4><ol>
-<li>save and load user preferences and achievements.<ul>
-<li>quit/resume game</li>
-</ul>
-</li>
-<li>a lot of developers are used to save/load data with JSON/XML files.</li>
-<li>Is there any better solution?<ul>
-<li>Serialize almost any type of data.</li>
-<li>it’s fast,even on mobile devices.</li>
-<li>encrypt save date efficiently and securely.</li>
-<li>snap a screen</li>
-</ul>
-</li>
-</ol>
-<h3 id="5-MVCS-STRANGEIOC-UI和逻辑分开"><a href="#5-MVCS-STRANGEIOC-UI和逻辑分开" class="headerlink" title="5. MVCS:STRANGEIOC(UI和逻辑分开)"></a>5. MVCS:STRANGEIOC(UI和逻辑分开)</h3><div style="width:60%;margin:auto"><img src="/2020/08/10/Unity%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86/Manager_of_Managers_problem.png" class="" title="Manager of Managers 模式的问题"></div>
-
-<div style="width:60%;margin:auto"><img src="/2020/08/10/Unity%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86/Manager_of_Managers_problem2.png" class="" title="Manager of Managers 模式的问题"></div>
-
-<h4 id="5-1-strangeioc-framework"><a href="#5-1-strangeioc-framework" class="headerlink" title="5.1 strangeioc framework"></a>5.1 strangeioc framework</h4><ol>
-<li>The core of the framework is <strong>binding</strong></li>
-<li>basic structure: The key triggers the value.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IBinder.Bind&lt;Key&gt;().To&lt;Value&gt;();</span><br></pre></td></tr></table></figure></li>
-<li>advanced structure: the name is a discriminator<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IBinder.Bind&lt;Key&gt;().To&lt;Value&gt;().ToName(name);</span><br></pre></td></tr></table></figure></li>
-<li>Type of key</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>key</th>
-<th align="center">value</th>
-<th align="right">Notes</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>event</td>
-<td align="center">callback</td>
-<td align="right">an event triggers a callback</td>
-</tr>
-<tr>
-<td>interface</td>
-<td align="center">implementation</td>
-<td align="right">binds an interface to its implementation</td>
-</tr>
-<tr>
-<td>class</td>
-<td align="center">dependent class</td>
-<td align="right">the instantiation of one class triggers the instantiation of dependent class.</td>
-</tr>
-</tbody></table>
-<div style="width:60%;margin:auto"><img src="/2020/08/10/Unity%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86/MVCS.png" class="" title="MVCS概述"></div>
-1. a view only does display and input.(UI事件和GameObject上的可视化相关)
-2. the mediator connects the view with the rest of your app
-3. commands are classes triggered by events.
-
-<h4 id="5-2-Mediator"><a href="#5-2-Mediator" class="headerlink" title="5.2 Mediator"></a>5.2 Mediator</h4><p><strong>Binding</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mediationBinder.Bind&lt;Example View&gt;().To&lt;ExampleMediator&gt;();</span><br></pre></td></tr></table></figure>
-
-<p><strong>Dispatcher</strong></p>
-<ul>
-<li>simple format<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatcher.Dispatcher(AttackEvent.FIRE_MISSILE);</span><br></pre></td></tr></table></figure></li>
-<li>Event + data<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Vector3 orientation &#x3D; gameObject.transform.loaclRotaion.eulerAngles;</span><br><span class="line">dispatcher.Dispatcher(AttackEvent.FIRE_MISSILE, orientation);</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p><strong>Listener</strong></p>
-<ul>
-<li>If Listener is a method<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dispatcher.AddListener(AttackEvent.FIRE_MISSILE, onMissileFire);</span><br><span class="line">dispatcher.RemoveListener(AttackEvent.FIRE_MISSILE, onMissileFire);</span><br></pre></td></tr></table></figure></li>
-<li>If Listener is a command<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">commandBinder.Binder(GameEvent.GUN_FIRE,OnGunFireCommand);</span><br><span class="line">class OnGunFireCommand:EventCommand&#123;</span><br><span class="line">    override public void Execute()&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h4 id="5-3-Limitation"><a href="#5-3-Limitation" class="headerlink" title="5.3 Limitation"></a>5.3 Limitation</h4><ul>
-<li>Injection empolys reflection, which is slow.（反射机制耗时）</li>
-<li>if inject sth,you have to map it, otherwise, it will result in null pointer errors.（容易造成空指针）</li>
-</ul>
-<h3 id="6-MVVM-UFRAME"><a href="#6-MVVM-UFRAME" class="headerlink" title="6 MVVM:UFRAME"></a>6 MVVM:UFRAME</h3><p>View—&gt;ViewModel—&gt;Model</p>
-<h3 id="7-编码策略"><a href="#7-编码策略" class="headerlink" title="7 编码策略"></a>7 编码策略</h3><ul>
-<li>文件命名规范</li>
-<li>文件名分类</li>
-<li>用空物体来管理同类物体</li>
-<li>零容忍warnings and errors</li>
-<li>零容忍runtime memory location(动态开辟数组等)</li>
-</ul>
-
       
     </div>
 
@@ -1698,7 +1800,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

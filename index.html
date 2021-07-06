@@ -188,20 +188,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -243,6 +243,230 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/06/linux-12-gdb-dubugger/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/07/06/linux-12-gdb-dubugger/" class="post-title-link" itemprop="url">[linux] 12. gdb dubugger</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-07-06 13:04:50 / Modified: 21:11:21" itemprop="dateCreated datePublished" datetime="2021-07-06T13:04:50+08:00">2021-07-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux-tools/" itemprop="url" rel="index"><span itemprop="name">linux tools</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><h5 id="debug-某个进程"><a href="#debug-某个进程" class="headerlink" title="debug 某个进程"></a>debug 某个进程</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -p 1234</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="指定参数"><a href="#指定参数" class="headerlink" title="指定参数"></a>指定参数</h5><p>gdb bebug gcc, 并且设置gcc参数为 ‘-O2 -c foo.c’</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb --args gcc -O2 -c foo.c</span><br></pre></td></tr></table></figure>
+
+<h2 id="反汇编相关"><a href="#反汇编相关" class="headerlink" title="反汇编相关"></a>反汇编相关</h2><h5 id="反汇编"><a href="#反汇编" class="headerlink" title="反汇编"></a>反汇编</h5><p><strong>disassemble</strong> 是以反汇编清单的形式输出内存的内容，表示的格式由命令<strong>set disassembly-flavor</strong>确定</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) disassemble main</span><br><span class="line">Dump of assembler code for function main:</span><br><span class="line">   0x0000000000400506 &lt;+0&gt;:     push   %rbp</span><br><span class="line">   0x0000000000400507 &lt;+1&gt;:     mov    %rsp,%rbp</span><br><span class="line">   0x000000000040050a &lt;+4&gt;:     mov    $0x4005a4,%edi</span><br><span class="line">   0x000000000040050f &lt;+9&gt;:     mov    $0x0,%eax</span><br><span class="line">   0x0000000000400514 &lt;+14&gt;:    callq  0x4003e0 &lt;printf@plt&gt;</span><br><span class="line">   0x0000000000400519 &lt;+19&gt;:    pop    %rbp</span><br><span class="line">   0x000000000040051a &lt;+20&gt;:    retq</span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+
+<p>将汇编指令格式 <strong>设置为intel格式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set disassembly-flavor intel </span><br></pre></td></tr></table></figure>
+
+<h5 id="设置断点-b-break"><a href="#设置断点-b-break" class="headerlink" title="设置断点 b / break"></a>设置断点 b / break</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># break 0x000000000040050f</span><br><span class="line"></span><br><span class="line"># b 0x000000000040050a</span><br></pre></td></tr></table></figure>
+
+<h5 id="列出所有断点"><a href="#列出所有断点" class="headerlink" title="列出所有断点"></a>列出所有断点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info breakpoints</span><br><span class="line">Num     Type           Disp Enb Address    What</span><br><span class="line">1       breakpoint     keep y   &lt;PENDING&gt;  0x000000000040050f</span><br><span class="line">2       breakpoint     keep y   &lt;PENDING&gt;  0x000000000040050a</span><br></pre></td></tr></table></figure>
+
+<h5 id="执行run到第一个断点处"><a href="#执行run到第一个断点处" class="headerlink" title="执行run到第一个断点处"></a>执行run到第一个断点处</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) start</span><br><span class="line">Temporary breakpoint 2 at 0x40050a: file hello.c, line 4.</span><br><span class="line">Starting program: &#x2F;home&#x2F;xxx&#x2F;myfiles&#x2F;cpp_code&#x2F;hell</span><br><span class="line"></span><br><span class="line">Temporary breakpoint 2, main () at hello.c:4</span><br><span class="line">4           printf(&quot;hello&quot;);</span><br><span class="line">4: &#x2F;x $eax &#x3D; 0x400506</span><br><span class="line">3: &#x2F;x $rsp &#x3D; 0x7fffffffe4c0</span><br><span class="line">2: &#x2F;x $edi &#x3D; 0x1</span><br><span class="line">1: &#x2F;x $rbp &#x3D; 0x7fffffffe4c0</span><br></pre></td></tr></table></figure>
+
+<h5 id="显示寄存器的值"><a href="#显示寄存器的值" class="headerlink" title="显示寄存器的值"></a>显示寄存器的值</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">display &#x2F;x $eax</span><br></pre></td></tr></table></figure>
+
+<h5 id="设置和显示参数"><a href="#设置和显示参数" class="headerlink" title="设置和显示参数"></a>设置和显示参数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) set args display &#x2F;x $eax</span><br><span class="line">(gdb) show args</span><br><span class="line">Argument list to give program being debugged when it is started is &quot;display &#x2F;x $eax&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="环境相关"><a href="#环境相关" class="headerlink" title="环境相关"></a>环境相关</h2><h5 id="path-directory"><a href="#path-directory" class="headerlink" title="path directory"></a>path directory</h5><p>加入directory到运行查找路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) path leo&#x2F;mydir</span><br></pre></td></tr></table></figure>
+
+<h5 id="show-paths"><a href="#show-paths" class="headerlink" title="show paths"></a>show paths</h5><p>打印运行时查找路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show paths</span><br><span class="line">Executable and object file path: &#x2F;home&#x2F;xxx&#x2F;myfiles&#x2F;cpp_code&#x2F;directory:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;bin:&#x2F;bin:&#x2F;usr&#x2F;local&#x2F;games:&#x2F;usr&#x2F;games:&#x2F;usr&#x2F;local&#x2F;mongodb&#x2F;bin</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="show-environment"><a href="#show-environment" class="headerlink" title="show environment"></a>show environment</h5><p>打印环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show environment</span><br><span class="line">TERM&#x3D;xterm</span><br><span class="line">SHELL&#x3D;&#x2F;bin&#x2F;bash</span><br><span class="line">HISTSIZE&#x3D;10000</span><br><span class="line">SSH_CLIENT&#x3D;10.252.71.151 63267 32200</span><br><span class="line">SSH_TTY&#x3D;&#x2F;dev&#x2F;pts&#x2F;3</span><br><span class="line">LC_ALL&#x3D;en_US.UTF-8</span><br><span class="line">HISTFILESIZE&#x3D;100000</span><br></pre></td></tr></table></figure>
+
+<h5 id="set-environment-varname-value"><a href="#set-environment-varname-value" class="headerlink" title="set environment varname [=value]"></a>set environment varname [=value]</h5><p>设置环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set env USER &#x3D; foo</span><br></pre></td></tr></table></figure>
+
+<h5 id="unset-environment-varname"><a href="#unset-environment-varname" class="headerlink" title="unset environment varname"></a>unset environment varname</h5><p>移除环境变量</p>
+<h5 id="pwd"><a href="#pwd" class="headerlink" title="pwd"></a>pwd</h5><p>显示当前工作路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) pwd</span><br><span class="line">Working directory &#x2F;home&#x2F;xxx&#x2F;myfiles&#x2F;cpp_code.</span><br></pre></td></tr></table></figure>
+
+<h5 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h5><p>切换gdb工作路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) pwd</span><br><span class="line">Working directory &#x2F;home&#x2F;xxx&#x2F;myfiles&#x2F;cpp_code.</span><br><span class="line">(gdb) cd ~</span><br><span class="line">Working directory &#x2F;home&#x2F;xxx.</span><br></pre></td></tr></table></figure>
+
+<h2 id="程序输入与输出"><a href="#程序输入与输出" class="headerlink" title="程序输入与输出"></a>程序输入与输出</h2><h5 id="info-terminal"><a href="#info-terminal" class="headerlink" title="info terminal"></a>info terminal</h5><p>显示GDB保存的终端信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info terminal</span><br><span class="line">Inferior&#39;s terminal status (currently saved by GDB):</span><br><span class="line">File descriptor flags &#x3D; O_RDWR | 0x8000</span><br><span class="line">Process group &#x3D; 19973</span><br><span class="line">c_iflag &#x3D; 0xd00, c_oflag &#x3D; 0x5,</span><br><span class="line">c_cflag &#x3D; 0xbf, c_lflag &#x3D; 0x8a3b</span><br><span class="line">c_cc: 0x3 0x1c 0x8 0x15 0x4 0x0 0x1 0x0 0x11 0x13 0x1a 0x0 0x12 0xf 0x17 0x16 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0</span><br></pre></td></tr></table></figure>
+
+<h5 id="run-gt-outfile"><a href="#run-gt-outfile" class="headerlink" title="run &gt; outfile"></a>run &gt; outfile</h5><p>重定向输出</p>
+<h2 id="debug正在运行的进程"><a href="#debug正在运行的进程" class="headerlink" title="debug正在运行的进程"></a>debug正在运行的进程</h2><p>由于之前使用<strong>Ctrl+Z</strong>强制退出，再次进入时报错 is already traced by xxx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb -p 22512 --quiet</span><br><span class="line">Attaching to process 22512</span><br><span class="line">warning: process 22512 is already traced by process 22307</span><br><span class="line">ptrace: Operation not permitted.</span><br><span class="line">(gdb)</span><br></pre></td></tr></table></figure>
+
+<p>jobs -l 找出正在终端运行的 process-id </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jobs -l</span><br><span class="line">[1]- 20412 Stopped                 sh export.sh</span><br><span class="line">[2]+ 22307 Stopped                 gdb -p 22512</span><br></pre></td></tr></table></figure>
+
+<h5 id="attach加入进程"><a href="#attach加入进程" class="headerlink" title="attach加入进程"></a>attach加入进程</h5><p>找到当前gdb运行进程 22307，<strong>attach</strong>进入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) attach 22307</span><br><span class="line">Attaching to process 22307</span><br></pre></td></tr></table></figure>
+
+<h5 id="detach"><a href="#detach" class="headerlink" title="detach"></a>detach</h5><p><strong>释放</strong>gdb当前占有进程</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><h5 id="step-与-next"><a href="#step-与-next" class="headerlink" title="step 与 next"></a>step 与 next</h5><ul>
+<li>step [count] 单步执行，会进入子函数内</li>
+<li>next [count] 单行执行时，不进入子函数内</li>
+</ul>
+<h5 id="step-mode"><a href="#step-mode" class="headerlink" title="step-mode"></a>step-mode</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set step-mode on</span><br><span class="line"></span><br><span class="line">set step-mode off</span><br></pre></td></tr></table></figure>
+<p>step-mode on时, 对于没有debug行的function， 程序会停留在function的首条指令而不是跳过它。开启时可以详细查看机器指令</p>
+<p>查看当前模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show step-mode</span><br></pre></td></tr></table></figure>
+
+<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://sourceware.org/gdb/current/onlinedocs/gdb/">Debugging with GDB</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/29/CSAPP-%E6%B1%87%E7%BC%96%E7%AF%87-1-%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6%E4%B8%8EGDT-LDT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/29/CSAPP-%E6%B1%87%E7%BC%96%E7%AF%87-1-%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6%E4%B8%8EGDT-LDT/" class="post-title-link" itemprop="url">[CSAPP]汇编篇 1.分段机制与GDT|LDT</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-29 12:56:49" itemprop="dateCreated datePublished" datetime="2021-06-29T12:56:49+08:00">2021-06-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-07-06 21:12:03" itemprop="dateModified" datetime="2021-07-06T21:12:03+08:00">2021-07-06</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B1%87%E7%BC%96/" itemprop="url" rel="index"><span itemprop="name">汇编</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h2><p>在32位系统中, 每个进程都认为拥有了2^32 的内存空间。其实这是一种假象,实际上操作系统内核一般占据2GB，剩余的2GB由用户空间的进程共享。其实,操作系统有种 保护方式，就是<strong>段</strong>，使程序能拥有独立的内存空间,又认为占据了4GB空间。</p>
+<p>段的特征有以下三个：<strong>段基址（base，长度32位），段限长（单位为2^12即4k，长度为20位），段属性(访问属性，12位)**。 这三个特征存储在</strong>段描述符（segmentdescriptor）**之中。</p>
+<h3 id="全局描述符表GDT"><a href="#全局描述符表GDT" class="headerlink" title="全局描述符表GDT"></a>全局描述符表GDT</h3><p>在整个系统中，<strong>全局描述符表GDT只有一张</strong>(一个cpu对应一个GDT)，GDT可以被放在<strong>内存的任何位置</strong>，但CPU必须知道GDT的入口，也就是基地址在哪。Intel的设计者提供了一个<strong>寄存器GDTR用来存放GDT的入口地址</strong>，程序员将GDT设定在内存中某个位置之后，可以通过<strong>LGDT指令</strong>将<strong>GDT的入口地址装入此寄存器</strong>，从此以后，CPU就根据此寄存器中的内容作为GDT的入口来访问GDT了。GDTR中存放的是GDT在内存中的<strong>基地址和其表长界限</strong>。</p>
+<p>指令<strong>LGDT和SGDT</strong>分别用于<strong>加载和保存GDTR寄存器</strong>的内容。</p>
+<h3 id="段选择子"><a href="#段选择子" class="headerlink" title="段选择子"></a>段选择子</h3><p>由GDTR访问全局描述符表是通过“段选择子”（实模式下的段寄存器）来完成的。段选择子是一个16位的寄存器（同实模式下的段寄存器相同）</p>
+<h2 id="NEED-TO-DO-LATER"><a href="#NEED-TO-DO-LATER" class="headerlink" title="NEED TO DO LATER"></a>NEED TO DO LATER</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -476,6 +700,116 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/31/mongo-2-skip%E3%80%81limit-and-set/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/05/31/mongo-2-skip%E3%80%81limit-and-set/" class="post-title-link" itemprop="url">[mongo] 2. skip、limit and sort</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-05-31 10:09:32" itemprop="dateCreated datePublished" datetime="2021-05-31T10:09:32+08:00">2021-05-31</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-21 21:41:09" itemprop="dateModified" datetime="2021-06-21T21:41:09+08:00">2021-06-21</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="skip-limit-和-sort-操作"><a href="#skip-limit-和-sort-操作" class="headerlink" title="skip(), limit() 和 sort()操作"></a>skip(), limit() 和 sort()操作</h2><p>MongoDB使用find()方法查询后，可能需要对于<strong>返回结果进行排序</strong>。在有些查询中，我们<strong>并不需要返回全部结果</strong>，而是按指定的<strong>页长和页码</strong>返回指定数量的结果。本节来学习一下 查询操作中常用的 **skip(), limit() 和 sort()**操作。</p>
+<h3 id="limit"><a href="#limit" class="headerlink" title="limit()"></a>limit()</h3><ul>
+<li>find()方法查询文档后，其<strong>默认返回前20条数据</strong>。</li>
+<li>要限制MongoDB查询结果数，使用limit()方法, 读取指定数量的数据，如返回 <strong>NUMBER条</strong>数据：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.COLLECTION_NAME.find().limit(NUMBER)</span><br></pre></td></tr></table></figure>
+
+<h3 id="skip"><a href="#skip" class="headerlink" title="skip()"></a>skip()</h3><ul>
+<li>跳过指定数量的数据, <strong>指定查询偏移量</strong></li>
+<li>通过搭配limit() , 可以实现分页查询</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)</span><br></pre></td></tr></table></figure>
+
+<h3 id="sort"><a href="#sort" class="headerlink" title="sort()"></a>sort()</h3><ul>
+<li>实现查询结果排序</li>
+<li>使用 1 和 -1 来指定排序的方式，其中 1 为升序排列，而 -1 是用于降序排列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.COLLECTION_NAME.find().sort(&#123;KEY:1&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="MongoDB-数据分页"><a href="#MongoDB-数据分页" class="headerlink" title="MongoDB 数据分页"></a>MongoDB 数据分页</h2><h3 id="使用-skip-limit-和-sort-组合"><a href="#使用-skip-limit-和-sort-组合" class="headerlink" title="使用 skip(), limit() 和 sort()组合"></a>使用 skip(), limit() 和 sort()组合</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.myCollection.find().sort(&#123;&quot;_id&quot;:1&#125;).skip(10).limit(10)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>sort将数据根据_id排序</p>
+</li>
+<li><p>skip指跳过前10条记录，也可以说是从第10条开始</p>
+</li>
+<li><p>limit限制查询10条数据</p>
+</li>
+<li><p>结果为<strong>按_id升序排序后的第10-19条的数据</strong></p>
+</li>
+</ul>
+<p>然而, 根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/wangliqiang1014/article/details/16861337?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control">MongoDB 数据分页和排序 limit,skip,sort用户</a>测试结果而言： <strong>skip的大小严重影响性能</strong>，应该严格<strong>避免特别大的skip操作</strong>。</p>
+<h3 id="避免比较大的skip操作"><a href="#避免比较大的skip操作" class="headerlink" title="避免比较大的skip操作"></a>避免比较大的skip操作</h3><p>分页查询时，可以记录上一条查询的score值，用如下方法获取数据(按score降序取数据)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.scores.find(&#123;lid: lid, score: &#123;$lt: last_score&#125;&#125;).sort(&#123;score: -1&#125;).limit(20)</span><br></pre></td></tr></table></figure>
+
+<h3 id="分批加载数据"><a href="#分批加载数据" class="headerlink" title="分批加载数据"></a>分批加载数据</h3><p>下面仅为实现思路, 不是正确的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">def _load_callback(infos):</span><br><span class="line">    if infos:</span><br><span class="line">        next_id &#x3D; None</span><br><span class="line">        for info in infos:</span><br><span class="line">            uid &#x3D; info.get(&#39;_id&#39;)</span><br><span class="line">            ...</span><br><span class="line">            next_id &#x3D; uid</span><br><span class="line"></span><br><span class="line">        if len(infos) &lt; 1000:</span><br><span class="line">            pass # do finish operation</span><br><span class="line">        else:</span><br><span class="line">            # continue load</span><br><span class="line">            self._load_db(next_id)  # 记录上一条查询的id值</span><br><span class="line">    else:</span><br><span class="line">        pass # do finish operation</span><br><span class="line"></span><br><span class="line">def _load_db(self, begin_id&#x3D;&#39;&#39;):</span><br><span class="line">    &quot;&quot;&quot;分批加载数据,batch_size&#x3D;1000&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    infos &#x3D; db.COLLECTION_NAME.find(&#123;&#39;_id&#39;: &#123;&#39;$gt&#39;: begin_id,&#125;&#125;).sort(&#123;&#39;_id&#39;: 1&#125;).limit(1000)</span><br><span class="line">    self._load_callback(infos)</span><br><span class="line"></span><br><span class="line">self._load_db() </span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/linux-11-rsnyc-%E4%B8%87%E8%83%BD%E7%9A%84%E6%96%87%E4%BB%B6%E5%A4%8D%E5%88%B6%E6%8C%87%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -499,10 +833,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-05-19 19:46:46 / Modified: 20:37:07" itemprop="dateCreated datePublished" datetime="2021-05-19T19:46:46+08:00">2021-05-19</time>
+      <time title="Created: 2021-05-19 19:46:46" itemprop="dateCreated datePublished" datetime="2021-05-19T19:46:46+08:00">2021-05-19</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-21 21:41:09" itemprop="dateModified" datetime="2021-06-21T21:41:09+08:00">2021-06-21</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -525,28 +865,20 @@
     <div class="post-body" itemprop="articleBody">
           <h2 id="what-is-rsnyc"><a href="#what-is-rsnyc" class="headerlink" title="what is rsnyc"></a>what is rsnyc</h2><p>rsync 其实就是”远程同步”（remote sync）的意思, rsync <strong>区别于FTP or scp</strong>的最大特点是会 <strong>检查</strong>发送方和接收方<strong>已有的文件</strong>，仅<strong>传输有变动</strong>的部分</p>
 <p>它可以在<strong>本地计算机与远程计算机</strong>之间，或者<strong>两个本地目录</strong>之间同步文件， 可替代<strong>cp和mv</strong>命令。</p>
-<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><ol>
-<li>-r 参数，表示递归（包括子目录）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -r source destination</span><br></pre></td></tr></table></figure>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p>1.-r 参数，表示递归(包括子目录)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -r source destination</span><br></pre></td></tr></table></figure>
 
-</li>
-</ol>
 <p>若有多个文件或目录需要同步</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -r source1 source2 destination</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li><p>-a 参数, 可以替代-r, 还可以同步元信息（比如修改时间、权限等）<br>由于 rsync <strong>默认使用文件大小和修改时间</strong>决定文件是否需要更新，所以-a比-r<strong>更有用</strong></p>
-</li>
-<li><p>-n 参数, 模拟执行的结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -anv source&#x2F; destination</span><br></pre></td></tr></table></figure></li>
-</ol>
+<p>2.-a 参数, 可以替代-r, 还可以同步元信息（比如修改时间、权限等）<br>由于 rsync <strong>默认使用文件大小和修改时间</strong>决定文件是否需要更新，所以-a比-r<strong>更有用</strong></p>
+<p>3.-n 参数, 模拟执行的结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -anv source&#x2F; destination</span><br></pre></td></tr></table></figure>
 <p>-n参数模拟命令执行的结果，<strong>并不真的执行命令</strong>。-v参数则是<strong>将结果输出到终端</strong>，这样就<strong>可以看到哪些内容会被同步</strong>。</p>
-<ol start="4">
-<li>–delete 参数, <strong>删除</strong>只存在于<strong>目标目录、不存在于源目录的文件</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --delete source&#x2F; destination</span><br></pre></td></tr></table></figure></li>
-</ol>
+<p>4.–delete 参数, <strong>删除</strong>只存在于<strong>目标目录、不存在于源目录的文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --delete source&#x2F; destination</span><br></pre></td></tr></table></figure>
 <p>–delete参数会<strong>使得destination成为source的一个镜像</strong></p>
-<ol start="5">
-<li>–exclude 参数, 同步时排除某些文件或目录</li>
-</ol>
+<p>5.–exclude 参数, 同步时排除某些文件或目录</p>
 <p>排除了所有 TXT 文件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --exclude&#x3D;&#39;*.txt&#39; source&#x2F; destination</span><br><span class="line"># 或者</span><br><span class="line">$ rsync -av --exclude &#39;*.txt&#39; source&#x2F; destination</span><br></pre></td></tr></table></figure>
 
@@ -556,24 +888,19 @@
 <p>多个排除模式，可以用多个–exclude参数。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --exclude &#39;file1.txt&#39; --exclude &#39;dir1&#x2F;*&#39; source&#x2F; destination</span><br><span class="line">或者</span><br><span class="line">$ rsync -av --exclude&#x3D;&#123;&#39;file1.txt&#39;,&#39;dir1&#x2F;*&#39;&#125; source&#x2F; destination</span><br></pre></td></tr></table></figure>
 
-<ol start="6">
-<li><p>–include 参数，指定必须同步的文件模式</p>
+<p>6.–include 参数，指定必须同步的文件模式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av --include&#x3D;&quot;*.txt&quot; --exclude&#x3D;&#39;*&#39; source&#x2F; destination</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>SSH 协议远程同步<br>将本地内容，同步到远程服务器</p>
+
+<p>7.SSH 协议远程同步<br>将本地内容，同步到远程服务器</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av source&#x2F; username@remote_host:destination</span><br></pre></td></tr></table></figure>
 
-</li>
-</ol>
 <p>将远程内容同步到本地</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av username@remote_host:source&#x2F; destination</span><br></pre></td></tr></table></figure>
 
 <p>如果 ssh 命令有附加的参数，则必须使用-e参数指定所要执行的 SSH 命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rsync -av -e &#39;ssh -p 2234&#39; source&#x2F; user@remote_host:&#x2F;destination</span><br></pre></td></tr></table></figure>
 
-<ol start="8">
-<li>增量备份</li>
-</ol>
+<p>8.增量备份</p>
 <p>rsync 的最大特点就是它可以完成增量备份，也就是默认只复制有变动的文件。</p>
 <p>除了源目录与目标目录直接比较，rsync 还支持使用基准目录，即将源目录与基准目录之间变动的部分，同步到目标目录。<br>第一次同步是全量备份，所有文件在基准目录里面同步一份。以后每一次同步都是增量备份，只同步源目录与基准目录之间有变动的部分，将这部分保存在一个新的目标目录。这个新的目标目录之中，也是包含所有文件，但实际上，只有那些变动过的文件是存在于该目录，其他没有变动的文件都是指向基准目录文件的硬链接。</p>
 <p>–link-dest参数用来指定<strong>同步时的基准目录</strong></p>
@@ -749,7 +1076,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-29 10:59:26" itemprop="dateModified" datetime="2021-04-29T10:59:26+08:00">2021-04-29</time>
+        <time title="Modified: 2021-05-07 20:00:14" itemprop="dateModified" datetime="2021-05-07T20:00:14+08:00">2021-05-07</time>
       </span>
 
   
@@ -1082,297 +1409,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/" class="post-title-link" itemprop="url">[boost.asio] 1.basic introduction of boost asio</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-04-22 16:30:54" itemprop="dateCreated datePublished" datetime="2021-04-22T16:30:54+08:00">2021-04-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-23 15:42:34" itemprop="dateModified" datetime="2021-04-23T15:42:34+08:00">2021-04-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Boost.Asio 可在I/O对象(如socket)中进行同步(synchronous)和异步(asynchronous)操作。<br>接下来，以一个基于同步的I/O socket连接操作为例：</p>
-<div style="width:100%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/sync_op.png" class="" title="同步连接"></div>
-
-<p>在program中,至少需要有一个 I/0 execution context,如<strong>boost::asio::io_context, boost::asio::thread_pool, or boost::asio::system_context</strong></p>
-<p>该boost::asio::io_context表明已经<strong>连接到</strong>了 <strong>操作系统的 I/O services</strong>上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::io_context io_context;</span><br></pre></td></tr></table></figure>
-
-<p>program进行I/O操作，必须有一个 I/O object 如 TCP socket：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boost::asio::ip::tcp::socket socket(io_context);</span><br></pre></td></tr></table></figure>
-
-<h4 id="同步连接操作相关事件"><a href="#同步连接操作相关事件" class="headerlink" title="同步连接操作相关事件"></a>同步连接操作相关事件</h4><p>进行同步连接操作是，如下事件<strong>按顺序</strong>触发</p>
-<ol>
-<li>通过调用  I/O object，进行初始化连接<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.connect(server_endpoint);</span><br></pre></td></tr></table></figure></li>
-<li>I/O object <strong>请求 I/O execution context</strong></li>
-<li>I/O execution context <strong>调用操作系统</strong>，进行<strong>连接操作</strong>。</li>
-<li>操作系统<strong>返回 操作返回值</strong> 给 I/O execution context</li>
-<li>I/O execution context将 操作系统返回的结果 转换为boost::system::error_code 对象。然后返回该结果给  I/O object。</li>
-<li>若操作失败, I/O object 抛出 boost::system::system_error类型的异常。 若初始化操作的code 为：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boost::system::error_code ec;</span><br><span class="line">socket.connect(server_endpoint, ec);</span><br></pre></td></tr></table></figure>
-返回结果设置到 类型为error_code的变量ec, I/O object不会抛出异常。</li>
-</ol>
-<h4 id="异步连接操作相关事件"><a href="#异步连接操作相关事件" class="headerlink" title="异步连接操作相关事件"></a>异步连接操作相关事件</h4><div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op1.png" class="" title="异步连接"></div>
-
-<ol>
-<li><p>通过调用  I/O object，进行初始化连接</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.async_connect(server_endpoint, your_completion_handler);</span><br></pre></td></tr></table></figure>
-<p>其中 <strong>_completion_handler</strong> 是一个**带有签名(signature)**的函数 or 函数对象</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void your_completion_handler(const boost::system::error_code&amp; ec);</span><br></pre></td></tr></table></figure>
-<p>这个签名(signature) 取决于正在进行的 异步操作。</p>
-</li>
-<li><p>I/O object <strong>请求 I/O execution context</strong>。</p>
-</li>
-<li><p>I/O execution context 给<strong>操作系统</strong>发signals，通知操作系统进行异步连接。</p>
-</li>
-<li><p><strong>操作系统</strong>完成连接操作后，将结果加入到队列，等待<strong>I/O execution context</strong>处理。</p>
-</li>
-<li><p>当使用 io_context 作为 I/O execution context时, 需要运行io_context::run()，获取返回的结果。当有未完成的异步操作时，不能运行 io_context::run()。因此需要在首次进行异步连接操作时，就运行io_context::run()。</p>
-</li>
-<li><p>在 io_context::run() 里，<strong>I/O execution context</strong> 将处理队列中的返回结果，将其翻译成 error_code，然后传给 <strong>completion handler(回调)</strong></p>
-</li>
-</ol>
-<div style="width:90%;margin:auto"><img src="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/async_op2.png" class="" title="异步连接2"></div>
-
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li>(Basic Boost.Asio Anatomy)[<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]">https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/basics.html]</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/22/problems-solution-windows-cmd-cd%E6%97%A0%E6%95%88%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/22/problems-solution-windows-cmd-cd%E6%97%A0%E6%95%88%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">[problems solution] windows cmd cd无效问题</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-04-22 11:36:10 / Modified: 13:22:03" itemprop="dateCreated datePublished" datetime="2021-04-22T11:36:10+08:00">2021-04-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/problems-solution/" itemprop="url" rel="index"><span itemprop="name">problems solution</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在windows下， 打开cmd.exe, 默认进入到当前用户主目录下， 发现除了C:\盘， 可以通过 <strong>cd、dir</strong> 指令 去到C:\盘的各个目录外， <strong>不能通过 cd e: 进入到其他盘</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuwen03&gt;cd ..</span><br><span class="line"></span><br><span class="line">C:\Users&gt;cd e:</span><br><span class="line">E:\</span><br><span class="line"></span><br><span class="line">C:\Users&gt;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="solution"><a href="#solution" class="headerlink" title="solution"></a>solution</h2><ol>
-<li>在 cd 和盘符<strong>之间</strong>加上 <strong>/d</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\liuwen03&gt;cd &#x2F;d e:</span><br><span class="line"></span><br><span class="line">E:\&gt;</span><br></pre></td></tr></table></figure></li>
-<li>直接用 盘符 e:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users&gt;e:</span><br><span class="line"></span><br><span class="line">E:\&gt;</span><br></pre></td></tr></table></figure></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Liu Wen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuWen's Blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/13/c-11-2-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E6%A8%A1%E6%9D%BF/" class="post-title-link" itemprop="url">[c++11] 2.可变参数模板</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-04-13 21:38:56 / Modified: 23:05:18" itemprop="dateCreated datePublished" datetime="2021-04-13T21:38:56+08:00">2021-04-13</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/c-11/" itemprop="url" rel="index"><span itemprop="name">c++11</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h2><p>C++11的新特性–<strong>可变模版参数（variadic templates）</strong>是C++11新增的最强大的特性之一，它对参数进行了高度泛化,表示<strong>0到任意个数、任意类型的参数</strong>. </p>
-<h2 id="可变模版参数函数"><a href="#可变模版参数函数" class="headerlink" title="可变模版参数函数"></a>可变模版参数函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class... T&gt;</span><br><span class="line">void f(T... args) </span><br><span class="line">&#123; &#x2F;&#x2F;可以传任意类型和个数的参数给函数f  </span><br><span class="line">    cout &lt;&lt; sizeof...(args) &lt;&lt; endl; &#x2F;&#x2F;打印变参的个数</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f();        &#x2F;&#x2F;0</span><br><span class="line">f(1, 2);    &#x2F;&#x2F;2</span><br><span class="line">f(1, 2.5, &quot;&quot;);    &#x2F;&#x2F;3</span><br></pre></td></tr></table></figure>
-
-<h4 id="递归函数方式展开参数包"><a href="#递归函数方式展开参数包" class="headerlink" title="递归函数方式展开参数包"></a>递归函数方式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">&#x2F;&#x2F;递归终止函数</span><br><span class="line">void print()</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;empty&quot; &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;展开函数</span><br><span class="line">template &lt;class T, class ...Args&gt;</span><br><span class="line">void print(T head, Args... rest)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; &quot;parameter &quot; &lt;&lt; head &lt;&lt; endl;</span><br><span class="line">   print(rest...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">   print(1,2,3,4);</span><br><span class="line">   return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="逗号表达式展开参数包"><a href="#逗号表达式展开参数包" class="headerlink" title="逗号表达式展开参数包"></a>逗号表达式展开参数包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">void printarg(T t)</span><br><span class="line">&#123;</span><br><span class="line">   cout &lt;&lt; t &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class ...Args&gt;</span><br><span class="line">void expand(Args... args)</span><br><span class="line">&#123;</span><br><span class="line">   int arr[] &#x3D; &#123;(printarg(args), 0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">expand(1,2,3,4);</span><br></pre></td></tr></table></figure>
-<p>这种展开参数包的方式，<strong>不需要通过递归终止函数</strong>，是直接在expand函数体中展开的, printarg不是一个递归终止函数，只是一个处理参数包中每一个参数的函数。这种就地展开参数包的方式实现的关键是<strong>逗号表达式</strong>。我们知道逗号表达式会按顺序执行逗号前面的表达式，比如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d &#x3D; (a &#x3D; b, c); </span><br></pre></td></tr></table></figure>
-<p>这个表达式会按顺序执行：<strong>b会先赋值给a</strong>，接着括号中的<strong>逗号表达式返回c的值</strong>，因此<strong>d将等于c</strong>。</p>
-<p>expand函数中的逗号表达式：(printarg(args), 0)，也是按照这个执行顺序，先执行printarg(args)，再得到逗号表达式的结果0。同时还用到了C++11的另外一个特性——初始化列表，通过初始化列表来初始化一个变长数组, {(printarg(args), 0)…}将会展开成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((printarg(arg1),0), (printarg(arg2),0), (printarg(arg3),0),  etc... )</span><br></pre></td></tr></table></figure>
-<p>最终会创建一个元素值 <strong>都为0的数组int arr[sizeof…(Args)]**。由于是逗号表达式，在创建数组的过程中会</strong>先执行逗号表达式前面的部分printarg(args)<strong>打印出参数，也就是说</strong>在构造int数组的过程中就将参数包展开了<strong>，这个数组的目的</strong>纯粹是为了在数组构造的过程展开参数包**。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class F, class... Args&gt;</span><br><span class="line">void expand(const F&amp; f, Args&amp;&amp;...args) </span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;这里用到了完美转发，关于完美转发，读者可以参考笔者在上一期程序员中的文章《通过4行代码看右值引用》</span><br><span class="line">  initializer_list&lt;int&gt;&#123;(f(std::forward&lt; Args&gt;(args)),0)...&#125;;</span><br><span class="line">&#125;</span><br><span class="line">expand([](int i)&#123;cout&lt;&lt;i&lt;&lt;endl;&#125;, 1,2,3);</span><br></pre></td></tr></table></figure>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>1.<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/parameter_pack">type … Args(optional)</a><br>2.<a target="_blank" rel="noopener" href="https://www.cnblogs.com/qicosmos/p/4325949.html">泛化之美–C++11可变模版参数的妙用</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
   
   <nav class="pagination">
@@ -1491,7 +1527,7 @@ NexT.utils.loadComments('#gitalk-container', () => {
       repo        : 'mygitalk',
       owner       : 'sysuleo',
       admin       : ['sysuleo'],
-      id          : 'f47af1d1eda4d807b02bba32be15120b',
+      id          : 'a676607444a8bc8b150c9a3aff884e61',
         language: '',
       distractionFreeMode: true
     });

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="what is vim？# Vim是从 vi 发展出来的一个 文本编辑器。简单的来说， vi 是老式的字处理器，不过功能已经很齐全了，但是还是有可以进步的地方。 vim 则可以说是程序开发者的一项很好用的工具。 vim 的模式# vim 共分为三种模式，分别是： - 命令模式（Command mode） - 输入模式（Insert mode） - 底线命令模式（Last line mo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[linux] 5.vim指令">
+<meta property="og:url" content="http://yoursite.com/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="what is vim？# Vim是从 vi 发展出来的一个 文本编辑器。简单的来说， vi 是老式的字处理器，不过功能已经很齐全了，但是还是有可以进步的地方。 vim 则可以说是程序开发者的一项很好用的工具。 vim 的模式# vim 共分为三种模式，分别是： - 命令模式（Command mode） - 输入模式（Insert mode） - 底线命令模式（Last line mo">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-05T04:55:59.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.908Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[linux] 5.vim指令 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [linux] 5.vim指令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-05 12:55:59" itemprop="dateCreated datePublished" datetime="2021-01-05T12:55:59+08:00">2021-01-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1><span id="what-is-vim">what is vim？</span><a href="#what-is-vim" class="header-anchor">#</a></h1>
+<p>Vim是从 vi 发展出来的一个 <strong>文本编辑器</strong>。简单的来说，
+vi 是老式的字处理器，不过功能已经很齐全了，但是还是有可以进步的地方。
+vim 则可以说是程序开发者的一项很好用的工具。</p>
+<h1><span id="vim-de-mo-shi">vim 的模式</span><a href="#vim-de-mo-shi" class="header-anchor">#</a></h1>
+<p>vim 共分为三种模式，分别是： - 命令模式（Command mode） -
+输入模式（Insert mode） - 底线命令模式（Last line mode）</p>
+<h2><span id="ming-ling-mo-shi">命令模式</span><a href="#ming-ling-mo-shi" class="header-anchor">#</a></h2>
+<p>用户刚刚启动 vim，便进入了命令模式。</p>
+<p>此状态下敲击键盘动作会被Vim识别为<strong>命令</strong>，而非输入字符。下面列举常用的命令模式</p>
+<h3><span id="cha-zhao-yu-ti-huan">查找 与 替换</span><a href="#cha-zhao-yu-ti-huan" class="header-anchor">#</a></h3>
+<h4><span id="cha-zhao">查找</span><a href="#cha-zhao" class="header-anchor">#</a></h4>
+<ul>
+<li><strong>Command模式</strong>下按 <strong>“/”</strong>
+即可进入查找模式，<strong>输入要查找的字符串</strong>并
+按下<strong>Enter</strong>。 Vim会跳转到第一个匹配。 按下
+<strong>“n”</strong> 查找下一个，按下 <strong>“N”</strong>
+查找上一个</li>
+<li>在查找模式中加入 示大小写不敏感查找，表示大小写敏感查找, 例如
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;foo\c</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4><span id="ti-huan">替换</span><a href="#ti-huan" class="header-anchor">#</a></h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:&#123;作用范围&#125;s&#x2F;&#123;目标&#125;&#x2F;&#123;替换&#125;&#x2F;&#123;替换标志&#125;</span><br></pre></td></tr></table></figure>
+<p>例如 在全局范围(%)查找 foo 并替换为 bar，所有出现都会被替换（g）</p>
+<h5><span id="zuo-yong-fan-wei">作用范围</span><a href="#zuo-yong-fan-wei" class="header-anchor">#</a></h5>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr>
+<th>作用范围</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前行</td>
+<td>:s/foo/bar/g</td>
+</tr>
+<tr>
+<td>全文</td>
+<td>:%s/foo/bar/g</td>
+</tr>
+<tr>
+<td>选区，在 Visual 模式下选择区域后输入 :，Vim 即可自动补全为
+:'&lt;,'&gt;。</td>
+<td>:'&lt;,'&gt;s/foo/bar/g</td>
+</tr>
+<tr>
+<td>2-11 行</td>
+<td>:2,11s/foo/bar/g</td>
+</tr>
+<tr>
+<td>当前行 . 与接下来两行 +2</td>
+<td>:.,+2s/foo/bar/g</td>
+</tr>
+</tbody>
+</table>
+<h5><span id="ti-huan-biao-zhi-fu">替换标志符</span><a href="#ti-huan-biao-zhi-fu" class="header-anchor">#</a></h5>
+<table>
+<thead>
+<tr>
+<th>替换标志符</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只替换从光标位置开始，目标的第一次出现</td>
+<td>:%s/foo/bar</td>
+</tr>
+<tr>
+<td>i 表示大小写不敏感查找</td>
+<td>:%s/foo/bar/i</td>
+</tr>
+<tr>
+<td>I 表示大小写敏感</td>
+<td>:%s/foo/bar/I</td>
+</tr>
+<tr>
+<td>c 表示需要确认</td>
+<td>:%s/foo/bar/c</td>
+</tr>
+<tr>
+<td>g 表示全局 global 替换</td>
+<td>:%s/foo/bar/gc</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="cha-ru">插入</span><a href="#cha-ru" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-----进入输入模式(Insert mode)-----</span><br><span class="line">i               当前位置前插入</span><br><span class="line">I               当前行首插入</span><br><span class="line"></span><br><span class="line">a               当前位置后插入</span><br><span class="line">A               当前行尾插入</span><br><span class="line"></span><br><span class="line">o               当前行之后插入一行</span><br><span class="line">O               当前行之前插入一行</span><br><span class="line"></span><br><span class="line">-----进入取代模式(Replace mode)-----</span><br><span class="line">r               取代光标所在的那一个字符一次</span><br><span class="line">R               一直取代光标所在的文字，直到按下 ESC 为止</span><br></pre></td></tr></table></figure>
+<h3><span id="yi-dong">移动</span><a href="#yi-dong" class="header-anchor">#</a></h3>
+<h4><span id="yi-xing-wei-dan-wei-yi-dong">以行为单位移动</span><a href="#yi-xing-wei-dan-wei-yi-dong" class="header-anchor">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>^</td>
+<td>移动到行首第一个词的首字母。</td>
+</tr>
+<tr>
+<td>|</td>
+<td>移动到<strong>行首第一个字符</strong>。</td>
+</tr>
+<tr>
+<td>$</td>
+<td>移动到<strong>行尾</strong>。</td>
+</tr>
+<tr>
+<td>j</td>
+<td>移动到下一行。</td>
+</tr>
+<tr>
+<td>k</td>
+<td>移动到上一行。</td>
+</tr>
+<tr>
+<td>:10</td>
+<td>移动光标到文件第 10 行。可以 :set number 来让 vim 显示行号。</td>
+</tr>
+<tr>
+<td>gg</td>
+<td>移动到<strong>文件首行</strong>。</td>
+</tr>
+<tr>
+<td>G</td>
+<td>移动到<strong>文件尾行</strong>。</td>
+</tr>
+</tbody>
+</table>
+<h4><span id="yi-ping-mu-wei-dan-wei-yi-dong">以屏幕为单位移动</span><a href="#yi-ping-mu-wei-dan-wei-yi-dong" class="header-anchor">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl + e</td>
+<td>向下滚动一行</td>
+</tr>
+<tr>
+<td>Ctrl + y</td>
+<td>向上滚动一行</td>
+</tr>
+<tr>
+<td>Ctrl + d(down)</td>
+<td>向下滚动半屏</td>
+</tr>
+<tr>
+<td>Ctrl + u(up)</td>
+<td>向上滚动半屏</td>
+</tr>
+<tr>
+<td>Ctrl + f(forward)</td>
+<td>向下滚动一屏</td>
+</tr>
+<tr>
+<td>Ctrl + b(back)</td>
+<td>向上滚动一屏</td>
+</tr>
+<tr>
+<td>Shift + g</td>
+<td>切换到最后</td>
+</tr>
+</tbody>
+</table>
+<h4><span id="yi-dan-ci-wei-dan-wei-yi-dong">以单词为单位移动</span><a href="#yi-dan-ci-wei-dan-wei-yi-dong" class="header-anchor">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>w</td>
+<td>移动到下一个单词的词首</td>
+</tr>
+<tr>
+<td>b</td>
+<td>移动到上一个单词的词首</td>
+</tr>
+<tr>
+<td>e</td>
+<td>移动到下一个单词的结尾</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="shan-chu">删除</span><a href="#shan-chu" class="header-anchor">#</a></h3>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x, X</td>
+<td>在一行字当中，x 为向后删除一个字符 (相当于 [del] 按键)， X
+为向前删除一个字符(相当于 [backspace] 亦即是退格键) (常用)</td>
+</tr>
+<tr>
+<td>nx</td>
+<td>n 为数字，连续向后删除 n 个字符。举例来说，我要连续删除 10 个字符，
+『10x』。</td>
+</tr>
+<tr>
+<td>dd</td>
+<td>删除游标所在的那一整行(常用)</td>
+</tr>
+<tr>
+<td>ndd</td>
+<td>n 为数字。删除光标所在的向下 n 行，例如 20dd 则是删除 20 行
+(常用)</td>
+</tr>
+<tr>
+<td>d1G</td>
+<td>删除光标所在到第一行的所有数据</td>
+</tr>
+<tr>
+<td>dG</td>
+<td>删除光标所在到最后一行的所有数据</td>
+</tr>
+<tr>
+<td>d$</td>
+<td>删除游标所在处，到该行的最后一个字符</td>
+</tr>
+<tr>
+<td>d0</td>
+<td>那个是数字的 0 ，删除游标所在处，到该行的最前面一个字符</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="fu-zhi">复制</span><a href="#fu-zhi" class="header-anchor">#</a></h3>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>yy</td>
+<td>复制游标所在的那一行(常用)</td>
+</tr>
+<tr>
+<td>nyy</td>
+<td>n 为数字。复制光标所在的向下 n 行，例如 20yy 则是复制 20
+行(常用)</td>
+</tr>
+<tr>
+<td>y1G</td>
+<td>复制游标所在行到第一行的所有数据</td>
+</tr>
+<tr>
+<td>yG</td>
+<td>复制游标所在行到最后一行的所有数据</td>
+</tr>
+<tr>
+<td>y0</td>
+<td>复制光标所在的那个字符到该行行首的所有数据</td>
+</tr>
+<tr>
+<td>y$</td>
+<td>复制光标所在的那个字符到该行行尾的所有数据</td>
+</tr>
+<tr>
+<td>p, P</td>
+<td>p 为将已复制的数据在光标下一行贴上，P 则为贴在游标上一行！
+举例来说，我目前光标在第 20 行，且已经复制了 10 行数据。则按下 p 后， 那
+10 行数据会贴在原本的 20 行之后，亦即由 21 行开始贴。但如果是按下 P 呢？
+那么原本的第 20 行会被推到变成 30 行。 (常用)</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="che-xiao-yu-chong-zuo">撤销与重做</span><a href="#che-xiao-yu-chong-zuo" class="header-anchor">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u</td>
+<td>撤销 (常用)</td>
+</tr>
+<tr>
+<td>[Ctrl]+r</td>
+<td>重做上一个动作 (常用)</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="cha-kan-li-shi-shu-ru">查看历史输入</span><a href="#cha-kan-li-shi-shu-ru" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q + (Ctrl + :)</span><br></pre></td></tr></table></figure>
+<h2><span id="shu-ru-mo-shi">输入模式</span><a href="#shu-ru-mo-shi" class="header-anchor">#</a></h2>
+<p>在命令模式下按下
+<strong>i</strong>就进入了输入模式。在输入模式中，可以使用以下按键：</p>
+<ul>
+<li>字符按键以及Shift组合，输入字符</li>
+<li>ENTER，回车键，换行</li>
+<li>BACK SPACE，退格键，<strong>删除光标前一个字符</strong></li>
+<li>DEL，删除键，<strong>删除光标后一个字符</strong></li>
+<li>方向键，在文本中移动光标</li>
+<li>HOME/END，移动光标到行首/行尾</li>
+<li>Page Up/Page Down，上/下翻页</li>
+<li>Insert，切换光标为输入/替换模式，光标将变成竖线/下划线</li>
+<li>ESC，退出输入模式，<strong>切换到命令模式</strong></li>
+</ul>
+<h2><span id="di-xian-ming-ling-mo-shi">底线命令模式</span><a href="#di-xian-ming-ling-mo-shi" class="header-anchor">#</a></h2>
+<p>在命令模式下按下 <strong>:（英文冒号）</strong>
+就进入了底线命令模式。</p>
+<p>底线命令模式可以输入单个或多个字符的命令，可用的命令非常多。</p>
+<p>在底线命令模式中，基本的命令有（已经省略了冒号）：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">:q          退出程序</span><br><span class="line">:q!         若曾修改过档案，又不想储存，使用 ! 为强制离开不储存</span><br><span class="line">:w          保存文件</span><br><span class="line">:w!         若文件属性为『只读』时，强制写入该档案。到底能不能写入， 还是跟权限有关</span><br><span class="line"></span><br><span class="line">----环境的变更----</span><br><span class="line">:set nu      显示行号，设定之后，会在每一行的前缀显示该行的行号</span><br><span class="line">:set nonu    与 set nu 相反，为取消行号</span><br><span class="line"></span><br><span class="line">ESC         退出底线命令模式</span><br></pre></td></tr></table></figure>
+惊叹号 <strong>("!")</strong> 在 vim 当中，常常具有『强制』的意思</p>
+<h2><span id="geng-gai-vim-pei-zhi">更改vim配置</span><a href="#geng-gai-vim-pei-zhi" class="header-anchor">#</a></h2>
+<p>打开配置文件
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi &#x2F;etc&#x2F;vim&#x2F;vimrc</span><br></pre></td></tr></table></figure>
+如设置显示行号, 跳转到文本末尾, 输入
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set number  &quot;显示行号</span><br></pre></td></tr></table></figure></p>
+<h1><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h1>
+<p>1.<a target="_blank" rel="noopener" href="https://www.runoob.com/linux/linux-vim.html" title="Linux vi/vim">Linux vi/vim</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/" rel="prev" title="[python源码分析] 8.dict,关联式容器">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 8.dict,关联式容器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/06/mongo-1-brief-introdution/" rel="next" title="[mongo] 1.brief introdution">
+      [mongo] 1.brief introdution <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">what is vim？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">vim 的模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">命令模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.1.</span> <span class="nav-text">查找 与 替换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">查找</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">替换</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.1.1.2.1.</span> <span class="nav-text">作用范围</span></a></li><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.1.1.2.2.</span> <span class="nav-text">替换标志符</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.2.</span> <span class="nav-text">插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.3.</span> <span class="nav-text">移动</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">以行为单位移动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.1.3.2.</span> <span class="nav-text">以屏幕为单位移动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.1.3.3.</span> <span class="nav-text">以单词为单位移动</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.4.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.5.</span> <span class="nav-text">复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.6.</span> <span class="nav-text">撤销与重做</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.7.</span> <span class="nav-text">查看历史输入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">输入模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.3.</span> <span class="nav-text">底线命令模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text">更改vim配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'bb3bfc09ff5e2519b4e908de5819537b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

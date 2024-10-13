@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="面向对象理论中 “ 类 ”和“ 对象 ” 这两个重要概念，在 Python 内部均 以对象的形式存在。 “类”是一种对象，称为 类型对象 ；“类”实例化生成的“对象”也是对象，称为 实例对象 。 根据对象不同特点还可进一步分类：    类别 特点     可变对象 对象创建后可以修改   不可变对象 对象创建后不能修改   定长对象 对象大小固定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 1.对象">
+<meta property="og:url" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="面向对象理论中 “ 类 ”和“ 对象 ” 这两个重要概念，在 Python 内部均 以对象的形式存在。 “类”是一种对象，称为 类型对象 ；“类”实例化生成的“对象”也是对象，称为 实例对象 。 根据对象不同特点还可进一步分类：    类别 特点     可变对象 对象创建后可以修改   不可变对象 对象创建后不能修改   定长对象 对象大小固定">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A12.png">
+<meta property="article:published_time" content="2020-10-11T06:03:26.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.909Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A12.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 1.对象 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 1.对象
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-11 14:03:26" itemprop="dateCreated datePublished" datetime="2020-10-11T14:03:26+08:00">2020-10-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>面向对象理论中 <strong>“ 类 ”和“ 对象 ”</strong> 这两个重要概念，在
+Python 内部均 <strong>以对象的形式存在</strong>。
+<strong>“类”是一种对象</strong>，称为 <strong>类型对象</strong>
+；“类”实例化生成的“对象”也是对象，称为 <strong>实例对象</strong> 。</p>
+<p>根据对象不同特点还可进一步分类：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可变对象</td>
+<td>对象创建后可以修改</td>
+</tr>
+<tr>
+<td>不可变对象</td>
+<td>对象创建后不能修改</td>
+</tr>
+<tr>
+<td>定长对象</td>
+<td>对象大小固定</td>
+</tr>
+<tr>
+<td>变长对象</td>
+<td>对象大小不固定</td>
+</tr>
+</tbody>
+</table>
+<p>那么，对象在 Python 内部到底长啥样呢？ 由于 Python 是由 C
+语言实现的，因此 Python 对象在 C 语言层面应该是一个
+<strong>结构体</strong> ，组织对象占用的内存。
+不同类型的对象，数据及行为均可能不同，因此可以大胆猜测：<strong>不同类型的对象由不同的结构体表示</strong>。
+对象也有一些共性，比如每个对象都需要有一个 <strong>引用计数 ，用于实现
+垃圾回收机制</strong> 。 因此，还可以进一步猜测：表示对象的结构体有一个
+<strong>公共头部</strong> 。</p>
+<h2><span id="pyobject-dui-xiang-de-ji-shi">PyObject，对象的基石</span><a href="#pyobject-dui-xiang-de-ji-shi" class="header-anchor">#</a></h2>
+<p>在 Python 内部，对象都由 <strong>PyObject 结构体</strong>表示，
+对象引用则是指针 PyObject * 。 PyObject 结构体定义于头文件 object.h
+，路径为 Include/object.h ，代码如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _object &#123;</span><br><span class="line">    _PyObject_HEAD_EXTRA   &#x2F;&#x2F;公共头部</span><br><span class="line">    Py_ssize_t ob_refcnt;  &#x2F;&#x2F;引用计数</span><br><span class="line">    struct _typeobject *ob_type;  &#x2F;&#x2F;类型指针</span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
+除了 _PyObject_HEAD_EXTRA 宏，结构体包含以下两个字段： - 引用计数 (
+ob_refcnt ) - 类型指针 ( ob_type )</p>
+<p><strong>引用计数</strong>
+很好理解：对象被其他地方引用时加一，引用解除时减一；
+当引用计数为零，便可将对象回收，这是最简单的垃圾回收机制。 类型指针
+指向对象的 类型对象 ，类型对象 描述 实例对象 的数据及行为。</p>
+<p>回过头来看 _PyObject_HEAD_EXTRA 宏的定义，同样在 Include/object.h
+头文件内：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#ifdef Py_TRACE_REFS</span><br><span class="line">&#x2F;* Define pointers to support a doubly-linked list of all live heap objects. *&#x2F;</span><br><span class="line">#define _PyObject_HEAD_EXTRA            \</span><br><span class="line">    struct _object *_ob_next;           \</span><br><span class="line">    struct _object *_ob_prev;</span><br><span class="line"></span><br><span class="line">#define _PyObject_EXTRA_INIT 0, 0,</span><br><span class="line"></span><br><span class="line">#else</span><br><span class="line">#define _PyObject_HEAD_EXTRA</span><br><span class="line">#define _PyObject_EXTRA_INIT</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></p>
+<p>如果 <strong>Py_TRACE_REFS 有定义，宏展开为两个指针，看名字是用来实现
+双向链表</strong> 的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">struct _object *_ob_next;</span><br><span class="line">struct _object *_ob_prev;</span><br></pre></td></tr></table></figure>
+结合注释，双向链表用于 <strong>跟踪所有 活跃堆对象</strong>
+，一般不启用，不深入介绍。 对于 变长对象 ，需要在 PyObject
+基础上加入长度信息，这就是 <strong>PyVarObject</strong> ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject ob_base;</span><br><span class="line">    Py_ssize_t ob_size; &#x2F;* Number of items in variable part *&#x2F;</span><br><span class="line">&#125; PyVarObject;</span><br></pre></td></tr></table></figure>
+<strong>变长对象比普通对象多一个字段 ob_size
+，用于记录元素个数</strong>：</p>
+<table style="width:29%;">
+<colgroup>
+<col style="width: 29%">
+</colgroup>
+<tbody>
+<tr>
+<td>于具体对象，视其大小是否固定，需要包含头部 PyObject 或 PyVarObject
+。 为此，头文件准备了两个宏定义，方便其他对象使用：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_HEAD          PyObject ob_base;</span><br><span class="line">#define PyObject_VAR_HEAD      PyVarObject ob_base;</span><br></pre></td></tr></table></figure>
+例如，对于大小固定的 浮点对象 ，只需在 PyObject 头部基础上， 用一个
+双精度浮点数 double 加以实现：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD  &#x2F;&#x2F;浮点数是定长对象</span><br><span class="line"></span><br><span class="line">    double ob_fval;</span><br><span class="line">&#125; PyFloatObject;</span><br></pre></td></tr></table></figure></td>
+</tr>
+</tbody>
+</table>
+<div style="width:100%;margin:auto">
+<img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/%5Bpython%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%5D1.%E5%AF%B9%E8%B1%A12.png" class title="PyVarFloat图">
+</div>
+<table style="width:24%;">
+<colgroup>
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr>
+<th>而对于大小不固定的 列表对象 ，则需要在 PyVarObject 头部基础上，
+用一个动态数组加以实现，数组存储列表包含的对象，即 PyObject 指针：</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>如图， PyListObject 底层
+<strong>由一个数组实现</strong>，关键字段是以下 3 个： ob_item ，指向
+<strong>动态数组 的指针</strong>，数组保存元素对象指针； allocated
+，<strong>动态数组总长度</strong>，即列表当前的 容量 ； ob_size
+，<strong>当前元素个数</strong>，即列表当前的 长度 ；
+列表容量不足时，<strong>Python 会自动扩容</strong>，具体做法在讲解 list
+源码时再详细介绍。 最后，介绍两个用于初始化对象头部的宏定义。
+其中，PyObject_HEAD_INIT 一般用于 定长对象 ，将<strong>引用计数
+ob_refcnt 设置为 1 并将对象类型 ob_type 设置成给定类型</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_HEAD_INIT(type)        \</span><br><span class="line">    &#123; _PyObject_EXTRA_INIT              \</span><br><span class="line">    1, type &#125;,</span><br></pre></td></tr></table></figure>
+PyVarObject_HEAD_INIT 在 PyObject_HEAD_INIT 基础上进一步设置 长度字段
+ob_size ，一般用于 变长对象 ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyVarObject_HEAD_INIT(type, size)       \</span><br><span class="line">    &#123; PyObject_HEAD_INIT(type) size &#125;,</span><br></pre></td></tr></table></figure>
+后续在研读源码过程中，将经常见到这两个宏定义。</p>
+<h1><span id="pytypeobject-lei-xing-de-ji-shi">PyTypeObject，类型的基石</span><a href="#pytypeobject-lei-xing-de-ji-shi" class="header-anchor">#</a></h1>
+<p>在 PyObject 结构体，我们看到了 Python 中所有对象共有的信息。
+对于内存中的任一个对象，不管是何类型，它刚开始几个字段肯定符合我们的预期：
+<strong>引用计数 、 类型指针 以及变长对象特有的 元素个数</strong> 。
+随着研究不断深入，我们发现有一些棘手的问题没法回答：
+不同类型的对象所需内存空间不同，创建对象时从哪得知内存信息呢？
+对于给定对象，怎么判断它支持什么操作呢？ 对于我们初步解读过的
+PyFloatObject 和 PyListObject ，并不包括这些信息。
+事实上，这些作为对象的 <strong>元信息</strong>
+，应该由一个独立实体保存，与对象所属 类型 密切相关。 注意到， PyObject
+中包含一个指针 ob_type ，指向一个 类型对象 ，秘密就藏在这里。类型对象
+<strong>PyTypeObject</strong> 也在 Include/object.h
+中定义，字段较多，只讨论关键部分：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _typeobject &#123;</span><br><span class="line">    PyObject_VAR_HEAD</span><br><span class="line">    const char *tp_name; &#x2F;* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; *&#x2F;</span><br><span class="line">    Py_ssize_t tp_basicsize, tp_itemsize; &#x2F;* For allocation *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Methods to implement standard operations *&#x2F;</span><br><span class="line">    destructor tp_dealloc;</span><br><span class="line">    printfunc tp_print;</span><br><span class="line"></span><br><span class="line">    getattrfunc tp_getattr;</span><br><span class="line">    setattrfunc tp_setattr;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Attribute descriptor and subclassing stuff *&#x2F;</span><br><span class="line">    struct _typeobject *tp_base;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ......</span><br><span class="line">&#125; PyTypeObject;</span><br></pre></td></tr></table></figure>
+可见 类型对象 PyTypeObject 是一个 <strong>变长对象</strong>
+，包含变长对象头部。 专有字段有： - 类型名称 ，即 tp_name 字段； -
+类型的继承信息，例如 tp_base 字段指向基类对象； - 创建实例对象时所需的
+内存信息 ，即 tp_basicsize 和 tp_itemsize 字段； - 该类型支持的相关
+操作信息 ，即 tp_print 、 tp_getattr 等函数指针；</p>
+<p>PyTypeObject 就是 <strong>类型对象 在 Python
+中的表现形式</strong>，对应着<strong>面向对象中“类”的概念</strong>。
+PyTypeObject 结构很复杂，但是我们不必在此刻完全弄懂它。
+先有个大概的印象，知道 PyTypeObject 保存着对象的 元信息 ，描述对象的
+类型 即可。 接下来，以 浮点 为例，考察 类型对象 和 实例对象
+在内存中的形态和关系：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; float</span><br><span class="line">&lt;class &#39;float&#39;&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; pi &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; e &#x3D; 2.71</span><br><span class="line">&gt;&gt;&gt; type(pi) is float</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+float 为
+<strong>浮点类型对象，系统中只有唯一一个，保存了所有浮点实例对象的元信息</strong>。
+而浮点实例对象就有很多了，圆周率 pi 是一个，自然对数 e
+是另一个，当然还有其他。 代码中各个对象在内存的形式如下图所示：</p>
+<p>其中，两个浮点 实例对象 都是 <strong>PyFloatObject 结构体</strong>，
+除了公共头部字段 ob_refcnt 和 ob_type ，专有字段
+<strong>ob_fval</strong> 保存了对应的数值。 浮点 类型对象 是一个
+PyTypeObject 结构体， 保存了类型名、内存分配信息以及浮点相关操作。
+实例对象 ob_type 字段指向类型对象， Python 据此判断对象类型，
+进而获悉关于对象的元信息，如操作方法等。 再次提一遍，float 、 pi 以及 e
+等变量只是一个指向实际对象的指针。 由于浮点 <strong>类型对象
+全局唯一</strong>，在 C 语言层面
+<strong>作为一个全局变量静态定义</strong>即可，Python 的确就这么做。
+浮点类型对象就藏身于 Object/floatobject.c 中， PyFloat_Type 是也：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line">    0,</span><br><span class="line">    (destructor)float_dealloc,                  &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_repr *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+其中，第 2 行初始化 ob_refcnt 、 ob_type 以及 ob_size 三个字段； 第 3
+行将 tp_name 字段初始化成类型名称 float ；再往下是各种操作的函数指针。
+注意到 ob_type 指针指向 PyType_Type ，这也是一个静态定义的全局变量。
+由此可见，代表“ 类型的类型 ” 即 type 的那个对象应该就是 PyType_Type
+了。</p>
+<h1><span id="pytype-type-lei-xing-de-lei-xing">PyType_Type，类型的类型</span><a href="#pytype-type-lei-xing-de-lei-xing" class="header-anchor">#</a></h1>
+<p>我们初步考察了 float 类型对象，知道它在 C 语言层面是 PyFloat_Type
+全局静态变量。 类型是一种对象，它也有自己的类型，也就是 Python 中的 type
+：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; float.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
+自定义类型也是如此：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class Foo(object):</span><br><span class="line">...     pass</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; Foo.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
+那么， type 在 C 语言层面又长啥样呢？ 围观 PyFloat_Type 时，我们通过
+ob_type 字段揪住了 <strong>PyType_Type</strong> 。 的确，它就是 type
+的肉身。 PyType_Type 在 Object/typeobject.c 中定义（也是
+<strong>重写PyTypeObject结构体</strong>）：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyType_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;type&quot;,                                     &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyHeapTypeObject),                   &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    sizeof(PyMemberDef),                        &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line">    (destructor)type_dealloc,                   &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (reprfunc)type_repr,                        &#x2F;* tp_repr *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+内建类型和自定义类对应的 <strong>PyTypeObject</strong> 对象都是这个通过
+PyType_Type 创建的。 PyType_Type 在 Python
+的类型机制中是一个至关重要的对象，它是所有类型的类型，称为
+<strong>元类型 ( meta class )。
+借助元类型</strong>，你可以实现很多神奇的高级操作。 注意到，
+<strong>PyType_Type 将自己的 ob_type 字段设置成它自己</strong>(第 2
+行)，这跟我们在 Python 中看到的行为是吻合的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; type.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; type.__class__ is type</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+至此，元类型 type 在对象体系里的位置非常清晰了：</p>
+<table style="width:8%;">
+<colgroup>
+<col style="width: 8%">
+</colgroup>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1><span id="pybaseobject-type-lei-xing-zhi-ji">PyBaseObject_Type，类型之基</span><a href="#pybaseobject-type-lei-xing-zhi-ji" class="header-anchor">#</a></h1>
+<p>object 是另一个特殊的类型，它是 <strong>所有类型的基类</strong>。
+那么，怎么找到它背后的实体呢？ 理论上，通过 PyFloat_Type 中 tp_base
+字段顺藤摸瓜即可。 然而，我们发现这个字段在并没有初始化：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0,                                          &#x2F;* tp_base *&#x2F;</span><br></pre></td></tr></table></figure>
+这又是什么鬼？ 接着查找代码中 PyFloat_Type 出现的地方，我们在
+Object/object.c 发现了蛛丝马迹：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (PyType_Ready(&amp;PyFloat_Type) &lt; 0)</span><br><span class="line">    Py_FatalError(&quot;Can&#39;t initialize float type&quot;);</span><br></pre></td></tr></table></figure>
+敢情 PyFloat_Type 静态定义后还是个半成品呀！ PyType_Ready
+对它做进一步加工，将 PyFloat_Type 中 tp_base 字段初始化成
+PyBaseObject_Type ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">int</span><br><span class="line">PyType_Ready(PyTypeObject *type)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    base &#x3D; type-&gt;tp_base;</span><br><span class="line">    if (base &#x3D;&#x3D; NULL &amp;&amp; type !&#x3D; &amp;PyBaseObject_Type) &#123;</span><br><span class="line">        base &#x3D; type-&gt;tp_base &#x3D; &amp;PyBaseObject_Type;</span><br><span class="line">        Py_INCREF(base);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+PyBaseObject_Type 就是 PyTypeObject 背后的实体：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyBaseObject_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;object&quot;,                                   &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyObject),                           &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line">    object_dealloc,                             &#x2F;* tp_dealloc *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    object_repr,                                &#x2F;* tp_repr *&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>注意到， ob_type 字段指向 PyType_Type 跟 object 在 Python
+中的行为时相吻合的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; object.__class__</span><br><span class="line">&lt;class &#39;type&#39;&gt;</span><br></pre></td></tr></table></figure>
+又注意到 PyType_Ready 函数初始化 PyBaseObject_Type 时，不设置 tp_base
+字段。
+因为继承链必须有一个终点，不然对象沿着继承链进行属性查找时便陷入死循环。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print(object.__base__)</span><br><span class="line">None</span><br></pre></td></tr></table></figure>
+至此，我们完全弄清了 Python
+对象体系中的所有实体以及关系，得到一幅完整的图画：</p>
+<table style="width:8%;">
+<colgroup>
+<col style="width: 8%">
+</colgroup>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li><p>创建一个对象时, 先创建一个
+<strong>类型对象PyTypeObject</strong>(类型对象自始至终都是
+<strong>只要一个的, 在C源码中, 就是定义了一个全局的变量</strong>),
+保存要创建对象的类型信息, 接着再在
+<strong>该类型对象的方法中创建指定的对象</strong>, 并将类型对象
+PyTypeObject 置为该对象的属性之一, 如创建一个int对象,
+先在PyInt_Type对象创建封装了信息之后再创建PyIntObject对象。</p></li>
+<li><p>Python相比较于其他语言的好处是
+<strong>其doc文档就在程序之中</strong>,
+通过<strong>PyTypeObject结构体中的doc属性</strong>可以看到。</p></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/" rel="prev" title="[unity shader] 2.GPU渲染管线">
+      <i class="fa fa-chevron-left"></i> [unity shader] 2.GPU渲染管线
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="next" title="[python源码分析] 2.对象的生命周期">
+      [python源码分析] 2.对象的生命周期 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">PyObject，对象的基石</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">PyTypeObject，类型的基石</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">PyType_Type，类型的类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">PyBaseObject_Type，类型之基</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '8d58405d70cba663990e3b3e959c919d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

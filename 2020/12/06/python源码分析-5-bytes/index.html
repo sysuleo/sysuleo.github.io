@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="由于一个字节8bit最多只能表示 256 种字符，用来表示英文字符绰绰有余，想覆盖非英文字符便捉襟见肘了。为了表示众多的非英文字符(比如汉字)，计算机先驱们发明了 多字节编码 ——通过 多个字节来表示一个字符。由于 原始字节序列不维护编码信息，操作不慎便导致各种乱码现象。 Python 提供的解决方案是 Unicode 字符串 ( str )对象， Unicode 可以表示各种字符，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 5.bytes">
+<meta property="og:url" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="由于一个字节8bit最多只能表示 256 种字符，用来表示英文字符绰绰有余，想覆盖非英文字符便捉襟见肘了。为了表示众多的非英文字符(比如汉字)，计算机先驱们发明了 多字节编码 ——通过 多个字节来表示一个字符。由于 原始字节序列不维护编码信息，操作不慎便导致各种乱码现象。 Python 提供的解决方案是 Unicode 字符串 ( str )对象， Unicode 可以表示各种字符，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/str_and_bytes.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_head.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_empty.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_ascii.png">
+<meta property="article:published_time" content="2020-12-06T02:35:41.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.915Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/str_and_bytes.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 5.bytes | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 5.bytes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-12-06 10:35:41" itemprop="dateCreated datePublished" datetime="2020-12-06T10:35:41+08:00">2020-12-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>由于一个字节8bit最多只能表示 <strong>256
+种字符</strong>，用来表示英文字符绰绰有余，想覆盖非英文字符便捉襟见肘了。为了表示众多的非英文字符(比如汉字)，计算机先驱们发明了
+<strong>多字节编码</strong> ——通过
+<strong>多个字节来表示一个字符</strong>。由于
+<strong>原始字节序列不维护编码信息</strong>，操作不慎便导致各种乱码现象。</p>
+<p>Python 提供的解决方案是 <strong>Unicode 字符串 ( str )对象</strong>，
+Unicode
+可以表示各种字符，无需关心编码。然而存储或者网络通讯时，字符串对象不可避免要
+<strong>序列化 成字节序列</strong>。为此， Python 额外提供了
+<strong>字节序列对象—— bytes</strong> 。</p>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/str_and_bytes.jpg" class title="str_and_bytes图">
+</div>
+<p>如上图， str 对象统一表示一个 <strong>字符串</strong>
+，不需要关心编码；计算机通过 <strong>字节序列
+与存储介质和网络介质打交道</strong>，字节序列由 <strong>bytes
+对象</strong>表示；存储或传输 str 对象时，需要将其
+<strong>序列化</strong> 成字节序列，序列化过程也是 <strong>编码</strong>
+的过程。</p>
+<h2><span id="dui-xiang-jie-gou">对象结构</span><a href="#dui-xiang-jie-gou" class="header-anchor">#</a></h2>
+<p>bytes 对象用于表示由若干字节组成的 字节序列 以及相关的 操作
+，并不关心字节序列的 含义 。因此， bytes 应该一种 <strong>变长 、
+不可变</strong> 对象 ，内部由 <strong>C 数组</strong> 实现。如下图:</p>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_head.png" class title="bytes_head图">
+</div>
+<ol type="1">
+<li><p>ob_sval 字节序列对象 PyBytesObject 中，确实藏着一个字符数组
+ob_sval 。注意到 <strong>ob_sval 数组长度定义为 1</strong> ，这是 C
+语言中定义 <strong>变长数组</strong>
+的技巧（ob_sval存储的是地址）。</p></li>
+<li><p>ob_snash <strong>ob_shash</strong> ，它用于保存字节序列的 哈希值
+。 由于计算 <strong>bytes
+对象哈希值需要遍历其内部的字符数组</strong>，开销相对较大。因此， Python
+<strong>第一次计算</strong> 哈希值时，选择 将哈希值缓存到
+<strong>ob_shash字段</strong>中，以
+<strong>空间换时间</strong>，避免重复计算。</p></li>
+<li><p>ob_size 每个PyVarObject内部都有个
+<strong>ob_size</strong>字段，PyBytesObject使用此字段存储大小信息以
+<strong>保持len（）操作的O（1）时间复杂度</strong>，并跟踪非ascii字符串的大小（内部可以为空字符）</p></li>
+</ol>
+<h3><span id="kong-dui-xiang-yang-li">空对象样例</span><a href="#kong-dui-xiang-yang-li" class="header-anchor">#</a></h3>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_empty.png" class title="bytes_empty图">
+</div>
+<p>Python 为待存储的字节序列 <strong>额外分配一个字节，用于在末尾处保存
+\0 ，以便兼容 C 字符串</strong>。从上图可以看出，就算空 bytes 对象( b''
+)也是要占用内存空间的，至少变长对象 公共头部 是少不了的。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(b&#39;&#39;)</span><br><span class="line">33</span><br></pre></td></tr></table></figure></p>
+<p>bytes 对象占用的内存空间可分为以下个部分进行计算：</p>
+<ul>
+<li>PyVarObject公共头部 24 字节，ob_refcnt 、 ob_type 、 ob_size
+每个字段各占用 8 字节；</li>
+<li>哈希值 ob_shash 占用 8 字节；</li>
+<li>字节序列本身，假设是 n 字节；</li>
+<li>额外 1 字节用于存储末尾处的 \0 ；</li>
+</ul>
+<p>因此，bytes 对象空间计算公式为 24+8+n+124+8+n+1，即 33+n33+n，其中 n
+为字节序列长度(也是len的取值)。 经过上面的学习，我们可以知道
+<strong>len(byte对象) = n</strong>，len显示的只是
+<strong>ob_size字段</strong>的值，而bytes对象真实占用内存量还
+<strong>需要加 33</strong>.</p>
+<h3><span id="ascii-yang-li">ascii样例</span><a href="#ascii-yang-li" class="header-anchor">#</a></h3>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/bytes_ascii.png" class title="bytes_ascii图">
+</div>
+<h2><span id="dui-xiang-xing-wei">对象行为</span><a href="#dui-xiang-xing-wei" class="header-anchor">#</a></h2>
+<p>对象的行为由对象的 <strong>类型</strong> 决定，因而我们需要到 bytes
+类型对象(PyBytes_Type)中寻找答案。在
+<strong>Objects/bytesobject.c</strong> 源码文件中，我们找到 bytes
+类型对象 的定义：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyBytes_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;bytes&quot;,</span><br><span class="line">    PyBytesObject_SIZE,</span><br><span class="line">    sizeof(char),</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &amp;bytes_as_number,                           &#x2F;* tp_as_number 保存着 数值运算 处理函数的指针*&#x2F;</span><br><span class="line">    &amp;bytes_as_sequence,                         &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    &amp;bytes_as_mapping,                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line">    (hashfunc)bytes_hash,                       &#x2F;* tp_hash *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+bytes 对象居然支持数据操作？bytes_as_number 结构体中只定义了一个操作——
+模运算 ( % )：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods bytes_as_number &#x3D; &#123;</span><br><span class="line">    0,              &#x2F;*nb_add*&#x2F;</span><br><span class="line">    0,              &#x2F;*nb_subtract*&#x2F;</span><br><span class="line">    0,              &#x2F;*nb_multiply*&#x2F;</span><br><span class="line">    bytes_mod,      &#x2F;*nb_remainder*&#x2F;</span><br><span class="line">&#125;</span><br><span class="line">static PyObject *</span><br><span class="line">bytes_mod(PyObject *self, PyObject *arg)</span><br><span class="line">&#123;</span><br><span class="line">    if (!PyBytes_Check(self)) &#123;</span><br><span class="line">        Py_RETURN_NOTIMPLEMENTED;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;实现字符串格式化</span><br><span class="line">    return _PyBytes_FormatEx(PyBytes_AS_STRING(self), PyBytes_GET_SIZE(self),</span><br><span class="line">                             arg, 0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+由此可见， bytes 对象只是 <strong>借用 %
+运算符实现字符串格式化</strong>，谈不上支持数值运算，虚惊一场：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b&#39;msg: a&#x3D;%d b&#x3D;%d&#39; % (1, 2)</span><br><span class="line">b&#39;msg: a&#x3D;1 b&#x3D;2&#39;</span><br></pre></td></tr></table></figure></p>
+<h2><span id="xu-lie-xing-cao-zuo">序列型操作</span><a href="#xu-lie-xing-cao-zuo" class="header-anchor">#</a></h2>
+<p>众所周知， <strong>bytes 是 序列型对象</strong>
+，序列型操作才是研究重点。我们在 bytes_as_sequence
+结构体中找到相关定义：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static PySequenceMethods bytes_as_sequence &#x3D; &#123;</span><br><span class="line">    (lenfunc)bytes_length, &#x2F;*sq_length*&#x2F;</span><br><span class="line">    (binaryfunc)bytes_concat, &#x2F;*sq_concat*&#x2F;</span><br><span class="line">    (ssizeargfunc)bytes_repeat, &#x2F;*sq_repeat*&#x2F;</span><br><span class="line">    (ssizeargfunc)bytes_item, &#x2F;*sq_item*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_slice*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_ass_item*&#x2F;</span><br><span class="line">    0,                  &#x2F;*sq_ass_slice*&#x2F;</span><br><span class="line">    (objobjproc)bytes_contains &#x2F;*sq_contains*&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+由此可见， bytes 支持的 序列型操作 包括以下 5 个： - sq_length
+，查询序列长度； - sq_concat ，将两个序列合并为一个； - sq_repeat
+，将序列重复多次； - sq_item ，取出给定下标序列元素； -
+sq_contains，包含关系判断；</p>
+<h3><span id="chang-du">长度</span><a href="#chang-du" class="header-anchor">#</a></h3>
+<p>最简单的序列型操作是 长度查询 ，直接返回 ob_size 字段即可：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static Py_ssize_t</span><br><span class="line">bytes_length(PyBytesObject *a)</span><br><span class="line">&#123;</span><br><span class="line">    return Py_SIZE(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3><span id="he-bing">合并</span><a href="#he-bing" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b&#39;abc&#39; + b&#39;cba&#39;</span><br><span class="line">b&#39;abccba&#39;</span><br></pre></td></tr></table></figure>
+<p>合并操作将两个 bytes 对象拼接成一个，由 bytes_concat 函数处理：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">bytes_concat(PyObject *a, PyObject *b)</span><br><span class="line">&#123;</span><br><span class="line">    Py_buffer va, vb;   &#x2F;&#x2F;定义局部变量 va 、 vb 用于维护缓冲区</span><br><span class="line">    PyObject *result &#x3D; NULL;  &#x2F;&#x2F;新建临时变量，保存合并结果</span><br><span class="line"></span><br><span class="line">    va.len &#x3D; -1;</span><br><span class="line">    vb.len &#x3D; -1;</span><br><span class="line">    &#x2F;&#x2F;获取字节序列所在缓冲区</span><br><span class="line">    if (PyObject_GetBuffer(a, &amp;va, PyBUF_SIMPLE) !&#x3D; 0 ||</span><br><span class="line">        PyObject_GetBuffer(b, &amp;vb, PyBUF_SIMPLE) !&#x3D; 0) &#123;</span><br><span class="line">        PyErr_Format(PyExc_TypeError, &quot;can&#39;t concat %.100s to %.100s&quot;,</span><br><span class="line">                     Py_TYPE(b)-&gt;tp_name, Py_TYPE(a)-&gt;tp_name);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Optimize end cases *&#x2F;</span><br><span class="line">    if (va.len &#x3D;&#x3D; 0 &amp;&amp; PyBytes_CheckExact(b)) &#123;  &#x2F;&#x2F;如果第一个对象长度为 0 ，第二个对象就是结果</span><br><span class="line">        result &#x3D; b;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line">    if (vb.len &#x3D;&#x3D; 0 &amp;&amp; PyBytes_CheckExact(a)) &#123;    &#x2F;&#x2F;第二个对象长度为 0 ，第一个对象就是结果</span><br><span class="line">        result &#x3D; a;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (va.len &gt; PY_SSIZE_T_MAX - vb.len) &#123;   &#x2F;&#x2F;长度超过限制则报错</span><br><span class="line">        PyErr_NoMemory();</span><br><span class="line">        goto done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    result &#x3D; PyBytes_FromStringAndSize(NULL, va.len + vb.len);  &#x2F;&#x2F;临时 bytes 对象用于保存合并结果，长度为待合并对象长度之和</span><br><span class="line">    if (result !&#x3D; NULL) &#123;</span><br><span class="line">        memcpy(PyBytes_AS_STRING(result), va.buf, va.len);</span><br><span class="line">        memcpy(PyBytes_AS_STRING(result) + va.len, vb.buf, vb.len);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  done:</span><br><span class="line">    if (va.len !&#x3D; -1)</span><br><span class="line">        PyBuffer_Release(&amp;va);</span><br><span class="line">    if (vb.len !&#x3D; -1)</span><br><span class="line">        PyBuffer_Release(&amp;vb);</span><br><span class="line">    return result;  &#x2F;&#x2F;返回结果</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+bytes_concat 函数逻辑很直白，<strong>将两个 bytes
+对象的缓冲区</strong>拷贝到一起形成新 bytes 对象。</p>
+<h3><span id="shu-ju-kao-bei-de-xian-jing">数据拷贝的陷阱</span><a href="#shu-ju-kao-bei-de-xian-jing" class="header-anchor">#</a></h3>
+<p>考察以下表达式——合并 3 个 bytes 对象：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; a + b + c</span><br></pre></td></tr></table></figure>
+这个语句执行时，分成两步进行合并：先将 a 和 b 合并，得到临时结果 t
+，再将 t 和 c 合并得到最终结果 result ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t &#x3D; a + b</span><br><span class="line">&gt;&gt;&gt; result &#x3D; t + c</span><br></pre></td></tr></table></figure>
+这个过程中，<strong>a 和 b 的数据需要被拷贝两遍</strong>！</p>
+<div style="width:100%;margin:auto">
+
+</div>
+<p>合并 <strong>n 个 bytes 对象，头两个对象需要拷贝 n-1</strong>
+次，只有最后一个对象不需要重复拷贝。平均下来，每个对象大约要拷贝
+<strong>n/2</strong> 次！</p>
+<h3><span id="nei-jian-fang-fa-join">内建方法 join</span><a href="#nei-jian-fang-fa-join" class="header-anchor">#</a></h3>
+bytes 对象提供了一个内建方法 join ，可高效合并多个 bytes 对象：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result &#x3D; b&#39;&#39;.join(segments)</span><br></pre></td></tr></table></figure>
+join
+方法对数据拷贝进行了优化：<strong>先遍历待合并对象</strong>，<strong>计算总长度</strong>；然后根据总长度
+<strong>创建目标对象</strong>；最后再
+<strong>遍历待合并对象</strong>，逐一拷贝数据。这样一来，每个对象均只需拷贝一次，解决了重复拷贝的陷阱。
+<div style="width:100%;margin:auto">
+
+</div>
+<h2><span id="zi-fu-huan-chong-chi">字符缓冲池</span><a href="#zi-fu-huan-chong-chi" class="header-anchor">#</a></h2>
+<p>为了优化单字节 <strong>bytes</strong> 对象(也可称为 字符对象
+)的创建效率， Python 内部维护了一个 字符缓冲池 ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static PyBytesObject *characters[UCHAR_MAX + 1];</span><br></pre></td></tr></table></figure>
+Python 内部 <strong>创建单字节 bytes</strong>
+对象时，先检查目标对象是否已在缓冲池中。PyBytes_FromStringAndSize
+函数是负责创建 bytes 对象的通用接口，同样位于
+<strong>Objects/bytesobject.c</strong> 中：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyBytes_FromStringAndSize(const char *str, Py_ssize_t size)</span><br><span class="line">&#123;</span><br><span class="line">    PyBytesObject *op;</span><br><span class="line">    if (size &lt; 0) &#123;</span><br><span class="line">        PyErr_SetString(PyExc_SystemError,</span><br><span class="line">            &quot;Negative size passed to PyBytes_FromStringAndSize&quot;);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;如果目标对象为 单字节对象 且 已在字符缓冲池 中，直接返回已缓存对象</span><br><span class="line">    if (size &#x3D;&#x3D; 1 &amp;&amp; str !&#x3D; NULL &amp;&amp;</span><br><span class="line">        (op &#x3D; characters[*str &amp; UCHAR_MAX]) !&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">#ifdef COUNT_ALLOCS</span><br><span class="line">        one_strings++;</span><br><span class="line">#endif</span><br><span class="line">        Py_INCREF(op);</span><br><span class="line">        return (PyObject *)op;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;创建新 bytes 对象并拷贝字节序列</span><br><span class="line">    op &#x3D; (PyBytesObject *)_PyBytes_FromSize(size, 0);</span><br><span class="line">    if (op &#x3D;&#x3D; NULL)</span><br><span class="line">        return NULL;</span><br><span class="line">    if (str &#x3D;&#x3D; NULL)</span><br><span class="line">        return (PyObject *) op;</span><br><span class="line"></span><br><span class="line">    memcpy(op-&gt;ob_sval, str, size);</span><br><span class="line">    &#x2F;* share short strings *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;如果创建的对象为单字节对象，将其放入字符缓冲池</span><br><span class="line">    if (size &#x3D;&#x3D; 1) &#123;</span><br><span class="line">        characters[*str &amp; UCHAR_MAX] &#x3D; op;</span><br><span class="line">        Py_INCREF(op);</span><br><span class="line">    &#125;</span><br><span class="line">    return (PyObject *) op;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由此可见，当 Python 程序
+<strong>开始运行时</strong>，<strong>字符缓冲池是空的</strong>。随着
+<strong>单字节 bytes
+对象</strong>的创建，缓冲池中的对象慢慢多了起来。</p>
+<p>字符对象
+<strong>首次创建后便在缓冲池中缓存起来</strong>；后续再次使用时，
+<strong>Python 直接从缓冲池中取</strong>，避免重复创建和销毁。与 小整数
+一样，字符对象 <strong>只有为数不多的 256
+个</strong>，但使用频率非常高。缓冲池技术作为一种
+<strong>以空间换时间</strong> 的优化手段，只需
+<strong>较小的内存为代价</strong>，便可明显提升执行效率。</p>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1905" title="Python 源码深度剖析/09 bytes 对象，不可变的字节序列">Python
+源码深度剖析/09 bytes 对象，不可变的字节序列</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/bytes/bytes.md" title="bytes">bytes</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/05/c-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%B8%80/" rel="prev" title="[c++]基础知识一">
+      <i class="fa fa-chevron-left"></i> [c++]基础知识一
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/" rel="next" title="[python源码分析] 6.python3中的字符串str/Unicode">
+      [python源码分析] 6.python3中的字符串str/Unicode <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">对象结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">空对象样例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.2.</span> <span class="nav-text">ascii样例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">对象行为</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">序列型操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.1.</span> <span class="nav-text">长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.2.</span> <span class="nav-text">合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.3.</span> <span class="nav-text">数据拷贝的陷阱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.4.</span> <span class="nav-text">内建方法 join</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">字符缓冲池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '039b27394d61751afb21618906979c83',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

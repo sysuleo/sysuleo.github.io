@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="内部结构# C++ 标准模板库中的 map 是一种关联式容器，内部基于 红黑树 实现。红黑树是一种 平衡 二叉树，插入、删除、查找 等关键操作的时间复杂度均为 O(logn)。 Python 虚拟机的运行依赖 dict 对象，包括 名字空间 以及 对象属性空间 等底层都由 dict 实现的。因此Python 中的 dict 对象基于查找效率更高的 hash table 实现的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 8.dict,关联式容器">
+<meta property="og:url" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="内部结构# C++ 标准模板库中的 map 是一种关联式容器，内部基于 红黑树 实现。红黑树是一种 平衡 二叉树，插入、删除、查找 等关键操作的时间复杂度均为 O(logn)。 Python 虚拟机的运行依赖 dict 对象，包括 名字空间 以及 对象属性空间 等底层都由 dict 实现的。因此Python 中的 dict 对象基于查找效率更高的 hash table 实现的。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/PyDictObject.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/dictkeys_basic.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/key_shares.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/before_py36.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/after_py36.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/after_py36_search.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/indices.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list0.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list1.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list2.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list3.png">
+<meta property="article:published_time" content="2021-01-03T02:21:59.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.930Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/PyDictObject.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 8.dict,关联式容器 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 8.dict,关联式容器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-03 10:21:59" itemprop="dateCreated datePublished" datetime="2021-01-03T10:21:59+08:00">2021-01-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2><span id="nei-bu-jie-gou">内部结构</span><a href="#nei-bu-jie-gou" class="header-anchor">#</a></h2>
+<p>C++ 标准模板库中的 <strong>map</strong> 是一种关联式容器，内部基于
+<strong>红黑树</strong> 实现。红黑树是一种 <strong>平衡
+二叉树，插入、删除、查找</strong> 等关键操作的时间复杂度均为
+<strong>O(logn)</strong>。</p>
+<p>Python 虚拟机的运行依赖 dict 对象，包括 <strong>名字空间</strong>
+以及 <strong>对象属性空间</strong> 等底层都由 dict 实现的。因此Python
+中的 dict 对象基于查找效率更高的 <strong>hash table</strong>
+实现的。</p>
+<h3><span id="pydictobject">PyDictObject</span><a href="#pydictobject" class="header-anchor">#</a></h3>
+<p>首先来看看dict的结构，PyDictObject 在头文件 Include/dictobject.h
+中定义：</p>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/PyDictObject.png" class title="PyDictObject图">
+</div>
+<p>dict 对象 <strong>理论上应该是一种变长对象</strong>，但从
+<strong>PyObject_HEAD</strong> 可以看出，它是基于
+<strong>不可变长对象</strong>实现。 除了PyObject_HEAD外， PyDictObject
+还包括以下几个字段：</p>
+<ul>
+<li>Py_ssize_t ma_used ，对象当前所保存的 <strong>键值对个数</strong>
+；</li>
+<li>uint64_t ma_version_tag ，对象当前 版本号 ，每次
+<strong>修改时更新</strong>；</li>
+<li>PyDictKeysObject *ma_keys ，指向按键对象映射的
+<strong>哈希表</strong> 结构；</li>
+<li>PyObject ** ma_values ， split table模式下指向由所有 <strong>值对象
+组成的数组</strong>。</li>
+</ul>
+<h4><span id="dictkeysobject">_dictkeysobject</span><a href="#dictkeysobject" class="header-anchor">#</a></h4>
+<p>然后我们再看看 PyDictKeysObject 的源码，在Objects/dict-common.h
+头文件中的 **_dictkeysobject**:</p>
+<ul>
+<li>Py_ssize_t dk_refcnt ，引用计数，跟 映射视图
+的实现有关，有点类似对象引用计数；</li>
+<li>Py_ssize_t dk_size ，<strong>哈希表大小</strong>，必须是 <span class="math inline">\(2^n\)</span>，这样可将模运算优化成
+<strong>按位与</strong> 运算；</li>
+<li>dict_lookup_func dk_lookup ， <strong>哈希查找函数</strong>
+指针，可根据 dict 当前状态选用最优函数版本；</li>
+<li>Py_ssize_t dk_usable ，键值对数组 <strong>可用个数</strong> ；</li>
+<li>Py_ssize_t dk_nentries ，键值对数组 <strong>已用个数</strong>
+；</li>
+<li>char dk_indices[] ，哈希表 <strong>起始地址</strong>
+，哈希表后紧接着 <strong>键值对数组</strong> dk_entries。 char is
+required to avoid strict aliasing.</li>
+</ul>
+<h4><span id="pydictkeyentry">PyDictKeyEntry</span><a href="#pydictkeyentry" class="header-anchor">#</a></h4>
+<p>键值对结构体 PyDictKeyEntry
+就非常直白了，除了保存键对象和值对象的指针外，缓存着键对象的哈希值：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    &#x2F;* Cached hash code of me_key. *&#x2F;</span><br><span class="line">    Py_hash_t me_hash;   &#x2F;* 键对象的 哈希值 ，避免重复调用 __hash__ 计算哈希值*&#x2F;</span><br><span class="line">    PyObject *me_key;    &#x2F;* 键对象指针*&#x2F;</span><br><span class="line">    PyObject *me_value; &#x2F;* 值对象指针 This field is only meaningful for combined tables *&#x2F;</span><br><span class="line">&#125; PyDictKeyEntry;</span><br></pre></td></tr></table></figure>
+#### indices and entries dk_indices 是PyDictKeyEntry的数组，它的大小是
+USABLE_FRACTION(dk_size)。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define USABLE_FRACTION(n) (((n) &lt;&lt; 1)&#x2F;3)  &#x2F;*line 413 in bjects&#x2F;dictobjetc.c*&#x2F;</span><br></pre></td></tr></table></figure></p>
+DK_ENTRIES(dk)可用于获取指向entries的指针。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyDictKeyEntry *ep0 &#x3D; DK_ENTRIES(mp-&gt;ma_keys);    &#x2F;*PyDictObject *mp*&#x2F;</span><br></pre></td></tr></table></figure>
+在 <strong>Objects/dictobjetc.c</strong>中，我们可以看到关于
+<strong>DK_ENTRIES</strong> 的宏定义
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*line 312 in bjects&#x2F;dictobjetc.c*&#x2F;</span><br><span class="line"></span><br><span class="line">#define DK_ENTRIES(dk) \</span><br><span class="line">    ((PyDictKeyEntry*)(&amp;((int8_t*)((dk)-&gt;dk_indices))[DK_SIZE(dk) * DK_IXSIZE(dk)]))</span><br></pre></td></tr></table></figure>
+重写DK_ENTRIES宏:
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; assume int8_t can fit into the indices array</span><br><span class="line">size_t indices_offset &#x3D; DK_SIZE(dk) * DK_IXSIZE(dk);</span><br><span class="line">int8_t *pointer_to_indices &#x3D; (int8_t *)(dk-&gt;dk_indices);</span><br><span class="line">int8_t *pointer_to_entries &#x3D; pointer_to_indices + indices_offset;</span><br><span class="line">PyDictKeyEntry *entries &#x3D; (PyDictKeyEntry *) pointer_to_entries;</span><br></pre></td></tr></table></figure>
+因此，PyDictKeysObject结构就很清晰了:
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/dictkeys_basic.png" class title="dictkeys_basic图">
+</div>
+<h2><span id="rong-liang-ce-lue">容量策略</span><a href="#rong-liang-ce-lue" class="header-anchor">#</a></h2>
+<h3><span id="split-table-he-combined-table">split table和combined table</span><a href="#split-table-he-combined-table" class="header-anchor">#</a></h3>
+在介绍PyDictObjet的ma_values时，我们曾提到 split
+table模式下才使用。那么，什么是plit table和combined table呢？ #####
+两者区别：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line">The DictObject can be in one of two forms.</span><br><span class="line"></span><br><span class="line">Either:</span><br><span class="line">  A combined table:</span><br><span class="line">    ma_values &#x3D;&#x3D; NULL, dk_refcnt &#x3D;&#x3D; 1.   </span><br><span class="line">    Values are stored in the me_value field of the PyDictKeysObject.</span><br><span class="line">Or:</span><br><span class="line">  A split table:</span><br><span class="line">    ma_values !&#x3D; NULL, dk_refcnt &gt;&#x3D; 1</span><br><span class="line">    Values are stored in the ma_values array.</span><br><span class="line">    Only string (unicode) keys are allowed.</span><br><span class="line">    All dicts sharing same key must have same insertion order.</span><br><span class="line">*&#x2F;</span><br></pre></td></tr></table></figure>
+##### 什么情况下，不同的dict对象共享相同的键但值不同 只包含
+<strong>unicode键而不包含伪键（没有删除的对象）</strong>，并保持
+<strong>相同的插入顺序</strong>。 如果
+<strong>同一类有多个实例</strong>，split table实现
+<strong>可以节省大量内存</strong>。有关更多详细信息，请参阅 <a target="_blank" rel="noopener" href="https://www.python.org/dev/peps/pep-0412/">PEP 412</a>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/key_shares.png" class title="key_shares图">
+</div>
+<h3><span id="yu-fen-pei-ji-zhi">预分配机制</span><a href="#yu-fen-pei-ji-zhi" class="header-anchor">#</a></h3>
+<p>dict 对象也有一种类似 list 对象的 预分配机制 。那么， dict
+对象容量管理策略是怎样的呢？</p>
+<p>由 Objects/dictobject.c 源文件中的 PyDict_MINSIZE 宏定义，我们知道
+<strong>dict 内部哈希表最小长度为 8</strong> ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define PyDict_MINSIZE 8</span><br></pre></td></tr></table></figure>
+哈希表越密集，哈希冲突则越频繁，性能也就越差。因此，哈希表必须是一种
+稀疏 的表结构，越稀疏则性能越好。由于 内存开销
+的制约，哈希表不可能无限度稀疏，需要在时间和空间上进行权衡。实践经验表明，<strong>1/2至2/3</strong>满的哈希表，较好地平衡了
+<strong>内存开销</strong> 与 <strong>搜索效率</strong> 。</p>
+<p>为保证哈希表的稀疏程度，进而控制哈希冲突频率， Python 通过
+USABLE_FRACTION
+宏将哈希表内元素控制在<strong>2/3</strong>以内。USABLE_FRACTION
+宏根据哈希表规模 n ，计算哈希表 <strong>可存储元素个数</strong>，也就是
+<strong>键值对数组</strong> 的长度。以长度为 8
+的哈希表为例，最多可以保持 5 个键值对，超出则需要扩容。USABLE_FRACTION
+在<strong>indices and entries</strong>小节已经展示过了。</p>
+<p>哈希表规模一定是 <span class="math inline">\(2^n\)</span> (熟悉C++
+unordered_map的都知道，哈希扩容时只是 <strong>近似翻倍的质数</strong>)
+，也就是说 Python 采用 <strong>翻倍扩容</strong> 策略。</p>
+<h5><span id="wei-shi-me-python3-7-zhong-kong-dict-zhan-yong-liao-240-zi-jie">为什么python3.7中空dict占用了240字节？</span><a href="#wei-shi-me-python3-7-zhong-kong-dict-zhan-yong-liao-240-zi-jie" class="header-anchor">#</a></h5>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Python 3.7.6 (default, Jan  8 2020, 20:23:39) [MSC v.1916 64 bit (AMD64)] :: Anaconda, Inc. on win32</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; empty_dict &#x3D; &#123;&#125;</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(empty_dict)</span><br><span class="line">240</span><br></pre></td></tr></table></figure>
+<p>从以上分析，可以看出 Python 为空 dict 对象分配了一个 <strong>长度为 8
+的哈希表</strong>，因而也要占用相当多的内存，主要有以下几个部分组成：</p>
+<ul>
+<li><strong>可收集对象链表节点</strong>，共 24 字节，在此不再展开，
+垃圾回收机制 讲解中有详细介绍；</li>
+<li>PyDictObject 结构体，6 个字段，共 <strong>48</strong> 字节；</li>
+<li>PyDictKeysObject 结构体，除两个数组外有 5 个字段，共 40 字节；</li>
+<li>哈希索引数组，<strong>长度为 8</strong> ，每个槽位 1 字节，共 8
+字节；</li>
+<li>键值对数组，长度为 5(用USABLE_FRACTION算出来的，限制在2/3之内)
+，每个 <strong>PyDictKeyEntry 结构体 24 字节</strong>，共
+<strong>120</strong> 字节。</li>
+</ul>
+<h3><span id="nei-cun-you-hua">内存优化</span><a href="#nei-cun-you-hua" class="header-anchor">#</a></h3>
+<p>python2.7空dict占用272字节，而python3.7只占用240！！！
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Python 2.7 (r27:82525, Jul  4 2010, 07:43:08) [MSC v.1500 64 bit (AMD64)] on win32</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; empty_dict &#x3D; &#123;&#125;</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(empty_dict)</span><br><span class="line">272</span><br></pre></td></tr></table></figure></p>
+<h5><span id="python3-6-zhi-qian">python3.6之前</span><a href="#python3-6-zhi-qian" class="header-anchor">#</a></h5>
+如果有许多大的稀疏哈希表，则会浪费大量内存。
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/before_py36.png" class title="before_py36图">
+</div>
+<h5><span id="python3-6-zhi-hou">python3.6之后</span><a href="#python3-6-zhi-hou" class="header-anchor">#</a></h5>
+为了以更紧凑的方式表示哈希表，可以在哈希表中 <strong>拆分 indices 和real
+key-value</strong>。
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/after_py36.png" class title="after_py36图">
+</div>
+<p>indices 指向一个
+<strong>索引数组</strong>，索引项指向原始内容存储的位置。可以将索引视为更简单的版本哈希表，将entries视为数组，数组将每个
+哈希值、key和value(PyDictKeyEntry)存储为一个元素。</p>
+每当 <strong>搜索或插入</strong> 一个元素时，根据hash value 和
+indices的大小，就可以在indices数组中得到一个索引，并根据新得到的索引从entries中得到结果。
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/after_py36_search.png" class title="after_py36_search图">
+</div>
+<p>为优化内存使用， Python 将 dict 哈希表分为
+<strong>哈希索引(indices)</strong> 和 <strong>键值对(entries)</strong>
+两个数组来实现。例如，在64字大小的操作系统中，每个指针需要8个字节，原来需要
+<span class="math inline">\(8 * 3 * 8 = 192\)</span> ，而优化后只需 $8 *
+3 * 3 + 1 * 8 = 80 $ ，节省了大约58%的内存使用。</p>
+<h5><span id="wei-shi-me-bian-li-zi-dian-python3-6-zhi-qian-shi-wu-xu-de-python3-6-zhi-hou-you-xu">为什么遍历字典python3.6之前是无序的，python3.6之后有序？</span><a href="#wei-shi-me-bian-li-zi-dian-python3-6-zhi-qian-shi-wu-xu-de-python3-6-zhi-hou-you-xu" class="header-anchor">#</a></h5>
+<p>因为entries <strong>按插入顺序存储元素</strong>，所以可以
+<strong>按插入项的相同顺序遍历哈希表</strong>。在旧版本的实现中，按<strong>hash
+key</strong>的顺序存储元素，<strong>遍历哈希表时会出现无序</strong>。这就是为什么dict在python3.6之前是无序的，而在python3.6之后是有序的</p>
+<h4><span id="you-hua-ji-suan">优化计算</span><a href="#you-hua-ji-suan" class="header-anchor">#</a></h4>
+<p>由于哈希表必须保持 稀疏 ，最多只有 <strong>2/3</strong>
+满，这意味着要浪费至少 <strong><span class="math inline">\(\frac{1}{3}\)</span></strong>
+的内存空间。更雪上加霜的是，一个键值对条目 PyDictKeyEntry 大小达 24
+字节，试想一个规模为 65536 的哈希表，将浪费高达 512KB 的内存空间：</p>
+<p><span class="math display">\[65536 * \frac{1}{3} * 24 =
+524288\]</span></p>
+<p>为了尽量节省内存， Python 将 <strong>键值对数组</strong>压缩到原来的
+<span class="math inline">\(\frac{2}{3}\)</span>，只负责存储，索引由另一个数组负责。由于索引数组只需要保存
+键值对数组 的下标，而整数占用的内存空间只是若干字节，因此可以
+<strong>节约大量内存</strong>。</p>
+<h5><span id="suo-yin-shu-zu-mei-ge-yuan-su-de-da-xiao">索引数组每个元素的大小</span><a href="#suo-yin-shu-zu-mei-ge-yuan-su-de-da-xiao" class="header-anchor">#</a></h5>
+索引数组 可根据哈希表规模，选择
+<strong>尽量小的整数类型</strong>。对于规模 <strong>不超过 256</strong>
+的哈希表，选择 <strong>8</strong> 位整数即可；对于长度 <strong>不超过
+6553</strong>6 的哈希表， <strong>16</strong> 位整数足矣；以此类推。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#define DK_SIZE(dk) ((dk)-&gt;dk_size)</span><br><span class="line">#if SIZEOF_VOID_P &gt; 4</span><br><span class="line">#define DK_IXSIZE(dk)                          \</span><br><span class="line">    (DK_SIZE(dk) &lt;&#x3D; 0xff ?                     \</span><br><span class="line">        1 : DK_SIZE(dk) &lt;&#x3D; 0xffff ?            \</span><br><span class="line">            2 : DK_SIZE(dk) &lt;&#x3D; 0xffffffff ?    \</span><br><span class="line">                4 : sizeof(int64_t))</span><br><span class="line">#else</span><br><span class="line">#define DK_IXSIZE(dk)                          \</span><br><span class="line">    (DK_SIZE(dk) &lt;&#x3D; 0xff ?                     \</span><br><span class="line">        1 : DK_SIZE(dk) &lt;&#x3D; 0xffff ?            \</span><br><span class="line">            2 : sizeof(int32_t))</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/indices.png" class title="indices图">
+</div>
+<table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr>
+<th>哈希表规模</th>
+<th>条目表规模</th>
+<th>旧方案</th>
+<th>新方案</th>
+<th>节约内存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>8 * 2 / 3 = 5</td>
+<td>24 * 8 = 192</td>
+<td>1 * 8 + 24 * 5 = 128</td>
+<td>64</td>
+</tr>
+<tr>
+<td>256</td>
+<td>256 * 2 / 3 = 170</td>
+<td>24 * 256 = 6144</td>
+<td>1 * 256 + 24 * 170 = 4336</td>
+<td>1808</td>
+</tr>
+<tr>
+<td>65536</td>
+<td>65536 * 2 / 3 = 43690</td>
+<td>24 * 65536 = 1572864</td>
+<td>2 * 65536 + 24 * 43690 = 1179632</td>
+<td>393232</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="free-list">free list</span><a href="#free-list" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#ifndef PyDict_MAXFREELIST</span><br><span class="line">#define PyDict_MAXFREELIST 80</span><br><span class="line">#endif</span><br><span class="line">static PyDictObject *free_list[PyDict_MAXFREELIST];</span><br></pre></td></tr></table></figure>
+<p>CPython还使用 <strong>free list
+重用删除的哈希表</strong>，<strong>避免内存碎片</strong>，提高性能</p>
+<p><strong>每个进程全局变量</strong>都有个 <strong>free
+list</strong></p>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list0.png" class title="free_list0图">
+</div>
+if we create a new dict object, the memory request is delegate to
+CPython's memory management system
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d &#x3D; dict()</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list1.png" class title="free_list1图">
+</div>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">del a</span><br></pre></td></tr></table></figure>
+<p>如果free list未满, dict类型的析构函数将当前dict存储到free list。</p>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list2.png" class title="free_list2图">
+</div>
+下次创建新的dict对象时，将检查 <strong>free list</strong>， 如果有
+<strong>可用的对象</strong>则从 <strong>free
+list</strong>分配；如果没有，则从
+<strong>CPython的内存管理</strong>系统分配。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d &#x3D; dict()</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto">
+<img src="/2021/01/03/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-8-dict%E5%93%88%E5%B8%8C%E8%A1%A8/free_list3.png" class title="free_list3图">
+</div>
+<h2><span id="ha-xi">哈希</span><a href="#ha-xi" class="header-anchor">#</a></h2>
+<h4><span id="ke-ha-xi-hashable-dui-xiang">可哈希 ( hashable )对象</span><a href="#ke-ha-xi-hashable-dui-xiang" class="header-anchor">#</a></h4>
+<p>根据哈希表性质， <strong>key对象</strong>
+必须满足以下两个条件，否则哈希表便不能正常工作：</p>
+<ul>
+<li><strong>哈希值</strong>在对象整个生命周期内
+<strong>不能改变</strong>； ( list 、dict 等
+<strong>可变对象均不能</strong>作为哈希key)</li>
+<li><strong>可比较</strong>，且比较相等的对象哈希值必须相同；
+满足这两个条件的对象便是 可哈希 ( hashable )对象，只有
+<strong>可哈希对象才可作为哈希表的键</strong>。因此，诸如 dict
+、set等底层由哈希表实现的容器对象，其键对象必须是可哈希对象。</li>
+</ul>
+<p>而用户自定义的对象默认便是可哈希对象，对象哈希值由对象地址计算而来，且任意两个不同对象均不相等：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class A:</span><br><span class="line">...     pass</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; a &#x3D; A()</span><br><span class="line">&gt;&gt;&gt; b &#x3D; A()</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; hash(a), hash(b)</span><br><span class="line">(2852108, 2852116)</span><br><span class="line">&gt;&gt;&gt; a &#x3D;&#x3D; b</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+#### 哈希函数 哈希值 计算作为对象行为中的一种，秘密也隐藏在类型对象中——
+<strong>tp_hash 函数指针</strong>。而内置函数 <strong>hash</strong>
+则依赖类型对象中的 <strong>tp_hash
+函数</strong>，完成哈希值计算并返回。</p>
+<p>以 str 对象为例，其哈希函数位于
+<strong>Objects/unicodeobject.c</strong> 源文件，unicode_hash 是也：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyUnicode_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;str&quot;,              &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyUnicodeObject),        &#x2F;* tp_size *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    (hashfunc) unicode_hash,        &#x2F;* tp_hash*&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    unicode_new,            &#x2F;* tp_new *&#x2F;</span><br><span class="line">    PyObject_Del,           &#x2F;* tp_free *&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+对于用户自定义的对象，可以实现 <strong>hash
+魔术方法</strong>，<strong>重写默认哈希值计算方法</strong>。举个例子，假设标签类
+Tag 的实例对象由 <strong>value 字段唯一标识</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Tag:</span><br><span class="line">    def __init__(self, value, title):</span><br><span class="line">        self.value &#x3D; value</span><br><span class="line">        self.title &#x3D; title</span><br><span class="line"></span><br><span class="line">    def __hash__(self):</span><br><span class="line">     &quot;&quot;&quot;value 字段唯一标识,根据 value 字段实现 哈希函数&quot;&quot;&quot;</span><br><span class="line">        return hash(self.value)</span><br><span class="line"></span><br><span class="line">    def __eq__(self, other):</span><br><span class="line">      &quot;&quot;&quot;根据 value 字段实现 相等性 判断&quot;&quot;&quot;</span><br><span class="line">        return self.value &#x3D;&#x3D; other.value</span><br></pre></td></tr></table></figure>
+哈希值 <strong>使用频率</strong>
+较高，而且在对象生命周期内均不变。因此，可以在对象内部
+<strong>对哈希值进行缓存</strong>，避免重复计算。以 str
+对象为例，内部结构中的 <strong>hash
+字段便是用于保存哈希值</strong>。</p>
+<h4><span id="ha-xi-chong-tu">哈希冲突</span><a href="#ha-xi-chong-tu" class="header-anchor">#</a></h4>
+<p>解决哈希冲突的常用方法有两种：</p>
+<ul>
+<li>分离链接法 ( separate chaining ) ；</li>
+<li>开放地址法 ( open addressing )；</li>
+</ul>
+<h5><span id="fen-chi-lian-jie-fa">分离链接法</span><a href="#fen-chi-lian-jie-fa" class="header-anchor">#</a></h5>
+<h5><span id="kai-fang-di-zhi-fa">开放地址法</span><a href="#kai-fang-di-zhi-fa" class="header-anchor">#</a></h5>
+<ul>
+<li>线性探测 ，顾名思义， <span class="math inline">\(d_i\)</span>是一个线性函数，例如 <span class="math inline">\(d_i = 2 * i\)</span></li>
+<li>平方探测 ，顾名思义， <span class="math inline">\(d_i\)</span>是一个平方函数，例如 <span class="math inline">\(d_i = i^2\)</span> 线性探测 和 平方探测
+很简单，<strong>平方探测似乎更胜一筹</strong>。如果哈希表存在局部热点，探测很难快速跳过热点区域，而
+平方探测
+则好很多。然而，这两种方法都不够好——因为固定的探测序列加大了冲突的概率。</li>
+</ul>
+<p>Python 探测方法在 lookdict 函数中实现，位于 Objects/dictobject.c
+源文件内。关键代码如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">static Py_ssize_t _Py_HOT_FUNCTION</span><br><span class="line">lookdict(PyDictObject *mp, PyObject *key,</span><br><span class="line">         Py_hash_t hash, PyObject **value_addr)</span><br><span class="line">&#123;</span><br><span class="line">    size_t i, mask, perturb;</span><br><span class="line">    PyDictKeysObject *dk;</span><br><span class="line">    PyDictKeyEntry *ep0;</span><br><span class="line"></span><br><span class="line">top:</span><br><span class="line">    dk &#x3D; mp-&gt;ma_keys;</span><br><span class="line">    ep0 &#x3D; DK_ENTRIES(dk);</span><br><span class="line">    mask &#x3D; DK_MASK(dk);</span><br><span class="line">    perturb &#x3D; hash;</span><br><span class="line">    i &#x3D; (size_t)hash &amp; mask;</span><br><span class="line"></span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        Py_ssize_t ix &#x3D; dk_get_index(dk, i);</span><br><span class="line">        &#x2F;&#x2F; 省略键比较部分代码</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 计算下个槽位</span><br><span class="line">        &#x2F;&#x2F; 由于参考了对象哈希值，探测序列因哈希值而异</span><br><span class="line">        perturb &gt;&gt;&#x3D; PERTURB_SHIFT;</span><br><span class="line">        i &#x3D; (i*5 + perturb + 1) &amp; mask;</span><br><span class="line">    &#125;</span><br><span class="line">    Py_UNREACHABLE();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="ha-xi-gong-ji">哈希攻击</span><a href="#ha-xi-gong-ji" class="header-anchor">#</a></h4>
+<p>Python 在 3.3 以前， <strong>哈希算法</strong>
+只根据对象本身计算哈希值。因此，<strong>只要 Python
+解释器相同，对象哈希值也肯定相同</strong>。我们执行 Python 2
+解释器启动一个交互式终端，并计算字符串 fasion 的哈希值：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; os.getpid()</span><br><span class="line">2878</span><br><span class="line">&gt;&gt;&gt; hash(&#39;fasion&#39;)</span><br><span class="line">-1023772170</span><br></pre></td></tr></table></figure>
+我们再次执行 Python 2 解释器启动另一个交互式终端，发现字符串
+<strong>fasion 的哈希值</strong>保存不变：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; os.getpid()</span><br><span class="line">2915</span><br><span class="line">&gt;&gt;&gt; hash(&#39;fasion&#39;)</span><br><span class="line">-1023772170</span><br></pre></td></tr></table></figure>
+如果一些别有用心的人 <strong>构造出大量哈希值相同的 key</strong>
+，并提交给服务器，会发生什么事情呢？例如，向一台 Python 2 Web 服务器
+post 一个 json 数据，数据包含大量的 key ，<strong>所有 key
+的哈希值相同</strong>。这意味着
+<strong>哈希表将频繁发生哈希冲突</strong>，性能由 <span class="math inline">\(O(1)\)</span> 急剧下降为 <span class="math inline">\(O(N)\)</span>，被活生生打垮！这就是
+<strong>哈希攻击</strong> 。</p>
+<p>问题很严重，好在应对方法却很简单:<strong>为对象加把
+盐(salt)</strong>。具体做法如下： 1. Python 解释器进程启动后，产生一个
+<strong>随机数作为 盐</strong> ； 2. 哈希函数同时参考
+<strong>对象本身</strong> 以及 <strong>随机数</strong> 计算哈希值；
+这样一来，攻击者无法获悉解释器内部的随机数，也就无法构造出哈希值相同的对象了！Python
+自 3.3 以后，哈希函数均采用 <strong>加盐模式</strong>，杜绝了
+<strong>哈希攻击</strong> 的可能性。Python 哈希算法在 Python/pyhash.c
+源文件中实现，有兴趣的童鞋可以学习一下，这里就不再展开了。</p>
+<p>执行 Python 3.7 解释器，启动一个交互式终端，并计算字符串 fasion
+的哈希值：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; hash(&#39;fasion&#39;)</span><br><span class="line">6950491525924312838</span><br></pre></td></tr></table></figure>
+再次执行 Python 3.7 解释器，启动另一个交互式终端，发现字符串 fasion
+的哈希值已经变了：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; hash(&#39;fasion&#39;)</span><br><span class="line">-7162025883309105262</span><br></pre></td></tr></table></figure>
+## reference 1. <a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/dict/dict.md" title="dict">dict</a> 2. <a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1909" title="Python 源码深度剖析/13 dict 对象，高效的关联式容器">Python
+源码深度剖析/13 dict 对象，高效的关联式容器</a> 2. <a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1910" title="Python 源码深度剖析/14 dict 哈希表高级知识精讲">Python
+源码深度剖析/14 dict 哈希表高级知识精讲</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91/" rel="prev" title="[数据库] Mysql为什么用B+树">
+      <i class="fa fa-chevron-left"></i> [数据库] Mysql为什么用B+树
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/05/linux-5-vim%E6%8C%87%E4%BB%A4/" rel="next" title="[linux] 5.vim指令">
+      [linux] 5.vim指令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">PyDictObject</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">1.1.1.</span> <span class="nav-text">_dictkeysobject</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">1.1.2.</span> <span class="nav-text">PyDictKeyEntry</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">容量策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">split table和combined table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">预分配机制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.2.0.1.</span> <span class="nav-text">为什么python3.7中空dict占用了240字节？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.</span> <span class="nav-text">内存优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.3.0.1.</span> <span class="nav-text">python3.6之前</span></a></li><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.3.0.2.</span> <span class="nav-text">python3.6之后</span></a></li><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.3.0.3.</span> <span class="nav-text">为什么遍历字典python3.6之前是无序的，python3.6之后有序？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.3.1.</span> <span class="nav-text">优化计算</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">索引数组每个元素的大小</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text">free list</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">哈希</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">3.0.1.</span> <span class="nav-text">可哈希 ( hashable )对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">3.0.2.</span> <span class="nav-text">哈希冲突</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">分离链接法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">3.0.2.2.</span> <span class="nav-text">开放地址法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">3.0.3.</span> <span class="nav-text">哈希攻击</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'e33dff1076c34c57830beaf769d685dc',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

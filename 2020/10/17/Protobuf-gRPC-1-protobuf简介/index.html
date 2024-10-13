@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="目录# [TOC] Protobuf是什么# Protobuf全称是Google Protocol Buffer，是一种高效轻便的结构化数据存储方式，可用于网络通信、数据存储等。 其具有以下优点：  平台无关、语言无关 支持Java, C++, Python等多种语言，支持多平台。 轻便高效，比XML更小（3~10倍），更快（20 ~ 100倍），更为简单。 扩展性，兼容性好">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Protobuf&amp;gRPC] 1.protobuf简介">
+<meta property="og:url" content="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="目录# [TOC] Protobuf是什么# Protobuf全称是Google Protocol Buffer，是一种高效轻便的结构化数据存储方式，可用于网络通信、数据存储等。 其具有以下优点：  平台无关、语言无关 支持Java, C++, Python等多种语言，支持多平台。 轻便高效，比XML更小（3~10倍），更快（20 ~ 100倍），更为简单。 扩展性，兼容性好">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/protobuf%E7%AE%80%E4%BB%8B.png">
+<meta property="article:published_time" content="2020-10-17T13:21:34.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.892Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="Protobuf&amp;gRPC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/protobuf%E7%AE%80%E4%BB%8B.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[Protobuf&gRPC] 1.protobuf简介 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Protobuf&gRPC] 1.protobuf简介
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-17 21:21:34" itemprop="dateCreated datePublished" datetime="2020-10-17T21:21:34+08:00">2020-10-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Protobuf-gRPC/" itemprop="url" rel="index"><span itemprop="name">Protobuf&gRPC</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3><span id="mu-lu">目录</span><a href="#mu-lu" class="header-anchor">#</a></h3>
+<p>[TOC]</p>
+<h2><span id="protobuf-shi-shi-me">Protobuf是什么</span><a href="#protobuf-shi-shi-me" class="header-anchor">#</a></h2>
+<p>Protobuf全称是Google Protocol
+Buffer，是一种高效轻便的<strong>结构化数据存储方式</strong>，可用于网络通信、数据存储等。</p>
+<p>其具有以下优点：</p>
+<ul>
+<li>平台无关、语言无关</li>
+<li>支持Java, C++, Python等多种语言，支持多平台。</li>
+<li>轻便高效，比XML更小（3~10倍），更快（20 ~ 100倍），更为简单。</li>
+<li>扩展性，兼容性好</li>
+<li>序列化数据结构的协议，可以更新数据结构，而不影响和破坏原有的旧程序。</li>
+</ul>
+<div style="width:90%;margin:auto">
+<img src="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/protobuf%E7%AE%80%E4%BB%8B.png" class title="protobuf简介图">
+</div>
+<h3><span id="xu-lie-hua">序列化</span><a href="#xu-lie-hua" class="header-anchor">#</a></h3>
+<p>将数据结构或对象转换成能够被存储和传输（例如网络传输）的格式（网络传输传输的是<strong>二进制数据</strong>），同时应当要保证这个序列化结果在之后（可能是另一个计算环境中）能够<strong>被重建回原来的数据结构或对象</strong>。</p>
+<h2><span id="protobuf-yu-fa-jie-shao">protobuf语法介绍</span><a href="#protobuf-yu-fa-jie-shao" class="header-anchor">#</a></h2>
+<p>目前有Protobuf2和Protobuf3。</p>
+<h3><span id="protobuf2-yu-fa-jian-jie">protobuf2语法简介</span><a href="#protobuf2-yu-fa-jian-jie" class="header-anchor">#</a></h3>
+<p>.proto文件中数据类型可以分为两大类:</p>
+<ul>
+<li>复合数据类型包括：<strong>枚举和message类型</strong></li>
+<li>标准数据类型包含：<strong>整型，浮点，字符串</strong>等</li>
+</ul>
+<p>数据类型前面修饰词：</p>
+<ul>
+<li>required:
+<strong>必须赋值</strong>，不能为空，否则该条message会被认为是“uninitialized”。除此之外，“required”字段跟“optional”字段并无差别。</li>
+<li>optional:字段<strong>可以赋值，也可以不赋值</strong>。假如没有赋值的话，会被赋上默认值。</li>
+<li>repeated:
+该字段<strong>可以重复任意次数</strong>，包括0次。重复数据的顺序将会保存在protocol
+buffer中，将这个字段想象成一个可以自动设置size的数组就可以了。</li>
+</ul>
+<p>注：<strong>每个字段要给数字</strong>
+<strong>该Number是用来标记该字段在序列化后的二进制数据中所在的field</strong>，每个字段的<strong>Number在message内部都是独一无二的</strong>。也<strong>不能进行改变</strong>，否则数据就不能正确的解包</p>
+<p>关于 proto2 定义 message
+消息的更多语法细节，例如具有支持哪些类型，字段编号分配、import
+导入定义，reserved 保留字段等知识请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6f68fb2c7d19" title="ProtoBuf 官方文档（二）- 语法指引（proto2）">ProtoBuf
+官方文档（二）- 语法指引（proto2）</a></p>
+<p>关于定义时的一些规范请参阅 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8c55fb0a09b5" title="[翻译] ProtoBuf 官方文档（四）- 规范指引">[翻译] ProtoBuf
+官方文档（四）- 规范指引</a></p>
+<h3><span id="protobuf3-yu-fa-jie-shao">protobuf3语法介绍</span><a href="#protobuf3-yu-fa-jie-shao" class="header-anchor">#</a></h3>
+<ul>
+<li><p>字段前取消了required和optional两个关键字，目前可用的只有repeated关键字。</p></li>
+<li><p>不可以设置默认值了。</p>
+<ol type="1">
+<li>string默认为空串</li>
+<li>枚举默认为第一个枚举定义的第一个值。并且必须是0,必须有有一个0值，我们可以用这个0值作为默认值。这个零值必须为第一个元素，为了兼容proto2语义，枚举类的第一个值总是默认值。</li>
+<li>bytes默认为空bytes</li>
+<li>bool默认为false</li>
+<li>数字类型默认为0</li>
+</ol></li>
+<li><p>protoType类型如下：
+double、float、int32、int64、uint32、uint64、sint32、sint64、fixed32、fixed64、sfixed32、sfixed64、bool、string、bytes</p></li>
+<li><p>分配标识号
+正如你所见，在消息定义中，每个字段都有唯一的一个数字标识符。这些标识符是用来在消息的二进制格式中识别各个字段的，一旦开始使用就不能够再改变。注：[1,15]之内的标识号在编码的时候会占用一个字节。[16,2047]之内的标识号则占用2个字节。所以应该为那些频繁出现的消息元素保留
+[1,15]之内的标识号。切记：要为将来有可能添加的、频繁出现的标识号预留一些标识号。</p></li>
+<li><p>标识号区间[1，2^29 -
+1]。<strong>不可以使用其中的[19000－19999]</strong>(从FieldDescriptor::kFirstReservedNumber
+到 FieldDescriptor::kLastReservedNumber)的标识号，
+Protobuf协议实现中对这些进行了预留。如果非要在.proto文件中使用这些预留标识号，编译时就会报警。同样你也不能使用早期保留的标识号。</p></li>
+<li><p>指定字段规则 所指定的消息字段修饰符必须是如下之一：
+<strong>singular</strong>：一个格式良好的消息应该有0个或者1个这种字段（但是不能超过1个）。
+<strong>repeated</strong>：在一个格式良好的消息中，这种字段可以重复任意多次（包括0次）。重复的值的顺序会被保留。
+在proto3中，repeated的标量域默认情况下使用packed。</p></li>
+</ul>
+<h2><span id="an-zhuang">安装</span><a href="#an-zhuang" class="header-anchor">#</a></h2>
+<p>使用Python的话简便的安装方法如下（linux）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install protobuf    # 安装protobuf库</span><br><span class="line">sudo apt-get install protobuf-compiler  # 安装protobuf编译器</span><br></pre></td></tr></table></figure>
+<h2><span id="shi-yong">使用</span><a href="#shi-yong" class="header-anchor">#</a></h2>
+<p>目前有Protobuf2和Protobuf3，本文以Protobuf3为例。</p>
+<h3><span id="di-yi-bu-chuang-jian-proto-wen-jian-ding-yi-shu-ju-jie-gou">第一步，创建.proto文件，定义数据结构</span><a href="#di-yi-bu-chuang-jian-proto-wen-jian-ding-yi-shu-ju-jie-gou" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;指定正在使用proto3语法：如果没有指定这个，编译器会使用proto2</span><br><span class="line">&#x2F;&#x2F;这个指定语法行必须是文件的非空非注释的第一个行</span><br><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="di-er-bu-protoc-bian-yi-proto-wen-jian-sheng-cheng-du-xie-jie-kou">第二步，protoc 编译
+.proto 文件生成读写接口</span><a href="#di-er-bu-protoc-bian-yi-proto-wen-jian-sheng-cheng-du-xie-jie-kou" class="header-anchor">#</a></h3>
+<p>我们在 .proto
+文件中定义了数据结构，这些数据结构是<strong>面向开发者和业务程序的</strong>，并不面向存储和传输。</p>
+<p>当需要把这些数据进行存储或传输时，就需要<strong>将这些结构数据进行序列化、反序列化以及读写</strong>。那么如何实现呢？答案就是通过
+<strong>protoc</strong> 这个编译器。</p>
+<p>利用protoc.exe编译proto文件，cmd切换到当前目录，执行以下命令：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; $SRC_DIR: .proto 所在的源目录</span><br><span class="line">&#x2F;&#x2F; --python_out: 生成 python 代码</span><br><span class="line">&#x2F;&#x2F; $DST_DIR: 生成代码的目标目录</span><br><span class="line">&#x2F;&#x2F; xxx.proto: 要针对哪个 proto 文件生成接口代码</span><br><span class="line">protoc -I&#x3D;$SRC_DIR --python_out&#x3D;$DST_DIR xxx.proto</span><br></pre></td></tr></table></figure>
+这里我们使用如下编译语句
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I&#x3D;. --python_out&#x3D;.&#x2F; addressbook.proto</span><br></pre></td></tr></table></figure></p>
+<p>编译好之后你就会在目标目录里面看到输出的结果文件，如下：addressbook_pb2.py</p>
+<h3><span id="di-san-bu-bian-yi-py-wen-jian-jin-xing-xu-lie-hua-he-fan-xu-lie-hua">第三步，编译.py文件，进行序列化和凡序列化</span><a href="#di-san-bu-bian-yi-py-wen-jian-jin-xing-xu-lie-hua-he-fan-xu-lie-hua" class="header-anchor">#</a></h3>
+<p>add_person.py
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for key in person.maps.mapfield:</span><br><span class="line">    print(key,person.maps.mapfield[key])</span><br></pre></td></tr></table></figure>
+编译该py文件，输出结果如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">b&#39;\n6\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line"></span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">1 1</span><br><span class="line">2 2</span><br></pre></td></tr></table></figure>
+我们就看到了序列化和反序列化的结果</p>
+<p>这篇简介就介绍到这，后期会继续</p>
+<h2><span id="jin-jie-shi-yong">进阶使用</span><a href="#jin-jie-shi-yong" class="header-anchor">#</a></h2>
+<p>addressbook.proto内容如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line">&#x2F;&#x2F;引入外部proto</span><br><span class="line">import &quot;emu.proto&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">  repeated Person people &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">  string name &#x3D; 1;</span><br><span class="line">  int32 id &#x3D; 2;</span><br><span class="line">  string email &#x3D; 3;</span><br><span class="line">  float money &#x3D; 4;</span><br><span class="line">  bool work_status &#x3D; 5;</span><br><span class="line"></span><br><span class="line">  repeated PhoneNumber phones &#x3D; 6;</span><br><span class="line">  &#x2F;&#x2F;外部引用map</span><br><span class="line">  repeated MyMessage maps &#x3D; 7;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;内部嵌套message</span><br><span class="line">  repeated Hobby hobby &#x3D; 8;</span><br><span class="line">  message Hobby&#123;</span><br><span class="line">    string interest &#x3D; 1;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PhoneNumber &#123;</span><br><span class="line">    string number &#x3D; 1;</span><br><span class="line">    PhoneType type &#x3D; 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum PhoneType &#123;</span><br><span class="line">    MOBILE &#x3D; 0;</span><br><span class="line">    HOME &#x3D; 1;</span><br><span class="line">    WORK &#x3D; 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+我们将addressbook.proto中的repeated MyMessage maps = 7;进行了外部引用，
+emu.proto如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  map&lt;int32, int32&gt; mapfield &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后首先对emu.proto进行编译， protoc ./emu.proto --python_out=./</p>
+<p>然后会addressbook.proto进行编译 protoc ./addressbook.proto
+--python_out=./
+然后会默认生成上述截图中的emu_pb2.py、addressbook_pb2.py文件</p>
+<p>我们接下来看看add_person.py代码
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">from tutorial import addressbook_pb2</span><br><span class="line"></span><br><span class="line">address_book &#x3D; addressbook_pb2.AddressBook()</span><br><span class="line">person &#x3D; address_book.people.add()</span><br><span class="line"></span><br><span class="line">person.id &#x3D; 1</span><br><span class="line">person.name &#x3D; &quot;safly&quot;</span><br><span class="line">person.email &#x3D; &quot;safly@qq.com&quot;</span><br><span class="line">person.money &#x3D; 1000.11</span><br><span class="line"></span><br><span class="line">person.work_status &#x3D; True</span><br><span class="line"></span><br><span class="line">phone_number &#x3D; person.phones.add()</span><br><span class="line">phone_number.number &#x3D; &quot;123456&quot;</span><br><span class="line">phone_number.type &#x3D; addressbook_pb2.MOBILE</span><br><span class="line"></span><br><span class="line">maps &#x3D; person.maps.add()</span><br><span class="line">maps.mapfield[1] &#x3D; 1</span><br><span class="line">maps.mapfield[2] &#x3D; 2</span><br><span class="line"></span><br><span class="line">hobby &#x3D; person.hobby.add()</span><br><span class="line">hobby.interest &#x3D; &quot;python&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#序列化</span><br><span class="line">serializeToString &#x3D; address_book.SerializeToString()</span><br><span class="line">print(serializeToString,type(serializeToString))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address_book.ParseFromString(serializeToString)</span><br><span class="line"></span><br><span class="line">for person in address_book.people:</span><br><span class="line">  print(&quot;p_id&#123;&#125;,p_name&#123;&#125;,p_email&#123;&#125;,p_money&#123;&#125;,p_workstatu&#123;&#125;&quot;</span><br><span class="line">        .format(person.id,person.name,person.email,person.money,person.work_status))</span><br><span class="line"></span><br><span class="line">  for phone_number in person.phones:</span><br><span class="line">    print(phone_number.number,phone_number.type)</span><br><span class="line">  print(person.phones[0].number)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for map in person.maps:</span><br><span class="line">    for key in map.mapfield:</span><br><span class="line">      print(key,&#39;-------&#39;,map.mapfield[key])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  for hobby in person.hobby:</span><br><span class="line">    print(hobby.interest)</span><br></pre></td></tr></table></figure>
+最后输出结果如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;Users&#x2F;zhiliao&#x2F;miniconda3&#x2F;bin&#x2F;python &#x2F;Users&#x2F;zhiliao&#x2F;zhiliao&#x2F;untitled1&#x2F;tutorial&#x2F;add_person.py</span><br><span class="line">b&#39;\n@\n\x05safly\x10\x01\x1a\x0csafly@qq.com%\n\x07zD(\x012\x08\n\x06123456:\x0c\n\x04\x08\x01\x10\x01\n\x04\x08\x02\x10\x02B\x08\n\x06python&#39; &lt;class &#39;bytes&#39;&gt;</span><br><span class="line">p_id1,p_namesafly,p_emailsafly@qq.com,p_money1000.1099853515625,p_workstatuTrue</span><br><span class="line">123456 0</span><br><span class="line">123456</span><br><span class="line">2 ------- 2</span><br><span class="line">1 ------- 1</span><br><span class="line">python</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013210620/article/details/81317731" title="python基础--protobuf的使用(一)">python基础--protobuf的使用(一)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2265f56805fa" title="Protobuf学习">Protobuf学习</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/31a6b4b2c3ab" title="Protobuf Python 示例">Protobuf Python 示例</a></li>
+</ol>
+<h2><span id="tuo-zhan-yue-du">拓展阅读</span><a href="#tuo-zhan-yue-du" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/73c9ed3a4877" title="深入 ProtoBuf - 编码">深入 ProtoBuf - 编码</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/62f0238beec8" title="深入 ProtoBuf - 序列化源码解析">深入 ProtoBuf -
+序列化源码解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ddc1aaca3691" title="深入 ProtoBuf - 反射原理解析">深入 ProtoBuf -
+反射原理解析</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Protobuf-gRPC/" rel="tag"># Protobuf&gRPC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="prev" title="[python源码分析] 2.对象的生命周期">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 2.对象的生命周期
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/" rel="next" title="[Protobuf&gRPC] 2.gRPC简介">
+      [Protobuf&gRPC] 2.gRPC简介 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">Protobuf是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">protobuf语法介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">protobuf2语法简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">protobuf3语法介绍</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">第一步，创建.proto文件，定义数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">第二步，protoc 编译
+.proto 文件生成读写接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">第三步，编译.py文件，进行序列化和凡序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">进阶使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text">拓展阅读</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'a5fa5378a8b245655923272fabc7d081',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="inode是一个重要概念，是理解Unix&#x2F;Linux文件系统和硬盘储存的基础 1. what is inode?#         linux文件相关 size 属性     扇区(Sector) 512bytes(0.5KB) 硬盘的最小存储单位   块(block) 通常4KB 文件存取的最小单位(操作系统读取硬盘,一次性读取一个块，提高效率)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[深入理解linux] 1.what is inode">
+<meta property="og:url" content="http://yoursite.com/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="inode是一个重要概念，是理解Unix&#x2F;Linux文件系统和硬盘储存的基础 1. what is inode?#         linux文件相关 size 属性     扇区(Sector) 512bytes(0.5KB) 硬盘的最小存储单位   块(block) 通常4KB 文件存取的最小单位(操作系统读取硬盘,一次性读取一个块，提高效率)">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-02-04T04:59:34.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.945Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="深入理解linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[深入理解linux] 1.what is inode | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-1-what-is-inode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [深入理解linux] 1.what is inode
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-04 12:59:34" itemprop="dateCreated datePublished" datetime="2021-02-04T12:59:34+08:00">2021-02-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Inode">inode</a>是一个重要概念，是理解Unix/Linux文件系统和硬盘储存的基础</p>
+<h2><span id="1-what-is-inode">1. what is inode?</span><a href="#1-what-is-inode" class="header-anchor">#</a></h2>
+<table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr>
+<th>linux文件相关</th>
+<th>size</th>
+<th>属性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>扇区(Sector)</td>
+<td>512bytes(0.5KB)</td>
+<td>硬盘的最小存储单位</td>
+</tr>
+<tr>
+<td>块(block)</td>
+<td>通常4KB</td>
+<td>文件存取的最小单位(操作系统读取硬盘,一次性读取一个块，提高效率)</td>
+</tr>
+<tr>
+<td>inode</td>
+<td>一般是128字节或256字节</td>
+<td>储存文件的元信息(如创建者、创建日期、大小等)</td>
+</tr>
+</tbody>
+</table>
+<p>inode, 中文译名为"索引节点",包含了与该
+<strong>文件有关的一些信息</strong>。</p>
+<h2><span id="2-the-content-of-inode">2. the content of inode</span><a href="#2-the-content-of-inode" class="header-anchor">#</a></h2>
+<p>use <strong>stat</strong> to check the content of inode:
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ stat mssh_ip.sh</span><br><span class="line"></span><br><span class="line">  File: ‘mssh_ip.sh’</span><br><span class="line">  Size: 183             Blocks: 8          IO Block: 4096   regular file</span><br><span class="line">Device: fe21h&#x2F;65057d    Inode: 7120498     Links: 1</span><br><span class="line">Access: (0644&#x2F;-rw-r--r--)  Uid: ( 7857&#x2F;liuwen03)   Gid: ( 7857&#x2F;liuwen03)</span><br><span class="line">Access: 2021-01-28 14:13:04.213991000 +0800</span><br><span class="line">Modify: 2021-01-28 14:13:04.213991000 +0800</span><br><span class="line">Change: 2021-02-04 11:37:19.457991000 +0800</span><br></pre></td></tr></table></figure></p>
+<p>由此可以看出, inode包含文件的元信息，具体来说有以下内容：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">　　* 文件的字节数</span><br><span class="line">　　* 文件拥有者的User ID</span><br><span class="line">　　* 文件的Group ID</span><br><span class="line">　　* 文件的读、写、执行权限</span><br><span class="line">　　* 文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</span><br><span class="line">　　* 链接数，即有多少文件名指向这个inode</span><br><span class="line">　　* 文件数据block的位置</span><br></pre></td></tr></table></figure></p>
+<h2><span id="3-what-is-inode-number">3. what is inode number?</span><a href="#3-what-is-inode-number" class="header-anchor">#</a></h2>
+<p>inode是<a target="_blank" rel="noopener" href="http://www.nongnu.org/ext2-doc/ext2.html#INODE-TABLE">inode
+table</a>中的一个item。Linux扩展文件系统 (如ext2/ext3)
+维护了一个inode的数组：inode table。inode
+table包含该文件系统中所有文件的列表。inode table中的各个inode项具有
+<strong>唯一的编号</strong> (该文件系统唯一)，即<strong>inode
+number</strong>。</p>
+<p>使用ls -i命令，可以看到文件名对应的inode number：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls -li mssh_ip.sh</span><br><span class="line">7120498 -rw-r--r-- 1 liuwen03 liuwen03 183 Jan 28 14:13 mssh_ip.sh</span><br></pre></td></tr></table></figure>
+## 4. the size and the number of inode
+inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是
+<strong>数据区</strong>，存放<strong>文件数据</strong>；另一个是inode区（<strong>inode
+table</strong>），存放<strong>inode所包含的信息</strong>。
+每个inode节点的size，一般是
+<strong>128或256字节</strong>。inode节点的总数，在<strong>格式化时就给定</strong>，一般是每1KB或每2KB就设置一个inode。假定在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode
+table的大小就会达到128MB，占整块硬盘的12.8%。</p>
+<p><strong>df -i</strong>显示文件系统inode的使用信息
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ df -i</span><br><span class="line">Filesystem        Inodes  IUsed     IFree IUse% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;dm-0        8134656 127239   8007417    2% &#x2F;</span><br><span class="line">udev             2056585    353   2056232    1% &#x2F;dev</span><br><span class="line">tmpfs            2058885    487   2058398    1% &#x2F;run</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;dev&#x2F;shm</span><br><span class="line">tmpfs            2058885      4   2058881    1% &#x2F;run&#x2F;lock</span><br><span class="line">tmpfs            2058885     13   2058872    1% &#x2F;sys&#x2F;fs&#x2F;cgroup</span><br><span class="line">&#x2F;dev&#x2F;vdc1      209713152 344897 209368255    1% &#x2F;home</span><br><span class="line">&#x2F;dev&#x2F;vda1          62248    328     61920    1% &#x2F;boot</span><br></pre></td></tr></table></figure></p>
+<h2><span id="5-mu-lu-de-inode-jie-gou">5. 目录的inode结构</span><a href="#5-mu-lu-de-inode-jie-gou" class="header-anchor">#</a></h2>
+<p>Linux中的 <strong>目录</strong>
+也被视<strong>为文件</strong>。目录是<strong>将文件名映射到其inode
+number的特殊文件</strong>
+(此映射称为dentry)。因此，当我们说某个目录包含文件和其他目录时，我们的意思是该目录将这些文件和目录映射到它们的inode
+number。这就是目录无法容纳两个具有相同名称的文件的原因，因为它<strong>无法使用两个不同的inode
+number映射一个名称</strong>。</p>
+<p>每个目录项，由两部分组成：所包含文件的<strong>文件名</strong>，以及该文件名<strong>对应的inode号码</strong>。</p>
+<p>理解了上面这些知识，就能理解目录的权限。目录文件的读权限（r）和写权限（w），都是针对目录文件本身。由于目录文件内只有文件名和inode号码，所以
+<strong>如果只有读权限，只能获取文件名，无法获取其他信息，因为其他信息都储存在inode节点中</strong>，而
+<strong>读取inode节点内的信息需要目录文件的执行权限（x）</strong>。</p>
+<h2><span id="6-inode-de-te-shu-zuo-yong">6、inode的特殊作用</span><a href="#6-inode-de-te-shu-zuo-yong" class="header-anchor">#</a></h2>
+<p>由于<strong>inode号码与文件名</strong>分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
+<ul>
+<li><p>有时，文件名包含特殊字符，无法正常删除。这时，<strong>直接删除inode节点，就能起到删除文件的作用</strong>。</p></li>
+<li><p>移动文件或重命名文件，<strong>只是改变文件名，不影响inode号码</strong>。</p></li>
+<li><p>打开一个文件以后，系统就
+<strong>以inode号码来识别</strong>这个文件，不再考虑文件名。因此，通常来说，<strong>系统无法从inode号码得知文件名</strong>。</p></li>
+</ul>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<p>1.<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2011/12/inode.html" title="理解inode">理解inode</a> 2.<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0520d6b76318" title="详解Linux Inode">详解Linux Inode</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux/" rel="tag"># 深入理解linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/04/linux-7-ln%E6%8C%87%E4%BB%A4/" rel="prev" title="[linux] 7.ln指令">
+      <i class="fa fa-chevron-left"></i> [linux] 7.ln指令
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3linux-2-soft-link-hard-link/" rel="next" title="[深入理解linux] 2. soft link/hard link">
+      [深入理解linux] 2. soft link/hard link <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">1. what is inode?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">2. the content of inode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">3. what is inode number?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">5. 目录的inode结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">6、inode的特殊作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'aa367c81804d10359c8929bdc7f40b37',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

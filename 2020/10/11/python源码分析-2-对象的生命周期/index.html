@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="C API# 开始讨论对象创建前，先介绍 Python 提供的 C API 。 Python 是用 C 写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python 内部也大量使用这些 API ，为了更好研读源码，先系统了解 API 组成结构很有必要。 C API 分为两类： 泛型 API 以及 特型 API。 泛型 API# 泛型 API 与类型无关，属于 抽">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 2.对象的生命周期">
+<meta property="og:url" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="C API# 开始讨论对象创建前，先介绍 Python 提供的 C API 。 Python 是用 C 写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python 内部也大量使用这些 API ，为了更好研读源码，先系统了解 API 组成结构很有必要。 C API 分为两类： 泛型 API 以及 特型 API。 泛型 API# 泛型 API 与类型无关，属于 抽">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F1.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F2.png">
+<meta property="article:published_time" content="2020-10-11T06:13:31.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.912Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F1.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 2.对象的生命周期 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 2.对象的生命周期
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-11 14:13:31" itemprop="dateCreated datePublished" datetime="2020-10-11T14:13:31+08:00">2020-10-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1><span id="c-api">C API</span><a href="#c-api" class="header-anchor">#</a></h1>
+<p>开始讨论对象创建前，先介绍 Python 提供的 C API 。 Python 是用 C
+写成的，对外提供了 C API ，让用户可以从 C 环境中与其交互。 Python
+内部也大量使用这些 API ，为了更好研读源码，先系统了解 API
+组成结构很有必要。 C API 分为两类： <strong>泛型 API 以及 特型
+API</strong>。</p>
+<h2><span id="fan-xing-api">泛型 API</span><a href="#fan-xing-api" class="header-anchor">#</a></h2>
+<p>泛型 API 与类型无关，属于 抽象对象层 ( Abstract Object Layer )，简称
+AOL 。 这类 API 参数是 PyObject*
+，<strong>可处理任意类型的对象</strong>， API 内部根据对象类型区别处理。
+以对象打印函数为例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int PyObject_Print(PyObject *op, FILE *fp, int flags)</span><br></pre></td></tr></table></figure></p>
+<p>接口第一个参数为待打印对象，可以是任意类型的对象，因此参数类型是
+PyObject* 。 Python 内部一般都是通过 PyObject*
+引用对象，以达到泛型化的目的。 <strong>对于任意类型的对象，均可调用
+PyObject_Print 将其打印出来</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 打印浮点对象</span><br><span class="line">PyObject *fo &#x3D; PyFloatObject_FromDouble(3.14);</span><br><span class="line">PyObject_Print(fo, stdout, 0);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 打印整数对象</span><br><span class="line">PyObject *lo &#x3D; PyFloatObject_FromLong(100);</span><br><span class="line">PyObject_Print(lo, stdout, 0);</span><br><span class="line">PyObject_Print 接口内部根据对象类型，决定如何输出对象。</span><br></pre></td></tr></table></figure></p>
+<h2><span id="te-xing-api">特型 API</span><a href="#te-xing-api" class="header-anchor">#</a></h2>
+<p>特型 API 与类型相关，属于 具体对象层 ( Concrete Object Layer )，简称
+COL 。 这类 API 只能作用于某种类型的对象，例如浮点对象 PyFloatObject 。
+Python 内部为每一种内置对象提供了这样一组 API ，举例如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyObject * PyFloat_FromDouble(double fval)</span><br></pre></td></tr></table></figure>
+PyFloat_FromDouble 创建一个浮点对象，并将它初始化为给定值 fval 。</p>
+<h1><span id="dui-xiang-de-chuang-jian">对象的创建</span><a href="#dui-xiang-de-chuang-jian" class="header-anchor">#</a></h1>
+<p>经过前面的理论学习，我们知道对象的 <strong>元数据</strong>
+保存在对应的 <strong>类型对象</strong> 中，元数据当然也包括
+<strong>对象如何创建 的信息</strong>。 因此，有理由相信 <strong>实例对象
+由 类型对象</strong> 创建。 不管创建对象的流程如何，最终的关键步骤都是
+<strong>分配内存</strong> 。 Python 对 内建对象
+是无所不知的，因此可以提供 C API ，直接分配内存并执行初始化。 以
+PyFloat_FromDouble 为例，在接口内部为 PyFloatObject
+结构体分配内存，并初始化相关字段即可。 对于用户自定义的类型 class
+Dog(object) ， Python 就无法事先提供 PyDog_New 这样的 C API 了。
+这种情况下，就只能通过 Dog 所对应的类型对象创建实例对象了。
+至于需要分配多少内存，如何进行初始化，答案就需要在
+<strong>类型对象</strong> 中找了。 总结起来，Python
+内部一般通过这两种方法创建对象： - 通过 <strong>C API</strong> ，例如
+PyFloat_FromDouble ，多用于内建类型； -
+通过<strong>类型对象</strong>，例如 Dog ，多用于自定义类型；
+通过类型对象创建实例对象，是一个更通用的流程，<strong>同时支持内置类型和自定义类型</strong>。
+以创建浮点对象为例，我们还可以通过浮点类型 PyFloat_Type 来创建：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; pi &#x3D; float(&#39;3.14&#39;)</span><br><span class="line">&gt;&gt;&gt; pi</span><br><span class="line">3.14</span><br></pre></td></tr></table></figure>
+例子中我们通过调用类型对象 float ，实例化了一个浮点实例 pi
+，<strong>对象居然还可以调用！</strong>在 Python
+中，可以被调用的对象就是 <strong>可调用对象</strong> 。</p>
+<p>问题来了，可调用对象被调用时，执行什么函数呢？
+由于类型对象保存着实例对象的元信息， float 类型对象的类型是 type
+，因此秘密应该就隐藏在 type 中。 再次考察 PyType_Type ，我们找到了
+<strong>tp_call 字段</strong>，这是一个 <strong>函数指针</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyType_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;type&quot;,                                     &#x2F;* tp_name *&#x2F;</span><br><span class="line">    sizeof(PyHeapTypeObject),                   &#x2F;* tp_basicsize *&#x2F;</span><br><span class="line">    sizeof(PyMemberDef),                        &#x2F;* tp_itemsize *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    (ternaryfunc)type_call,                     &#x2F;* tp_call *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+当实例对象被调用时，便执行 tp_call 字段保存的处理函数。 因此，
+float(‘3.14’) 在 C 层面等价于：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyFloat_Type.ob_type.tp_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+即：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyType_Type.tp_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+最终执行， type_call 函数：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type_call(&amp;PyFloat_Type, args, kwargs)</span><br></pre></td></tr></table></figure>
+调用参数通过 args 和 kwargs
+两个对象传递，先不展开，留到函数机制中详细介绍。 接着围观 type_call
+函数，定义于 Include/typeobject.c ，关键代码如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)</span><br><span class="line">&#123;</span><br><span class="line">    PyObject *obj;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    obj &#x3D; type-&gt;tp_new(type, args, kwds);   &#x2F;&#x2F;为对象分配内存</span><br><span class="line">    obj &#x3D; _Py_CheckFunctionResult((PyObject*)type, obj, NULL);</span><br><span class="line">    if (obj &#x3D;&#x3D; NULL)</span><br><span class="line">        return NULL;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    type &#x3D; Py_TYPE(obj);                     &#x2F;&#x2F;获取PyType_Type</span><br><span class="line">    if (type-&gt;tp_init !&#x3D; NULL) &#123;</span><br><span class="line">        int res &#x3D; type-&gt;tp_init(obj, args, kwds);   &#x2F;&#x2F;初始化对象</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            assert(PyErr_Occurred());</span><br><span class="line">            Py_DECREF(obj);                  &#x2F;&#x2F;引用减一</span><br><span class="line">            obj &#x3D; NULL;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            assert(!PyErr_Occurred());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，关键的步骤有两个： 1. 调用类型对象 tp_new 函数指针 申请内存
+(第 7 行)； 2. 必要时调用类型对象 tp_init 函数指针对对象进行 初始化 (第
+15 行)； 至此，对象的创建过程已经非常清晰了：</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F1.png" class title="PyVarObject图">
+</div>
+<hr>
+<p>总结一下，float 类型对象是 可调用对象 ，调用 float 即可创建实例对象：
+1. 调用 float ， Python 最终执行其类型对象 type 的 tp_call 函数； 2.
+tp_call 函数调用 float 的 tp_new 函数为实例对象分配 内存空间 ； 3.
+tp_call 函数必要时进一步调用 tp_init 函数对实例对象进行 初始化 ；</p>
+<h1><span id="dui-xiang-de-duo-tai-xing">对象的多态性</span><a href="#dui-xiang-de-duo-tai-xing" class="header-anchor">#</a></h1>
+<p>Python 创建一个对象，比如 PyFloatObject ，会分配内存，并进行初始化。
+此后， Python 内部 <strong>统一通过一个 PyObject*
+变量来保存和维护这个对象</strong>，而不是通过 PyFloatObject* 变量。 通过
+PyObject* 变量保存和维护对象，可以
+<strong>实现更抽象的上层逻辑</strong>，而不用关心对象的实际类型和实现细节。
+以对象哈希值计算为例，假设有这样一个函数接口：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Py_hash_t PyObject_Hash(PyObject *v);</span><br></pre></td></tr></table></figure>
+该函数可以计算任意对象的哈希值，不管对象类型是啥。
+例如，计算浮点对象哈希值：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PyObject *fo &#x3D; PyFloatObject_FromDouble(3.14);</span><br><span class="line">PyObject_Hash(fo);</span><br></pre></td></tr></table></figure>
+对于其他类型，例如整数对象，也是一样的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PyObject *lo &#x3D; PyLongObject_FromLong(100);</span><br><span class="line">PyObject_Hash(lo);</span><br></pre></td></tr></table></figure>
+然而，对象类型不同，其行为也千差万别，哈希值计算方法便是如此。
+PyObject_Hash 函数如何解决这个问题呢？ 到 Object/object.c 中寻找答案：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Py_hash_t</span><br><span class="line">PyObject_Hash(PyObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;类似强制类型转换，但是不像c++一样，用父类指针调用子类就行</span><br><span class="line">    &#x2F;&#x2F;这里的结构体里面指针有ob_type和tp_hash，标记了类型和哈希函数</span><br><span class="line">    PyTypeObject *tp &#x3D; Py_TYPE(v);</span><br><span class="line">    if (tp-&gt;tp_hash !&#x3D; NULL)</span><br><span class="line">        return (*tp-&gt;tp_hash)(v);</span><br><span class="line">    &#x2F;* To keep to the general practice that inheriting</span><br><span class="line">    * solely from object in C code should work without</span><br><span class="line">    * an explicit call to PyType_Ready, we implicitly call</span><br><span class="line">    * PyType_Ready here and then check the tp_hash slot again</span><br><span class="line">    * 隐式调用PyType_Ready，然后再次检查tp_hash插槽</span><br><span class="line">    *&#x2F;</span><br><span class="line">    if (tp-&gt;tp_dict &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">        if (PyType_Ready(tp) &lt; 0)</span><br><span class="line">            return -1;</span><br><span class="line">        if (tp-&gt;tp_hash !&#x3D; NULL)</span><br><span class="line">            return (*tp-&gt;tp_hash)(v);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;* Otherwise, the object can&#39;t be hashed *&#x2F;</span><br><span class="line">    return PyObject_HashNotImplemented(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+函数先通过 <strong>ob_type 指针找到对象的类型</strong> (第 4 行)；
+然后通过类型对象的 <strong>tp_hash
+函数指针，调用对应的哈希值计算函数</strong> (第 6 行)。 换句话讲，
+PyObject_Hash 根据对象的类型，调用不同的函数版本。 这不就是 多态 吗？
+通过 ob_type 字段， <strong>Python 在 C 语言层面实现了对象的 多态
+特性</strong>， 思路跟 C++ 中的 虚表指针 有异曲同工之妙。</p>
+<h1><span id="dui-xiang-de-xing-wei">对象的行为</span><a href="#dui-xiang-de-xing-wei" class="header-anchor">#</a></h1>
+<p>不同对象的行为不同，比如哈希值计算方法就不同，由类型对象中 tp_hash
+字段决定。 除了 tp_hash ，我们看到 PyTypeObject
+结构体还定义了很多函数指针，这些指针最终都会指向某个函数，或者为空。
+这些函数指针可以看做是 <strong>类型对象（PyTypeObject）</strong>
+中定义的 操作 ，这些操作决定对应 <strong>实例对象 在运行时的
+行为</strong> 。 尽管如此，不同对象也有一些共性。 举个例子，整数对象 和
+浮点对象 都支持加减乘除等 数值型操作 ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; 1 + 2</span><br><span class="line">3</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; 3.14 * 3.14</span><br><span class="line">9.8596</span><br></pre></td></tr></table></figure>
+元组对象 tuple 和 列表对象 list 都支持下标操作：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t &#x3D; (&#39;apple&#39;, &#39;banana&#39;, &#39;car&#39;, &#39;dog&#39;)</span><br><span class="line">&gt;&gt;&gt; t[-1]</span><br><span class="line">&#39;dog&#39;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; l &#x3D; [&#39;alpha&#39;, &#39;beta&#39;]</span><br><span class="line">&gt;&gt;&gt; l[-1]</span><br><span class="line">&#39;beta&#39;</span><br></pre></td></tr></table></figure>
+因此，以对象行为为依据，可以 <strong>对对象进行分类</strong>：</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%5Bpython%5D%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F2.png" class title="PyVarObject图">
+</div>
+<hr>
+<p>Python 便以此为依据，为每个类别都定义了一个 标准操作集 ： -
+PyNumberMethods 结构体定义了 数值型 操作； - PySequenceMethods
+结构体定义了 序列型 操作； - PyMappingMethods 结构体定义了 关联型
+操作；</p>
+<p>只要 类型对象 提供相关 操作集 ， 实例对象 便具备对应的 行为 。
+操作集字段如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _typeobject &#123;</span><br><span class="line">    PyObject_VAR_HEAD</span><br><span class="line">    const char *tp_name; &#x2F;* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; *&#x2F;</span><br><span class="line">    Py_ssize_t tp_basicsize, tp_itemsize; &#x2F;* For allocation *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Method suites for standard classes *&#x2F;</span><br><span class="line"></span><br><span class="line">    PyNumberMethods *tp_as_number;</span><br><span class="line">    PySequenceMethods *tp_as_sequence;</span><br><span class="line">    PyMappingMethods *tp_as_mapping;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &#x2F;* Functions to access object as input&#x2F;output buffer *&#x2F;</span><br><span class="line">    PyBufferProcs *tp_as_buffer;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125; PyTypeObject;</span><br></pre></td></tr></table></figure>
+以 float 为例，类型对象 PyFloat_Type 相关字段是这样初始化的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods float_as_number &#x3D; &#123;</span><br><span class="line">    float_add,          &#x2F;* nb_add *&#x2F;</span><br><span class="line">    float_sub,          &#x2F;* nb_subtract *&#x2F;</span><br><span class="line">    float_mul,          &#x2F;* nb_multiply *&#x2F;</span><br><span class="line">    float_rem,          &#x2F;* nb_remainder *&#x2F;</span><br><span class="line">    float_divmod,       &#x2F;* nb_divmod *&#x2F;</span><br><span class="line">    float_pow,          &#x2F;* nb_power *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;PyFloat_Type是PyTypeObject结构体类型，只是重写了</span><br><span class="line">&#x2F;&#x2F;注意与c++父类区分开，这里只是重定义了一些具体参数</span><br><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">    &amp;float_as_number,                           &#x2F;* tp_as_number *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>字段 <strong>tp_as_number 非空</strong>，因此 float 对象
+<strong>支持数值型操作</strong> ；</li>
+<li>字段 <strong>tp_as_sequence 为空</strong>，因此 float 对象
+<strong>不支持序列型操作</strong> ；</li>
+<li>字段 tp_as_mapping 为空，因此 float 对象
+<strong>不支持关联型操作</strong> ； 注意到， float_as_number
+变量中相关函数指针都初始化为对应的 float 版本操作函数。</li>
+</ul>
+<h1><span id="yin-yong-ji-shu">引用计数</span><a href="#yin-yong-ji-shu" class="header-anchor">#</a></h1>
+<p>C/C++
+赋予程序员极大的自由，可以任意申请内存，并按自己的意图灵活管理。
+然而，权利的另一面则对应着 责任 ，一旦内存不再使用，程序员必须将其释放。
+这给程序员带来极大的 工作负担 ，并导致大量问题： <strong>内存泄露 、
+野指针 、 越界访问</strong> 等。 许多后来兴起的开发语言，如 Java 、
+Golang 等，选择 由语言本身负责内存的管理 。 垃圾回收机制
+的引入，程序员摆脱了内存管理的噩梦，可以更专注于业务逻辑。
+于此同时，开发人员失去了灵活使用内存的机会，也牺牲了一定的执行效率。
+随着垃圾回收机制日益完善，可在大部分对性能要求不苛刻的场景中引入，利大于弊。
+Python 也采用垃圾回收机制，代替程序员进行繁重的内存管理，提升开发效率
+的同时，降低 bug 发生的几率。 Python 垃圾回收机制的关键是对象的
+<strong>引用计数</strong> ，它决定了一个对象的生死。 我们知道每个 Python
+对象都有一个 <strong>ob_refcnt</strong> 字段，记录着对象当前的引用计数。
+当对象被其他地方引用时， ob_refcnt 加一； 当引用解除时， ob_refcnt
+减一。 当 ob_refcnt 为零，说明对象已经没有任何引用了，这时便可将其回收。
+Python 对象创建后，引用计数设为 1 ：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<strong>这里引用计数为啥是 2 呢</strong>？ 对象
+<strong>作为函数参数传递，需要将引用计数加一(重)，避免对象被提前销毁</strong>；函数返回时，再将引用计数减一。
+因此，例子中 getrefcount 函数看到的对象引用计数为 2 。
+接着，变量赋值让对象多了一个引用，这很好理解：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; b &#x3D; a</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+将对象放在容器对象中，引用计数也增加了，符合预期：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l &#x3D; [a]</span><br><span class="line">&gt;&gt;&gt; l</span><br><span class="line">[3.14]</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+我们将 b 变量删除，引用计数减少了：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; del b</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+接着，将列表清空，引用计数进一步下降：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.clear()</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(a)</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+最后，将变量 a 删除后，引用计数降为 0 ，便不复存在了：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; del a</span><br></pre></td></tr></table></figure>
+在 Python 中，很多场景都涉及引用计数的调整，例如： -
+<strong>容器操作</strong>； - <strong>变量赋值</strong>； -
+<strong>函数参数传递</strong>； - <strong>属性操作</strong>；</p>
+<p>为此， Python 定义了两个非常重要的宏，用于维护对象应用计数。 其中，
+Py_INCREF 将对象应用计数加一 ( 3 行)：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define Py_INCREF(op) (                         \</span><br><span class="line">    _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA       \</span><br><span class="line">    ((PyObject *)(op))-&gt;ob_refcnt++)</span><br></pre></td></tr></table></figure>
+Py_DECREF 将引用计数减一 ( 5 行)，并在引用计数为 0 是回收对象 ( 8 行)：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#define Py_DECREF(op)                                   \</span><br><span class="line">    do &#123;                                                \</span><br><span class="line">        PyObject *_py_decref_tmp &#x3D; (PyObject *)(op);    \</span><br><span class="line">        if (_Py_DEC_REFTOTAL  _Py_REF_DEBUG_COMMA       \</span><br><span class="line">        --(_py_decref_tmp)-&gt;ob_refcnt !&#x3D; 0)             \</span><br><span class="line">            _Py_CHECK_REFCNT(_py_decref_tmp)            \</span><br><span class="line">        else</span><br><span class="line">            \\ 调用对象对应的析构函数销毁对象 </span><br><span class="line">            _Py_Dealloc(_py_decref_tmp);                \</span><br><span class="line">    &#125; while (0)</span><br></pre></td></tr></table></figure>
+当一个对象引用计数为 0 ， Python
+便调用对象对应的析构函数销毁对象，但这并不意味着对象内存一定会回收。
+为了提高内存分配效率， Python 为一些
+<strong>常用对象维护了内存池</strong>，
+<strong>对象回收后内存进入内存池中</strong>，以便下次使用，由此
+避免频繁申请、释放内存 。 内存池
+技术作为程序开发的高级话题，需要更大的篇幅，放在后续章节中介绍。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/11/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1-%E5%AF%B9%E8%B1%A1/" rel="prev" title="[python源码分析] 1.对象">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 1.对象
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/17/Protobuf-gRPC-1-protobuf%E7%AE%80%E4%BB%8B/" rel="next" title="[Protobuf&gRPC] 1.protobuf简介">
+      [Protobuf&gRPC] 1.protobuf简介 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">C API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">泛型 API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.2.</span> <span class="nav-text">特型 API</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">对象的创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">对象的多态性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">对象的行为</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">引用计数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '113a6a80682567cd7d050d2846b46712',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

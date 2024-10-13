@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 概述#    1.1 shader种类# shader主要有：固定管线着色器，顶点片元着色器，表面着色器  固定管线着色器（逐渐淘汰） 顶点shader：干预模型形态的shader（顶点变换） 像素shader：干预像素着色的shader(不同纹理贴图）  1.2 GPU编程语言#  Dirext3D-----微软（windows） OpenGL-----Linu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[unity shader] 1.概述">
+<meta property="og:url" content="http://yoursite.com/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="1. 概述#    1.1 shader种类# shader主要有：固定管线着色器，顶点片元着色器，表面着色器  固定管线着色器（逐渐淘汰） 顶点shader：干预模型形态的shader（顶点变换） 像素shader：干预像素着色的shader(不同纹理贴图）  1.2 GPU编程语言#  Dirext3D-----微软（windows） OpenGL-----Linu">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/Shader_sum_up.png">
+<meta property="article:published_time" content="2020-08-18T07:23:32.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.939Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="shader">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/Shader_sum_up.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[unity shader] 1.概述 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [unity shader] 1.概述
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-18 15:23:32" itemprop="dateCreated datePublished" datetime="2020-08-18T15:23:32+08:00">2020-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/shader/" itemprop="url" rel="index"><span itemprop="name">shader</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1><span id="1-gai-shu">1. 概述</span><a href="#1-gai-shu" class="header-anchor">#</a></h1>
+<div style="width:70%;margin:auto">
+<img src="/2020/08/18/unity-shader-graph-1-%E6%A6%82%E8%BF%B0/Shader_sum_up.png" class title="shader概述图">
+</div>
+<h2><span id="1-1-shader-chong-lei">1.1 shader种类</span><a href="#1-1-shader-chong-lei" class="header-anchor">#</a></h2>
+<p>shader主要有：<strong>固定管线着色器，顶点片元着色器，表面着色器</strong></p>
+<ul>
+<li>固定管线着色器（逐渐淘汰）</li>
+<li>顶点shader：干预<strong>模型形态的shader（顶点变换）</strong></li>
+<li>像素shader：干预<strong>像素着色的shader(不同纹理贴图）</strong></li>
+</ul>
+<h2><span id="1-2-gpu-bian-cheng-yu-yan">1.2 GPU编程语言</span><a href="#1-2-gpu-bian-cheng-yu-yan" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><strong>Dirext3D-----微软（windows）</strong></li>
+<li><strong>OpenGL-----Linux（Android）</strong></li>
+</ol>
+<p>目前面向GPU的编程有三种高级图像语言：<strong>HLSL语言，GLSL语言，Cg语言</strong>。</p>
+<ol type="1">
+<li><p>HLSL语言：High Level Shading
+Language，由<strong>Microsoft公司提供，通过Direct3D图形软件库</strong>来编写的着色器语言。</p></li>
+<li><p>GLSL语言：<strong>OpenGL Shading
+Language，由OpenGL安委会提供</strong>，在OpenGL中进行着色器编程的语言。</p></li>
+<li><p>Cg语言：C for
+Graphics，由<strong>NVIDIA公司和Microsoft公司合作提供</strong>，有自己的一套关键字和函数库，独立于三维编程接口，<strong>在Direct3D和OpenGL上都可工作</strong>。</p></li>
+</ol>
+<h1><span id="2-shader-lab-ji-chu-yu-fa">2. shader lab基础语法</span><a href="#2-shader-lab-ji-chu-yu-fa" class="header-anchor">#</a></h1>
+<h2><span id="2-1-shaderlab-jian-jie">2.1 ShaderLab简介</span><a href="#2-1-shaderlab-jian-jie" class="header-anchor">#</a></h2>
+<p>ShaderLab: <strong>Unity
+自己又封装了一层CG/HLSL/GLSL的接口</strong>，但为了实现跨平台，Unity<strong>重点支持Cg着色器语言</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Shader &quot;主色器名称&quot;&#123;</span><br><span class="line">    Properties&#123;&#125; &#x2F;&#x2F;属性定义</span><br><span class="line">    SubShader&#123;&#125; &#x2F;&#x2F;子主色器</span><br><span class="line">    SubShader&#123;&#125; &#x2F;&#x2F;子主色器2</span><br><span class="line">    …………</span><br><span class="line">    FallBack &quot;备用着色器名称&quot; &#x2F;&#x2F;如果所有子着色器不能运行，则使用备用着色器</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单的shader示例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; colored vertex lighting</span><br><span class="line">Shader &quot;Simple colored lighting&quot;</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; a single color property</span><br><span class="line">    Properties &#123;</span><br><span class="line">        _Color (&quot;Main Color&quot;, Color) &#x3D; (1,.5,.5,1)</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; define one subshader</span><br><span class="line">    SubShader</span><br><span class="line">    &#123;</span><br><span class="line">        &#x2F;&#x2F; a single pass in our subshader</span><br><span class="line">        Pass</span><br><span class="line">        &#123;</span><br><span class="line">            &#x2F;&#x2F; use fixed function per-vertex lighting</span><br><span class="line">            Material</span><br><span class="line">            &#123;</span><br><span class="line">                Diffuse [_Color]</span><br><span class="line">            &#125;</span><br><span class="line">            Lighting On</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+Shader "name"{ }定义了一个名字为“name”的shader。</p>
+<h3><span id="2-1-1-properties-shu-xing-ding-yi">2.1.1 properties属性定义</span><a href="#2-1-1-properties-shu-xing-ding-yi" class="header-anchor">#</a></h3>
+<p>用来定义<strong>主色器中使用的贴图资源或者数值参数</strong>等。这些属性<strong>会在inspector视图的材质界面中显示</strong>，可以方便的进行设置和修改。</p>
+<h3><span id="2-1-2-subshader-shu-xing-ding-yi">2.1.2 SubShader属性定义</span><a href="#2-1-2-subshader-shu-xing-ding-yi" class="header-anchor">#</a></h3>
+<p>一个着色器<strong>包含一个或者多个子着色器</strong>。当Unity使用着色器渲染的时，会<strong>从上到下遍历子着色器，找到第一个被用户设备支持的子着色器</strong>，并<strong>使用该子着色器进行渲染</strong>。如果<strong>没有子着色器可以使用，则使用备用着色器</strong>。</p>
+<h3><span id="2-1-3-fallback-shu-xing-ding-yi">2.1.3 Fallback属性定义</span><a href="#2-1-3-fallback-shu-xing-ding-yi" class="header-anchor">#</a></h3>
+<p>备用着色器一般<strong>会指定一个对硬件要求最低的shader</strong>。当所有子着色器不能运行的时候，unity会启用备用着色器来进行渲染。</p>
+<h2><span id="2-2-properties-shu-xing">2.2 Properties属性</span><a href="#2-2-properties-shu-xing" class="header-anchor">#</a></h2>
+<p>properties一般定义<strong>在着色器的起始部分</strong>，我们可以在Shader书写的时候定义多种多样的属性，而使用Shader的时候可以直接在材质检视面板(Material
+Inspector)里编辑这些属性，<strong>取不同的值或者纹理</strong>。这可以说是Unity贴心&amp;可见即所得的又一体现吧。</p>
+<p>定义了一些属性参数，可在Unity编辑器的“Inspector”面板中编辑和调整。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">_Name(&quot;Display Name&quot;, type) &#x3D; defaultValue[&#123;options&#125;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Properties &#123;</span><br><span class="line">        _Color是变量名 (&quot;Main Color&quot;是在“Inspector”中的名字, Color是变量类型) &#x3D; (1,.5,.5,1)是默认值　 　　　　　　　　</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h3><span id="2-2-1-properties-lei-xing">2.2.1 Properties 类型</span><a href="#2-2-1-properties-lei-xing" class="header-anchor">#</a></h3>
+<p>类型|说明 -:-|-:- Range（min,max）| 在（min，max）范围内的浮点数
+Float |浮点数 Int |整型 Color |颜色 RGBA Vector |四维向量 2D |2D纹理 3D
+|3D纹理 Cube |立方体贴图纹理 Rect |矩形纹理</p>
+<ul>
+<li>**_Name**
+属性的名字，简单说就是变量名，在之后<strong>整个Shader代码中将使用这个名字来获取该属性的内容</strong>。Unity中用下划线开始_Name</li>
+<li><strong>Display Name</strong> -
+这个字符串<strong>将显示在Unity的材质编辑器中作为Shader的使用者可读的内容</strong></li>
+<li><strong>type</strong> -
+这个属性的类型，可能的type所表示的内容有以下几种：
+<ul>
+<li>Color - 一种颜色，由RGBA（红绿蓝和透明度）四个量来定义；</li>
+<li>2D -
+一张2的阶数大小（256，512之类）的贴图。这张贴图将在采样后被转为对应基于模型UV的每个像素的颜色，最终被显示出来；</li>
+<li>Rect - 一个非2阶数大小的贴图；</li>
+<li>Cube - 即Cube map
+texture（立方体纹理），简单说就是6张有联系的2D贴图的组合，主要用来做反射效果（比如天空盒和动态反射），也会被转换为对应点的采样；</li>
+<li>Range(min, max) -
+一个介于最小值和最大值之间的浮点数，一般用来当作调整Shader某些特性的参数（比如透明度渲染的截止值可以是从0至1的值等）；</li>
+<li>Float - 任意一个浮点数；</li>
+<li>Vector - 一个四维数；</li>
+</ul></li>
+<li><strong>defaultValue</strong>
+定义了这个属性的默认值，通过输入一个符合格式的默认值来指定对应属性的初始值（某些效果可能需要某些特定的参数值来达到需要的效果，虽然这些值可以在之后在进行调整，但是如果默认就指定为想要的值的话就省去了一个个调整的时间，方便很多）。
+<ul>
+<li>Color - 以0～1定义的rgba颜色，比如(1,1,1,1)；</li>
+<li>2D/Rect/Cube -
+对于贴图来说，默认值可以为一个代表默认tint颜色的字符串，可以是空字符串或者”white”,”black”,”gray”,”bump”中的一个</li>
+<li>Float，Range - 某个指定的浮点数</li>
+<li>Vector - 一个4维数，写为 (x,y,z,w)</li>
+</ul></li>
+<li>另外还有一个{option}，它只对2D，Rect或者Cube贴图有关，在写输入时我们最少要在贴图之后写一对什么都不含的空白的{}，当我们需要打开特定选项时可以把其写在这对花括号内。如果需要同时打开多个选项，可以使用空白分隔。可能的选择有ObjectLinear,
+EyeLinear, SphereMap, CubeReflect,
+CubeNormal中的一个，这些都是OpenGL中TexGen的模式，</li>
+</ul>
+<h2><span id="2-3-subshader">2.3 SubShader</span><a href="#2-3-subshader" class="header-anchor">#</a></h2>
+<h3><span id="2-3-1-ding-yi-yu-fa">2.3.1 定义语法</span><a href="#2-3-1-ding-yi-yu-fa" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Subshader &#123; </span><br><span class="line"> [Tags] </span><br><span class="line">   [CommonState] </span><br><span class="line">    Passdef [Passdef ...] &#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="2-3-2-biao-qian-tags">2.3.2 标签（Tags）</span><a href="#2-3-2-biao-qian-tags" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;写在SubShader的第一句</span><br><span class="line">Tags &#123; &quot;TagName1&quot; &#x3D; &quot;Value1&quot; &quot;TagName2&quot; &#x3D; &quot;Value2&quot; &#125;</span><br><span class="line">&#x2F;&#x2F;比如</span><br><span class="line">Tags &#123; &quot;RenderType&quot;&#x3D;&quot;Opaque&quot; &#125;</span><br></pre></td></tr></table></figure>
+<h4><span id="zuo-yong">作用</span><a href="#zuo-yong" class="header-anchor">#</a></h4>
+<p><strong>SubShaders使用标签来告诉引擎如何以及何时将其渲染。</strong></p>
+<p><strong>Unity识别的以下标记必须在SubShader节内，而不是Pass！</strong></p>
+<ol type="1">
+<li><strong>“Queue”标签</strong>。定义<strong>渲染顺序</strong>-队列标签。预制的值为
+（1）”Background”。值为1000。比如用于天空盒。
+（2）”Geometry”。值为2000。大部分物体在这个队列。不透明的物体也在这里。这个队列内部的物体的渲染顺序会有进一步的优化（应该是从近到远，early-z
+test可以剔除不需经过FS处理的片元）。其他队列的物体都是按空间位置的从远到近进行渲染。
+（3）”AlphaTest”。值为2450。已进行AlphaTest的物体在这个队列。
+（4）”Transparent”。值为3000。透明物体。
+（5）”Overlay”。值为4000。比如镜头光晕。
+（6）用户可以定义任意值，比如”Queue”=”Geometry+10”</li>
+<li><strong>“RenderType”标签</strong>。Unity可以运行时<strong>替换符合特定RenderType的所有Shader</strong>。<strong>Camera.RenderWithShader或者Camera.SetReplacementShader配合使用</strong>。Unity内置的RenderType包括：
+（1）”Opaque”：绝大部分<strong>不透明的物体都使用这个</strong>；
+（2）”Transparent”：<strong>绝大部分透明的物体、包括粒子特效都使用这个</strong>；
+（3）”Background”：<strong>天空盒都使用这个</strong>；
+（4）”Overlay”：<strong>GUI、镜头光晕</strong>都使用这个；
+（5）还有其他可参考Rendering with Replaced
+Shaders；用户也可以定义任意自己的RenderType字符串。</li>
+<li><strong>”ForceNoShadowCasting”，值为”true”时，表示不接受阴影</strong>。</li>
+<li><strong>”IgnoreProjector”</strong>，值为”true”时，表示<strong>不接受Projector组件的投影</strong>。</li>
+</ol>
+<h3><span id="2-3-3-pass-tong-dao-cha-ru-dao-xuan-ran-liu-shui-xian-de-ding-yi-yu-fa">2.3.3
+Pass(通道：插入到渲染流水线)的定义语法</span><a href="#2-3-3-pass-tong-dao-cha-ru-dao-xuan-ran-liu-shui-xian-de-ding-yi-yu-fa" class="header-anchor">#</a></h3>
+<p><strong>subshader包装了一个渲染方案，这些方案由一个个通道（pass）来执行的，subshader可以包含很多通道块，每个Pass都能使几何体渲染一次</strong>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line"> [Name and Tags名称和标签]</span><br><span class="line">  [Render Setup 渲染设置]</span><br><span class="line">   [Texture setup 纹理设置]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;实例代码</span><br><span class="line">Shader &quot;Custom&#x2F;Shader_01&quot; &#123;</span><br><span class="line">    SubShader &#123;</span><br><span class="line">        Pass&#123;</span><br><span class="line">            Name &quot;ONE&quot;</span><br><span class="line">            Material&#123;</span><br><span class="line">                Diffuse(1,0.7,0.4,1)</span><br><span class="line">                Ambient(1,0.7,0.4,1)</span><br><span class="line">            &#125;</span><br><span class="line">            Lighting On</span><br><span class="line">            SetTexture[_]&#123; combine primary &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3><span id="2-3-4-pass-ming-cheng-he-biao-qian-name-and-tags">2.3.4 pass名称和标签（Name and
+tags）</span><a href="#2-3-4-pass-ming-cheng-he-biao-qian-name-and-tags" class="header-anchor">#</a></h3>
+<p>可以定义<strong>Pass的名字以及任意数量的标签</strong>。为Pass命名后，可以在<strong>别的着色器中通过Pass名称来引用它，减少重复操作</strong>。Name<strong>命名必须大写</strong></p>
+<h3><span id="2-3-5-pass-xuan-ran-she-zhi-render-setup">2.3.5 pass渲染设置（Render
+Setup）</span><a href="#2-3-5-pass-xuan-ran-she-zhi-render-setup" class="header-anchor">#</a></h3>
+<p>pass里可以<strong>设置图形硬件的各种状态</strong>，例如<strong>开启Alpha混合，开启雾效</strong>等。</p>
+<h4><span id="regularpass-xuan-ran-she-zhi">RegularPass渲染设置</span><a href="#regularpass-xuan-ran-she-zhi" class="header-anchor">#</a></h4>
+<p>命令 |说明 -:-|-:- Meterial{} |材质，定义一个使用顶点光照管线的材质
+Lighting |光照，设置光照，取值为off或on Cull
+|裁剪，设置裁剪模式，模式包括：back、Front、off ZTest
+|深度测试，设置深度测试，包括：Less、Greater、LEqual、GEqual、Equal、NotEqual、Always。
+ZWrite |深度缓存写入，设置深度缓存写入的开关，取值为Off或On Fog{}
+|雾效，设置雾效参数 AlphaTest
+|<strong>Alpha测试</strong>，设置Alpha测试，包括：Less、Greater、LEqual、GEqual、Equal、NotEqual、Always。
+Blend |Alpha混合，设置Alpha混合模式 Stencil|
+蒙版，用蒙版来实现像素的取舍操作，选项有：keep、Zero、Replace、Incrsat、DecrSat、Invert、Incrwrap和DecrWrap
+Color |颜色，是指顶点光照关闭时使用的颜色值 ColorMask
+|颜色遮罩，设置<strong>颜色遮罩</strong>，当值为0时关闭所有的颜色通道的渲染，取值为RGB
+offset |深度偏移，设置深度偏移 SeparateSpecular
+|高光颜色。开启或关闭顶点光照的独立高光颜色，取值为On或Off ColorMaterial
+|颜色集，当计算顶点光照时使用每个顶点的颜色。</p>
+<h4><span id="te-shu-tong-dao">特殊通道</span><a href="#te-shu-tong-dao" class="header-anchor">#</a></h4>
+<ol type="1">
+<li><p><strong>UsePass 命令 使用 来自另一个着色器的命名通道</strong>。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">**UsePass &quot;Shader&#x2F;Name&quot;**</span><br></pre></td></tr></table></figure>
+插入<strong>所有来自给定着色器中的给定名字的通道</strong>。Shader/Name包含了<strong>通过斜杠字符分割的着色器的名字和通道的名字</strong>
+某些着色器重用其他着色器中已存在的通道，减少重复的代码。例如，在许多像素光照着色器中，阴影色或顶点光照通道在在相应的顶点光照着色器中是相同的。UsePass命令只是包含了另一个着色器的给定通道。例如当如下的命令可以使用内置的高光着色器中的名叫"Base"的通道：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UsePass &quot;Specular&#x2F;BASE&quot;</span><br></pre></td></tr></table></figure>
+为了让UsePass能正常工作，必须给希望使用的通道命名。通道中的Name命令将提供这个名字：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Name &quot;MyPassName&quot;</span><br></pre></td></tr></table></figure>
+注意，所有通道名字都是大写开头，因此<strong>UsePass必须使用大写开头的名字来书写索引</strong>。</p></li>
+<li><p>GrabPass是一种特殊的通道类型 -
+<strong>捕获物体所在位置的屏幕的内容并写入到一个纹理中</strong>。这个纹理能<strong>被用于后续的通道中完成一些高级图像特效。</strong>
+有两种方式将GrabPass放入一个 subshader中：</p></li>
+</ol>
+<ul>
+<li>GrabPass {}
+能<strong>捕获当前屏幕的内容到一个纹理中</strong>。纹理能在后续通道中通过
+_GrabTexture
+进行访问。注意：这种形式的捕获通道将在每一个使用该通道的对象渲染过程中执行昂贵的屏幕捕获操作</li>
+<li>GrabPass { "TextureName" }
+能捕获屏幕内容到一个纹理中，但只会在每帧中处理第一个使用给定纹理名的纹理的对象的渲染过程中产生捕获操作。纹理在未来的通道中可以通过给定的纹理名访问。当你在一个场景中拥有多个使用GrabPass的对象时将提高性能。</li>
+</ul>
+<p>GrabPass能使用<strong>Name 和 Tags命令。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Shader &quot;GrabPassInvert&quot; &#123;</span><br><span class="line">    SubShader &#123;</span><br><span class="line">        &#x2F;&#x2F; Draw ourselves after all opaque geometry </span><br><span class="line">        &#x2F;&#x2F; 在所有不透明几何体之后自画</span><br><span class="line">        Tags &#123; &quot;Queue&quot; &#x3D; &quot;Transparent&quot; &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; Grab the screen behind the object into _GrabTexture</span><br><span class="line">        &#x2F;&#x2F; 捕获对象后的屏幕到_GrabTexture</span><br><span class="line">        GrabPass &#123; &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; Render the object with the texture generated above, and invert it&#39;s colors</span><br><span class="line">        &#x2F;&#x2F; 用前面捕获的纹理渲染对象，并反相它的颜色</span><br><span class="line">        Pass &#123;</span><br><span class="line">            SetTexture [_GrabTexture] &#123; combine one-texture &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="2-3-6-pass-wen-li-she-zhi-texture-setup">2.3.6 pass纹理设置（Texture
+Setup）</span><a href="#2-3-6-pass-wen-li-she-zhi-texture-setup" class="header-anchor">#</a></h3>
+<p>纹理设置语法：<strong>setTexture 纹理属性{[命令选项}</strong>
+纹理设置用于<strong>固定功能管线</strong>，如果<strong>使用表面着色器或者自定义的顶点或者片段着色器，那么纹理设置将会被忽略</strong>。
+setTexture的命令选项包括三种： 1.
+<strong>Conbine</strong>:将两个颜色源混合，混合源可以是previous（上一次setTexture的结果）、constant（常量颜色值）、primary（顶点颜色）和texture（纹理颜色中的一种）
+2. <strong>ConstantColor设置一个颜色常量</strong> 3.
+<strong>matrix:设置矩阵对纹理坐标进行变换</strong></p>
+<h2><span id="2-4-fallback-bei-yong-zhao-se-qi">2.4 Fallback备用着色器</span><a href="#2-4-fallback-bei-yong-zhao-se-qi" class="header-anchor">#</a></h2>
+<h3><span id="yu-fa">语法：</span><a href="#yu-fa" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">（1）Fallback “备用着色器名称”</span><br><span class="line">（2）Fallback off</span><br></pre></td></tr></table></figure>
+<h2><span id="2-5-unity-nei-zhi-surface-shader-guan-zhao-xiao-guo-ji-suan-de-xing-neng-kai-xiao-pai-xu">2.5
+unity内置Surface shader关照效果计算的性能开销排序</span><a href="#2-5-unity-nei-zhi-surface-shader-guan-zhao-xiao-guo-ji-suan-de-xing-neng-kai-xiao-pai-xu" class="header-anchor">#</a></h2>
+<ol type="1">
+<li>Unlit:仅适用<strong>纹理颜色，不受光照影响</strong></li>
+<li>VertexLit:顶点光照</li>
+<li>Diffuse：漫反射</li>
+<li>Specular：在满反射的基础上增加了高光计算</li>
+<li>Normal Mapped：法线贴图，增加了一张法线贴图和几个着色器指令</li>
+<li>Normal Mapped Specular：<strong>带高光的法线贴图</strong></li>
+<li>Parallax Normal
+Mapped：<strong>视差法线贴图</strong>，增加了视察贴图的计算开销。</li>
+<li>Parallax Normal Mapped
+Specular：<strong>带高光的视差法线贴图</strong></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shader/" rel="tag"># shader</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/15/c-c-%E4%B8%AD%E7%9A%84Lazy/" rel="prev" title="[c#]c#中的Lazy">
+      <i class="fa fa-chevron-left"></i> [c#]c#中的Lazy
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/18/unity-shader-2-GPU%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/" rel="next" title="[unity shader] 2.GPU渲染管线">
+      [unity shader] 2.GPU渲染管线 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 shader种类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 GPU编程语言</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">2. shader lab基础语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 ShaderLab简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 properties属性定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 SubShader属性定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 Fallback属性定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 Properties属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 Properties 类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 SubShader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 定义语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 标签（Tags）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">作用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3.3
+Pass(通道：插入到渲染流水线)的定义语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.3.4 pass名称和标签（Name and
+tags）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.5.</span> <span class="nav-text">2.3.5 pass渲染设置（Render
+Setup）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.3.5.1.</span> <span class="nav-text">RegularPass渲染设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">2.3.5.2.</span> <span class="nav-text">特殊通道</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.6.</span> <span class="nav-text">2.3.6 pass纹理设置（Texture
+Setup）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 Fallback备用着色器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.4.1.</span> <span class="nav-text">语法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.5.</span> <span class="nav-text">2.5
+unity内置Surface shader关照效果计算的性能开销排序</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'a8c6723129704ec51000d1739264d48a',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

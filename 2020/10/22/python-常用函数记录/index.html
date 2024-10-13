@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇文章用来记录工作和学习过程中遇到的一些python常用api方法。 os模块# os.walk()# 1os.walk(top[, topdown&#x3D;True[, onerror&#x3D;None[, followlinks&#x3D;False]]]) 参数 top -- 是你所要遍历的目录的地址, 返回的是一个三元组(root,dirs,files)。 - root">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python]常用API记录">
+<meta property="og:url" content="http://yoursite.com/2020/10/22/python-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="这篇文章用来记录工作和学习过程中遇到的一些python常用api方法。 os模块# os.walk()# 1os.walk(top[, topdown&#x3D;True[, onerror&#x3D;None[, followlinks&#x3D;False]]]) 参数 top -- 是你所要遍历的目录的地址, 返回的是一个三元组(root,dirs,files)。 - root">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-22T02:58:05.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.909Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/10/22/python-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python]常用API记录 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/22/python-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python]常用API记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-22 10:58:05" itemprop="dateCreated datePublished" datetime="2020-10-22T10:58:05+08:00">2020-10-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇文章用来记录工作和学习过程中遇到的一些python常用api方法。</p>
+<h2><span id="os-mo-kuai">os模块</span><a href="#os-mo-kuai" class="header-anchor">#</a></h2>
+<h3><span id="os-walk">os.walk()</span><a href="#os-walk" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">os.walk(top[, topdown&#x3D;True[, onerror&#x3D;None[, followlinks&#x3D;False]]])</span><br></pre></td></tr></table></figure>
+<p><strong>参数</strong> top -- 是你所要遍历的目录的地址,
+<strong>返回的是一个三元组(root,dirs,files)</strong>。 - root
+所指的是当前正在遍历的这个文件夹的本身的地址 - dirs 是一个 list
+，内容是该文件夹中所有的目录的名字(不包括子目录) - files 同样是 list ,
+内容是该文件夹中所有的文件(不包括子目录)</p>
+<p>topdown --可选，为 True，则优先遍历 top 目录，否则优先遍历 top
+的子目录(默认为开启)。如果 topdown 参数为 True，walk
+会遍历top文件夹，与top 文件夹中每一个子目录。</p>
+<p>onerror -- 可选，需要一个 callable 对象，当 walk 需要异常时，会调用。
+followlinks -- 可选，如果为 True，则会遍历目录下的快捷方式(linux
+下是软连接 symbolic link )实际所指的目录(默认关闭)，如果为
+False，则优先遍历 top 的子目录。</p>
+<h3><span id="os-getenv-key-default-none">os.getenv(key, default = None)</span><a href="#os-getenv-key-default-none" class="header-anchor">#</a></h3>
+<p>返回环境变量键的值(如果存在)，否则返回默认值。</p>
+<h3><span id="os-path-abspath-file">os.path.abspath(<strong>file</strong>)</span><a href="#os-path-abspath-file" class="header-anchor">#</a></h3>
+<ul>
+<li><strong>获取的当前执行脚本的完整路径</strong></li>
+<li>只有当在脚本中执行的时候，os.path.abspath(<strong>file</strong>)才会起作用，因为该命令是获取的当前执行脚本的完整路径，如果在交互模式或者terminate
+终端中运行会报没有__file__这个错误</li>
+</ul>
+<h3><span id="os-path-dirname-path">os.path.dirname(path)</span><a href="#os-path-dirname-path" class="header-anchor">#</a></h3>
+<p>去掉文件名，返回目录</p>
+<h3><span id="os-environ-get">os.environ.get（）</span><a href="#os-environ-get" class="header-anchor">#</a></h3>
+<p>是python中os模块获取环境变量的一个方法</p>
+<h2><span id="getattr-object-name-default">getattr(object, name[,
+default])</span><a href="#getattr-object-name-default" class="header-anchor">#</a></h2>
+<p>getattr() 函数用于返回一个<strong>对象属性值</strong>。 - object --
+对象。 - name -- 字符串，对象属性。 - default --
+默认返回值，如果不提供该参数，在没有对应属性时，将触发
+AttributeError。</p>
+<h2><span id="shutil-copyfile-src-dst">shutil.copyfile(src, dst)</span><a href="#shutil-copyfile-src-dst" class="header-anchor">#</a></h2>
+<p><strong>复制文件内容</strong>（不包含元数据）<strong>从src到dst</strong>。
+<strong>dst必须是完整的目标文件名</strong>; 如果src和dst是
+<strong>同一文件，就会引发错误shutil.Error</strong>。
+<strong>dst必须是可写的</strong>，否则将引发异常IOError。如果dst已经存在，它会被替换。</p>
+<h2><span id="property"><span class="citation" data-cites="property">@property</span></span><a href="#property" class="header-anchor">#</a></h2>
+<p>Python内置的@property装饰器就是负责<strong>把一个方法变成属性调用</strong>的.
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Student(object):</span><br><span class="line"></span><br><span class="line">    @property</span><br><span class="line">    def score(self):</span><br><span class="line">        return self._score</span><br><span class="line"></span><br><span class="line">    @score.setter</span><br><span class="line">    def score(self, value):</span><br><span class="line">        if not isinstance(value, int):</span><br><span class="line">            raise ValueError(&#39;score must be an integer!&#39;)</span><br><span class="line">        if value &lt; 0 or value &gt; 100:</span><br><span class="line">            raise ValueError(&#39;score must between 0 ~ 100!&#39;)</span><br><span class="line">        self._score &#x3D; value</span><br></pre></td></tr></table></figure>
+<span class="citation" data-cites="property的实现比较复杂">@property的实现比较复杂</span>，我们先考察如何使用。<strong>把一个getter方法变成属性</strong>，只需要加上@property就可以了，此时，<span class="citation" data-cites="property本身">@property本身</span><strong>又创建了另一个装饰器@score.setter</strong>，负责<strong>把一个setter方法变成属性赋值</strong>，于是，我们就拥有一个可控的属性操作：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s &#x3D; Student()</span><br><span class="line">&gt;&gt;&gt; s.score &#x3D; 60 # OK，实际转化为s.set_score(60)</span><br><span class="line">&gt;&gt;&gt; s.score # OK，实际转化为s.get_score()</span><br><span class="line">60</span><br><span class="line">&gt;&gt;&gt; s.score &#x3D; 9999</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  ...</span><br><span class="line">ValueError: score must between 0 ~ 100!</span><br></pre></td></tr></table></figure></p>
+<p>还可以<strong>定义只读属性</strong>，<strong>只定义getter方法，不定义setter方法就是一个只读属性</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Student(object):</span><br><span class="line">    @property</span><br><span class="line">    def birth(self):</span><br><span class="line">        return self._birth</span><br><span class="line"></span><br><span class="line">    @birth.setter</span><br><span class="line">    def birth(self, value):</span><br><span class="line">        self._birth &#x3D; value</span><br><span class="line"></span><br><span class="line">    @property</span><br><span class="line">    def age(self):</span><br><span class="line">        return 2014 - self._birth</span><br></pre></td></tr></table></figure>
+上面的<strong>birth是可读可写的</strong>，而<strong>age就是一个只读属性</strong>。</p>
+<h2><span id="python-zhong-han-shu-qian-tian-jia-yi-ji-de-yong-fa">python中函数前添加*以及**的用法</span><a href="#python-zhong-han-shu-qian-tian-jia-yi-ji-de-yong-fa" class="header-anchor">#</a></h2>
+<p>转自：http://blog.csdn.net/delphiwcdj/article/details/5746560
+当要使函数接收元组或字典形式的参数
+的时候，有一种特殊的方法，它分别使用*和**前缀
+。这种方法在函数需要获取可变数量的参数 的时候特别有用。</p>
+<p>[注意] [1] 由于在args变量前有*前缀
+，所有多余的函数参数都会作为一个元组存储在args中
+。如果使用的是<strong>前缀 ，多余的参数则会被认为是一个字典的健/值对 。
+[2] 对于def func(<em>args):，</em>args表示把传进来的位置参数存储在
+</strong>tuple（元组）args里面<strong>。例如，调用func(1, 2, 3)
+，args就表示(1, 2, 3)这个元组 。 [3] 对于 def
+func(</strong>args):，<strong>args表示把参数
+</strong>作为字典的健-值对存储在dict（字典）args里面**。例如，调用func(a='I',
+b='am', c='wcdj') ，args就表示{'a':'I', 'b':'am', 'c':'wcdj'}这个字典 。
+[4]
+注意普通参数与*和**参数公用的情况，一般将*和**参数放在参数列表最后。</p>
+<h2><span id="globals">globals()</span><a href="#globals" class="header-anchor">#</a></h2>
+<p>以字典类型返回<strong>当前位置的全部全局变量</strong></p>
+<h2><span id="locals-han-shu">locals() 函数</span><a href="#locals-han-shu" class="header-anchor">#</a></h2>
+<p>locals() 函数会
+<strong>以字典类型返回当前位置的全部局部变量</strong>。 对于函数, 方法,
+lambda 函式, 类, 以及实现了 <strong>call</strong> 方法的类实例, 它都返回
+True。</p>
+<h2><span id="lambad-han-shu-yong-fa">lambad函数用法</span><a href="#lambad-han-shu-yong-fa" class="header-anchor">#</a></h2>
+<p>####（1）直接赋给一个变量，然后再像一般函数那样调用
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">c&#x3D;lambda x,y,z:x*y*z</span><br><span class="line">c(2,3,4)</span><br><span class="line"></span><br><span class="line">24</span><br></pre></td></tr></table></figure>
+当然，也可以在函数后面直接传递实参
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(lambda x:x**2)(3)</span><br><span class="line">9</span><br></pre></td></tr></table></figure>
+####（2）将lambda函数作为参数传递给其他函数比如说结合map、filter、sorted、reduce等一些Python内置函数使用，下面举例说明。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">fliter(lambda x:x%3&#x3D;&#x3D;0,[1,2,3,4,5,6])</span><br><span class="line"></span><br><span class="line">[3,6]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">squares &#x3D; map(lambda x:x**2,range(5)</span><br><span class="line">print(lsit(squares))</span><br><span class="line">[0,1,4,9,16]</span><br></pre></td></tr></table></figure>
+与sorted函数结合使用，比如：创建由元组构成的列表：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a&#x3D;[(&#39;b&#39;,3),(&#39;a&#39;,2),(&#39;d&#39;,4),(&#39;c&#39;,1)]</span><br></pre></td></tr></table></figure>
+按照第一个元素排序
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sorted(a,key&#x3D;lambda x:x[0])</span><br><span class="line">[(&#39;a&#39;,2),(&#39;b&#39;,3),(&#39;c&#39;,1),(&#39;d&#39;,4)]</span><br></pre></td></tr></table></figure>
+按照第二个元素排序
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sorted(a,key&#x3D;lambda x:x[1])</span><br><span class="line">[(&#39;c&#39;,1),(&#39;a&#39;,2),(&#39;b&#39;,3),(&#39;d&#39;,4)]</span><br></pre></td></tr></table></figure>
+与reduce函数结合使用
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from functools import reduce</span><br><span class="line">print(reduce(lambda a,b:&#39;&#123;&#125;,&#123;&#125;&#39;.format(a,b),[1,2,3,4,5,6,7,8,9]))</span><br><span class="line"></span><br><span class="line">1,2,3,4,5,6,7,8,9</span><br></pre></td></tr></table></figure>
+####（3）嵌套使用将lambda函数嵌套到普通函数中，lambda函数本身做为return的值
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def increment(n):</span><br><span class="line">    return lambda x:x+n</span><br><span class="line"></span><br><span class="line">f&#x3D;increment(4)</span><br><span class="line">f(2)</span><br><span class="line">6</span><br></pre></td></tr></table></figure>
+####（4）字符串联合，有默认值，也可以用x=(lambda...)这种格式
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x&#x3D;(lambda x&#x3D;&#39;Boo&#39;,y&#x3D;&#39;Too&#39;,z&#x3D;&#39;Z00&#39;：x+y+z)</span><br><span class="line">print(x(&#39;Foo&#39;))</span><br><span class="line"></span><br><span class="line">&#39;FooTooZoo&#39;</span><br></pre></td></tr></table></figure>
+####（5）在tkinter中定义内联的callback函数
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">from tkinter import Button,mainloop</span><br><span class="line"></span><br><span class="line">x&#x3D;Button(text&#x3D;&#39;Press me&#39;,command&#x3D;(lambda :sys.stdout.write(&#39;Hello,World\n&#39;)))</span><br><span class="line">x.pack()</span><br><span class="line">x.mainloop()</span><br></pre></td></tr></table></figure>
+这段代码还是挺有意思的，希望小伙伴们可以复制粘贴运行一下哈。
+####（6）判断字符串是否以某个字母开头有
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Names &#x3D; [&#39;Anne&#39;, &#39;Amy&#39;, &#39;Bob&#39;, &#39;David&#39;, &#39;Carrie&#39;, &#39;Barbara&#39;, &#39;Zach&#39;]</span><br><span class="line">B_Name&#x3D; filter(lambda x: x.startswith(&#39;B&#39;),Names)</span><br><span class="line">print(B_Name)</span><br><span class="line"></span><br><span class="line">[&#39;Bob&#39;, &#39;Barbara&#39;]</span><br></pre></td></tr></table></figure>
+####（7）求两个列表元素的和
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a &#x3D; [1,2,3,4]</span><br><span class="line">b &#x3D; [5,6,7,8]</span><br><span class="line">print(list(map(lambda x,y:x+y, a,b)))</span><br><span class="line"></span><br><span class="line">[6,8,10,12]</span><br></pre></td></tr></table></figure>
+####（8）求字符串每个单词的长度
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sentence &#x3D; &quot;Welcome To Beijing!&quot;</span><br><span class="line">words &#x3D; sentence.split()</span><br><span class="line">lengths  &#x3D; map(lambda x:len(x),words)</span><br><span class="line">print(list(lengths))</span><br><span class="line">[7,2,8]</span><br></pre></td></tr></table></figure></p>
+<h2><span id="for-else-jie-gou">for else结构</span><a href="#for-else-jie-gou" class="header-anchor">#</a></h2>
+<p>for else 结构还是第一次见，于是记录一下。如果for循环
+<strong>正常结束，else中语句执行</strong>。如果是
+<strong>break</strong>的，则 <strong>不执行</strong>。</p>
+<p>简单使用场景:寻找100以内的素数之和
+(这个应该是较暴力算法，这里不讨论算法问题)
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sum&#x3D;0</span><br><span class="line">for n in range(2,100):</span><br><span class="line">    for i in range(2,n):</span><br><span class="line">        if n%i&#x3D;&#x3D;0:          # 不是素数</span><br><span class="line">            break</span><br><span class="line">    else:</span><br><span class="line">        sum+&#x3D;n              # 加上素数</span><br><span class="line">print(sum)</span><br></pre></td></tr></table></figure></p>
+<h2><span id="shan-yong-san-mu-yun-suan">善用三目运算</span><a href="#shan-yong-san-mu-yun-suan" class="header-anchor">#</a></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num &#x3D; 3 if res &gt; 3 else 1</span><br></pre></td></tr></table></figure>
+<h2><span id="jie-shou-dong-tai-can-shu-sys-argv">接受动态参数sys.argv</span><a href="#jie-shou-dong-tai-can-shu-sys-argv" class="header-anchor">#</a></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># test.py</span><br><span class="line"></span><br><span class="line">import sys</span><br><span class="line">def main(argv)</span><br><span class="line">    print(argv)</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main(sys.argv)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py 1 2 3 4 5</span><br></pre></td></tr></table></figure>
+<h2><span id="binascii-er-jin-zhi-he-ascii-ma-hu-zhuan">binascii --- 二进制和 ASCII
+码互转</span><a href="#binascii-er-jin-zhi-he-ascii-ma-hu-zhuan" class="header-anchor">#</a></h2>
+<p><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/binascii.html" title="binascii --- 二进制和 ASCII 码互转">binascii介绍</a> ###
+返回二进制数据 data 的十六进制表示形式
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">binascii.b2a_hex(data[, sep[, bytes_per_sep&#x3D;1]])</span><br><span class="line">binascii.hexlify(data[, sep[, bytes_per_sep&#x3D;1]])</span><br></pre></td></tr></table></figure>
+data
+的每个字节都被转换为相应的2位十六进制表示形式。因此返回的字节对象的长度是
+data 的两倍。</p>
+<h3><span id="fan-hui-you-shi-liu-jin-zhi-zi-fu-chuan-hexstr-biao-shi-de-er-jin-zhi-shu-ju">返回由十六进制字符串
+hexstr 表示的二进制数据</span><a href="#fan-hui-you-shi-liu-jin-zhi-zi-fu-chuan-hexstr-biao-shi-de-er-jin-zhi-shu-ju" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">binascii.a2b_hex(hexstr)</span><br><span class="line">binascii.unhexlify(hexstr)</span><br></pre></td></tr></table></figure>
+<p>此函数功能与 b2a_hex() 相反。 hexstr 必须包含
+<strong>偶数个十六进制数字</strong>（可以是大写或小写），否则会引发
+Error 异常。</p>
+<h2><span id="zlip">zlip</span><a href="#zlip" class="header-anchor">#</a></h2>
+<ul>
+<li><p>字符串：使用 <strong>zlib.compress</strong>可以压缩字符串。使用
+<strong>zlib.decompress</strong>可以解压字符串。</p></li>
+<li><p>数据流：压缩：<strong>compressobj</strong>，解压：<strong>decompressobj</strong></p></li>
+</ul>
+<h2><span id="cpickle">cPickle</span><a href="#cpickle" class="header-anchor">#</a></h2>
+<h4><span id="cpickle-dump">cPickle.dump</span><a href="#cpickle-dump" class="header-anchor">#</a></h4>
+<p>将python对象序列化
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cPickle.dump(obj, file, protocol&#x3D;None, *, fix_imports&#x3D;True, buffer_callback&#x3D;None)</span><br></pre></td></tr></table></figure></p>
+<h4><span id="cpickle-load">cPickle.load</span><a href="#cpickle-load" class="header-anchor">#</a></h4>
+<p>载入本地文件，恢复python对象
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; data &#x3D; cPickle.load(open(&quot;test\\data.pkl&quot;,&quot;rb&quot;))</span><br></pre></td></tr></table></figure></p>
+<h4><span id="cpickle-dumps">cPickle.dumps</span><a href="#cpickle-dumps" class="header-anchor">#</a></h4>
+<p>将python对象序列化保存到一个字符串变量中
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; data_string &#x3D; cPickle.dumps(data)</span><br></pre></td></tr></table></figure></p>
+<h4><span id="cpickle-loads">cPickle.loads</span><a href="#cpickle-loads" class="header-anchor">#</a></h4>
+<p>从字符串变量中载入python对象
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; data &#x3D; cPickle.loads(data_string)</span><br></pre></td></tr></table></figure></p>
+<h2><span id="pyflakes">pyflakes</span><a href="#pyflakes" class="header-anchor">#</a></h2>
+<p>检查加载字符串代码是否有错
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from pyflakes.api import checkCode</span><br><span class="line">a &#x3D; f.read()</span><br><span class="line">checkCode(a, my_Reporter(sys.stdout, sys.stderr)) # my_Reporter是pyflakes.reporter的拓展</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/18/Protobuf-gRPC-2-gRPC%E7%AE%80%E4%BB%8B/" rel="prev" title="[Protobuf&gRPC] 2.gRPC简介">
+      <i class="fa fa-chevron-left"></i> [Protobuf&gRPC] 2.gRPC简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/27/cocos-%E5%B8%B8%E7%94%A8API/" rel="next" title="[Cocos]常用API">
+      [Cocos]常用API <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">os模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">os.walk()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.2.</span> <span class="nav-text">os.getenv(key, default &#x3D; None)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.3.</span> <span class="nav-text">os.path.abspath(file)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.4.</span> <span class="nav-text">os.path.dirname(path)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.5.</span> <span class="nav-text">os.environ.get（）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">getattr(object, name[,
+default])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">shutil.copyfile(src, dst)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">@property</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">python中函数前添加*以及**的用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">globals()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">locals() 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">8.</span> <span class="nav-text">lambad函数用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">9.</span> <span class="nav-text">for else结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">10.</span> <span class="nav-text">善用三目运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">11.</span> <span class="nav-text">接受动态参数sys.argv</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">12.</span> <span class="nav-text">binascii --- 二进制和 ASCII
+码互转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">12.1.</span> <span class="nav-text">返回由十六进制字符串
+hexstr 表示的二进制数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">13.</span> <span class="nav-text">zlip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">14.</span> <span class="nav-text">cPickle</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">14.0.1.</span> <span class="nav-text">cPickle.dump</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">14.0.2.</span> <span class="nav-text">cPickle.load</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">14.0.3.</span> <span class="nav-text">cPickle.dumps</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">14.0.4.</span> <span class="nav-text">cPickle.loads</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">15.</span> <span class="nav-text">pyflakes</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '32d91007dad7aee53d7f026e0bd2eb0c',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

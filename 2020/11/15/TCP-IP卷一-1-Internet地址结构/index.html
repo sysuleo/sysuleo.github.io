@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="最近打算读一下计算机网路领域的圣经，并将一些重要知识点总结记录下来。 1.1 引言# 链接到Internet的设备都必须有一个 IP地址。基于TCP&#x2F;IP协议的专用网络中 使用的设备 也具有IP地址。 IP路由器实现的转发程序使用IP地址来 识别流量去向；IP地址也表示流量的来源。 IP地址与电话号码类似，但人们知道电话号码，而 IP地址通常被Internet中的 DNS屏蔽在用户">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[TCP&#x2F;IP卷一]1.Internet地址结构">
+<meta property="og:url" content="http://yoursite.com/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="最近打算读一下计算机网路领域的圣经，并将一些重要知识点总结记录下来。 1.1 引言# 链接到Internet的设备都必须有一个 IP地址。基于TCP&#x2F;IP协议的专用网络中 使用的设备 也具有IP地址。 IP路由器实现的转发程序使用IP地址来 识别流量去向；IP地址也表示流量的来源。 IP地址与电话号码类似，但人们知道电话号码，而 IP地址通常被Internet中的 DNS屏蔽在用户">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-15T15:01:21.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.897Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="TCP&#x2F;IP卷一">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[TCP/IP卷一]1.Internet地址结构 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [TCP/IP卷一]1.Internet地址结构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-15 23:01:21" itemprop="dateCreated datePublished" datetime="2020-11-15T23:01:21+08:00">2020-11-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近打算读一下计算机网路领域的圣经，并将一些重要知识点总结记录下来。</p>
+<h2><span id="1-1-yin-yan">1.1 引言</span><a href="#1-1-yin-yan" class="header-anchor">#</a></h2>
+<p>链接到Internet的设备都必须有一个
+<strong>IP地址</strong>。基于TCP/IP协议的专用网络中
+<strong>使用的设备</strong> 也具有IP地址。
+<strong>IP路由器</strong>实现的转发程序使用IP地址来
+<strong>识别流量去向</strong>；IP地址也表示流量的来源。
+IP地址与电话号码类似，但人们知道电话号码，而 IP地址通常被Internet中的
+<strong>DNS</strong>屏蔽在用户视野之外， DNS实现大多数人使用的是
+<strong>名字</strong>而非数字化的IP地址。</p>
+<p>个人用户通常由Internet <strong>服务商（ISP）分配</strong>
+地址，通过支付费用来获得地址和执行路由。</p>
+<h2><span id="1-2-biao-shi-ip-di-zhi">1.2 表示IP地址</span><a href="#1-2-biao-shi-ip-di-zhi" class="header-anchor">#</a></h2>
+<ul>
+<li><p>IPv4地址，通常采用
+<strong>点分四组或者点分十进制表示法（192.168.0.1）</strong>。点分四组表示法由
+四个用点分隔的十进制数组成。每个数字都是
+<strong>[0,255]的非负整数(8位二进制可以表示)</strong>，代表整个IP地址的四分之一（共占32位大小）。</p></li>
+<li><p>IPv6，地址长度为
+<strong>128位</strong>，是IPv4的四倍，它通常采用成为<strong>块或者字段的四个十六进制数（一个块大小为16位）</strong>，这些数用冒号分隔。
+例如一个包含8个块的IPv6可以写成
+5f05:2000:80ad:5800:0058:0800:2023:1d71。虽然不像用户熟悉的十进制数，但将十六进制转换为二级制更容易。另外IPv6可以简化成标准化的
+<strong>[RFC4291]</strong>:</p></li>
+<li><ol type="1">
+<li>一个块的前导零不必书写，如上面可以写成：5f05:2000:80ad:5800:58:800:2023:1d71</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>全零块可以省略，用::代替，例如 0：0：0：0：0：0：0：1可以写成
+::1。为了避免歧义，<strong>一个IPv6中::只能使用一次</strong>。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>IPv6格式嵌入IPv4地址可使用混合符号形式，如IPv6地址::ffff:10.0.0.1可以表示IPv4地址为10.0.0.1。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>IPv6的
+<strong>低32位通常用点分四组法</strong>。Ipv6地址::0102::f001相当于地址::1.2.240.1。它被称为IPv4兼容的IPv6地址。</li>
+</ol></li>
+</ul>
+<p>后面<strong>[RFC5952]</strong>做了命名新的优化，这里不细讲了。</p>
+<h2><span id="1-3-ji-ben-de-ip-di-zhi-jie-gou">1.3 基本的IP地址结构</span><a href="#1-3-ji-ben-de-ip-di-zhi-jie-gou" class="header-anchor">#</a></h2>
+<p>IPv4 地址空间中有 4 294 967 296(2^32)个可能的地址，而
+IPv6地址个数为(2^128)：(不列了，实在太大了，根本用不完)。由于拥有大量地址，可以方便将地址空间
+<strong>分为一个一个块</strong>。</p>
+<h3><span id="1-3-1-dan-bo-di-zhi">1.3.1 单播地址</span><a href="#1-3-1-dan-bo-di-zhi" class="header-anchor">#</a></h3>
+<p>大多IPv4地址块被 <strong>最终细分为一个地址</strong>，用于
+<strong>识别链接Internet或某些专用的内联网计算机网络接口</strong>。这些就是单播地址(IPv4
+<strong>大部分都是单播地址空间</strong>)</p>
+<p>除了单播地址，还有 <strong>广播，组播和任播地址</strong>。</p>
+<h3><span id="1-3-2-fen-lei-xun-zhi">1.3.2 分类寻址</span><a href="#1-3-2-fen-lei-xun-zhi" class="header-anchor">#</a></h3>
+<ul>
+<li>每个IP单播地址 =
+<strong>网络部分(识别接口使用的iP地址在哪个网络可被发现) +
+主机地址(识别网络部分下的特定主机)</strong>。 因此地址中一些连续位称为
+<strong>网络号</strong>，其余称为 <strong>主机号</strong>。</li>
+<li>现实中 <strong>不同网络下主机数量不一</strong>，
+每台主机都需要一个唯一IP。 --
+方案1：基于当前或预计主机数量，将不同大小的IP地址空间分配给不同的站点。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TCP-IP%E5%8D%B7%E4%B8%80/" rel="tag"># TCP/IP卷一</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-4-%E4%B8%8D%E6%BA%A2%E5%87%BA%E7%9A%84%E6%95%B4%E6%95%B0int/" rel="prev" title="[python源码分析] 4.不溢出的整数int">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 4.不溢出的整数int
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/" rel="next" title="[python]弱引用weakref介绍">
+      [python]弱引用weakref介绍 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">1.1 引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">1.2 表示IP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">1.3 基本的IP地址结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.1.</span> <span class="nav-text">1.3.1 单播地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.2.</span> <span class="nav-text">1.3.2 分类寻址</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'fdfcea2ad1a1837d4f30901978660bf4',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

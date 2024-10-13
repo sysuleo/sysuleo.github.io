@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="lsof 做什么的# lsof（list open files）是一个 查看当前系统文件的工具。在linux环境下，任何事物 皆以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问 网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个 文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。 lsof打开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[linux] 3.lsof命令">
+<meta property="og:url" content="http://yoursite.com/2020/12/16/linux-3-lsof%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="lsof 做什么的# lsof（list open files）是一个 查看当前系统文件的工具。在linux环境下，任何事物 皆以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问 网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个 文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。 lsof打开">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-12-16T12:31:45.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.908Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/16/linux-3-lsof%E5%91%BD%E4%BB%A4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[linux] 3.lsof命令 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/16/linux-3-lsof%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [linux] 3.lsof命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-12-16 20:31:45" itemprop="dateCreated datePublished" datetime="2020-12-16T20:31:45+08:00">2020-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">linux指令</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2><span id="lsof-zuo-shi-me-de">lsof 做什么的</span><a href="#lsof-zuo-shi-me-de" class="header-anchor">#</a></h2>
+<p>lsof（list open files）是一个
+<strong>查看当前系统文件的工具</strong>。在linux环境下，任何事物
+<strong>皆以文件的形式存在</strong>，通过文件不仅仅可以访问常规数据，还可以访问
+<strong>网络连接和硬件</strong>。如传输控制协议 (TCP) 和用户数据报协议
+(UDP) 套接字等，系统在后台都为该应用程序分配了一个
+<strong>文件描述符</strong>，该文件描述符提供了大量关于这个应用程序本身的信息。</p>
+<p>lsof打开的文件可以是：</p>
+<ul>
+<li>普通文件</li>
+<li>目录</li>
+<li>网络文件系统的文件</li>
+<li>字符或设备文件</li>
+<li>(函数)共享库</li>
+<li>管道，命名管道</li>
+<li>符号链接</li>
+<li>网络文件（例如：NFS file、网络socket，unix域名socket）</li>
+<li>or其它类型的文件</li>
+</ul>
+<p>由于 <strong>有时候</strong> lsof 需要
+<strong>访问核心内存和各种文件</strong>，所以需要
+<strong>root用户</strong>执行。</p>
+<h2><span id="lsof-zen-me-yong">lsof 怎么用</span><a href="#lsof-zen-me-yong" class="header-anchor">#</a></h2>
+<h3><span id="ming-ling-ge-shi">命令格式：</span><a href="#ming-ling-ge-shi" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof [参数][文件]</span><br></pre></td></tr></table></figure>
+<h3><span id="ming-ling-can-shu">命令参数：</span><a href="#ming-ling-can-shu" class="header-anchor">#</a></h3>
+<ul>
+<li>-a 列出打开文件 <strong>存在的进程</strong></li>
+<li>-c<进程名> 列出指定进程所打开的文件</进程名></li>
+<li>-g 列出GID号进程详情</li>
+<li>-d<文件号> 列出占用该文件号的进程</文件号></li>
+<li>+d<目录> 列出目录下被打开的文件</目录></li>
+<li>+D<目录> 递归列出目录下被打开的文件</目录></li>
+<li>-n<目录> 列出使用NFS的文件</目录></li>
+<li>-i<条件> 列出 <strong>符合条件的进程</strong>。（4、6、协议、:端口、
+<span class="citation" data-cites="ip">@ip</span> ）</条件></li>
+<li>-p<进程号> 列出 <strong>指定进程号所打开的文件</strong></进程号></li>
+<li>-u 列出UID号进程详情</li>
+<li>-h 显示 帮助信息</li>
+<li>-v 显示版本信息</li>
+</ul>
+<h2><span id="lsof-shi-li-fen-xi">lsof实例分析</span><a href="#lsof-shi-li-fen-xi" class="header-anchor">#</a></h2>
+<h3><span id="example-1-wu-ren-he-can-shu">example 1: 无任何参数</span><a href="#example-1-wu-ren-he-can-shu" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$lsof|more</span><br><span class="line"></span><br><span class="line">进程的名称  进程标识符       进程所有者</span><br><span class="line">COMMAND     PID   TID        USER   FD      TYPE             DEVICE SIZE&#x2F;OFF      NODE NAME</span><br><span class="line">systemd       1              root  cwd   unknown                                       &#x2F;proc&#x2F;1&#x2F;cwd (readlink: Permission denied)</span><br><span class="line">kthreadd      2              root  cwd   unknown                                       &#x2F;proc&#x2F;2&#x2F;cwd (readlink: Permission denied)</span><br><span class="line">kthreadd      2              root  rtd   unknown                                       &#x2F;proc&#x2F;2&#x2F;root (readlink: Permission denied)</span><br><span class="line">bash      24070          liuwen03  cwd       DIR             254,33     4096       614 &#x2F;home&#x2F;liuwen03</span><br><span class="line">bash      24070          liuwen03  rtd       DIR              253,0     4096       128 &#x2F;</span><br><span class="line">bash      24070          liuwen03  txt       REG              253,0  1029688  16819734 &#x2F;bin&#x2F;bash.19.so</span><br><span class="line">bash      24070          liuwen03  mem       REG              253,0    43592   8451394 &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libnss_nis-2.19.so</span><br></pre></td></tr></table></figure>
+<ul>
+<li>COMMAND：进程的名称</li>
+<li>PID：进程标识符</li>
+<li>PPID：父进程标识符（需要指定-R参数）</li>
+<li>USER：进程所有者</li>
+<li>PGID：进程所属组</li>
+<li>FD：文件描述符，应用程序通过文件描述符识别该文件。如cwd、txt等
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">（1）cwd：表示current work dirctory，即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改</span><br><span class="line">（2）txt ：该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的 &#x2F;sbin&#x2F;init 程序</span><br><span class="line">（3）lnn：library references (AIX);</span><br><span class="line">（4）er：FD information error (see NAME column);</span><br><span class="line">（5）jld：jail directory (FreeBSD);</span><br><span class="line">（6）ltx：shared library text (code and data);</span><br><span class="line">（7）mxx ：hex memory-mapped type number xx.</span><br><span class="line">（8）m86：DOS Merge mapped file;</span><br><span class="line">（9）mem：memory-mapped file;</span><br><span class="line">（10）mmap：memory-mapped device;</span><br><span class="line">（11）pd：parent directory;</span><br><span class="line">（12）rtd：root directory;</span><br><span class="line">（13）tr：kernel trace file (OpenBSD);</span><br><span class="line">（14）v86  VP&#x2F;ix mapped file;</span><br><span class="line">（15）0：表示标准输入</span><br><span class="line">（16）1：表示标准输出</span><br><span class="line">（17）2：表示标准错误</span><br><span class="line">一般在标准输出、标准错误、标准输入后还跟着文件状态模式：r、w、u等</span><br><span class="line">（1）u：表示该文件被打开并处于读取&#x2F;写入模式</span><br><span class="line">（2）r：表示该文件被打开并处于只读模式</span><br><span class="line">（3）w：表示该文件被打开并处于</span><br><span class="line">（4）空格：表示该文件的状态模式为unknow，且没有锁定</span><br><span class="line">（5）-：表示该文件的状态模式为unknow，且被锁定</span><br><span class="line">同时在文件状态模式后面，还跟着相关的锁</span><br><span class="line">（1）N：for a Solaris NFS lock of unknown type;</span><br><span class="line">（2）r：for read lock on part of the file;</span><br><span class="line">（3）R：for a read lock on the entire file;</span><br><span class="line">（4）w：for a write lock on part of the file;（文件的部分写锁）</span><br><span class="line">（5）W：for a write lock on the entire file;（整个文件的写锁）</span><br><span class="line">（6）u：for a read and write lock of any length;</span><br><span class="line">（7）U：for a lock of unknown type;</span><br><span class="line">（8）x：for an SCO OpenServer Xenix lock on part      of the file;</span><br><span class="line">（9）X：for an SCO OpenServer Xenix lock on the      entire file;</span><br><span class="line">（10）space：if there is no lock.</span><br></pre></td></tr></table></figure></li>
+<li>TYPE：文件类型，如DIR、REG等，常见的文件类型:
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">（1）DIR：表示目录</span><br><span class="line">（2）CHR：表示字符类型</span><br><span class="line">（3）BLK：块设备类型</span><br><span class="line">（4）UNIX： UNIX 域套接字</span><br><span class="line">（5）FIFO：先进先出 (FIFO) 队列</span><br><span class="line">（6）IPv4：网际协议 (IP) 套接字</span><br><span class="line">（7）REG：常规文件</span><br></pre></td></tr></table></figure></li>
+<li>DEVICE：指定磁盘的名称</li>
+<li>SIZE：文件的大小</li>
+<li>NODE：索引节点（文件在磁盘上的标识）</li>
+<li>NAME：打开文件的确切名称</li>
+</ul>
+<h3><span id="example-2-mou-ge-wen-jian-xiang-guan-de-jin-cheng">example 2: 某个文件相关的进程</span><a href="#example-2-mou-ge-wen-jian-xiang-guan-de-jin-cheng" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$lsof &#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">COMMAND   PID     USER  FD   TYPE DEVICE SIZE&#x2F;OFF     NODE NAME</span><br><span class="line">bash    15079 liuwen03 txt    REG  253,0  1029688 16819734 &#x2F;bin&#x2F;bash</span><br><span class="line">bash    15382 liuwen03 txt    REG  253,0  1029688 16819734 &#x2F;bin&#x2F;bash</span><br><span class="line">bash    15934 liuwen03 txt    REG  253,0  1029688 16819734 &#x2F;bin&#x2F;bash</span><br><span class="line">bash    24070 liuwen03 txt    REG  253,0  1029688 16819734 &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+<h3><span id="example-3-mou-ge-yong-hu-da-kai-de-wen-jian-xin-xi">example
+3：某个用户打开的文件信息</span><a href="#example-3-mou-ge-yong-hu-da-kai-de-wen-jian-xin-xi" class="header-anchor">#</a></h3>
+<p>-u 选项，<strong>u是user的缩写</strong>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$lsof -u liuwen03|more</span><br><span class="line"></span><br><span class="line">COMMAND     PID     USER   FD      TYPE             DEVICE SIZE&#x2F;OFF      NODE NAME</span><br><span class="line">lsof       2059 liuwen03  cwd       DIR             254,33     4096       614 &#x2F;home&#x2F;liuwen03</span><br><span class="line">lsof       2059 liuwen03  rtd       DIR              253,0     4096       128 &#x2F;</span><br><span class="line">lsof       2059 liuwen03  txt       REG              253,0   163192    605633 &#x2F;usr&#x2F;bin&#x2F;lsof</span><br><span class="line">lsof       2059 liuwen03  mem       REG              253,0    47712   8451392 &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libnss_files-2.19.so</span><br><span class="line">...略</span><br></pre></td></tr></table></figure></p>
+<h3><span id="example-4-mou-ge-cheng-xu-jin-cheng-suo-da-kai-de-wen-jian-xin-xi">example
+4：某个程序进程所打开的文件信息</span><a href="#example-4-mou-ge-cheng-xu-jin-cheng-suo-da-kai-de-wen-jian-xin-xi" class="header-anchor">#</a></h3>
+<p>-c 将会列出所有
+<strong>以python这个进程开头的程序的文件</strong>，其实你可以写成
+<strong>lsof | grep python</strong>, 但是
+第一种方法明显比第二种方法要少打几个字符；
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$lsof -c python|more</span><br><span class="line"></span><br><span class="line">COMMAND   PID     USER   FD      TYPE             DEVICE SIZE&#x2F;OFF      NODE NAME</span><br><span class="line">python   1257     root  cwd   unknown                                       &#x2F;proc&#x2F;1257&#x2F;cwd (readlink: Permission denied)</span><br><span class="line">python   1257     root  txt   unknown                                       &#x2F;proc&#x2F;1257&#x2F;exe (readlink: Permission denied)</span><br><span class="line">python   1257     root NOFD                                                 &#x2F;proc&#x2F;1257&#x2F;fd (opendir: Permission denied)</span><br><span class="line">python   2834 liuwen03  cwd       DIR             254,33     4096   4294389 &#x2F;home&#x2F;liuwen03&#x2F;Dev&#x2F;medal_and_tv&#x2F;G37Server&#x2F;dc&#x2F;dc</span><br><span class="line">python   2834 liuwen03  rtd       DIR              253,0     4096       128 &#x2F;</span><br><span class="line">python   2834 liuwen03  txt       REG              253,0  3777864    180384 &#x2F;usr&#x2F;bin&#x2F;python2.7</span><br><span class="line">...略</span><br></pre></td></tr></table></figure></p>
+<h3><span id="example-5-mou-ge-yong-hu-yi-ji-mou-ge-jin-cheng-suo-da-kai-de-wen-jian-xin-xi">example 5:
+某个用户以及某个进程所打开的文件信息</span><a href="#example-5-mou-ge-yong-hu-yi-ji-mou-ge-jin-cheng-suo-da-kai-de-wen-jian-xin-xi" class="header-anchor">#</a></h3>
+<p>其实就是上面 3 和 4 的组合拳
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$lsof  -u liuwen03 -c python</span><br></pre></td></tr></table></figure></p>
+<h3><span id="example-6-xian-shi-mou-ge-jin-cheng-da-kai-de-wen-jian">example 6:显示
+某个进程打开的文件</span><a href="#example-6-xian-shi-mou-ge-jin-cheng-da-kai-de-wen-jian" class="header-anchor">#</a></h3>
+<p>列出 2834 进程打开的文件
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$lsof -p 2834</span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF      NODE NAME</span><br><span class="line">python  2834 liuwen03  cwd    DIR    254,33     4096   4294389 &#x2F;home&#x2F;liuwen03&#x2F;Dev&#x2F;medal_and_tv&#x2F;G37Server&#x2F;dc&#x2F;dc</span><br><span class="line">python  2834 liuwen03  rtd    DIR     253,0     4096       128 &#x2F;</span><br><span class="line">...略</span><br></pre></td></tr></table></figure></p>
+<h3><span id="example-7-lie-chu-suo-you-de-wang-luo-lian-jie">example 7：列出所有的网络连接</span><a href="#example-7-lie-chu-suo-you-de-wang-luo-lian-jie" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$lsof -i|more</span><br><span class="line"></span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">python  2834 liuwen03    7u  IPv4 215114357      0t0  TCP *:27183 (LISTEN)</span><br><span class="line">python  2843 liuwen03    4u  IPv4 215901528      0t0  TCP localhost.i.nease.net:34189-&gt;localhost.i.nease.net:4000 (ESTABLISHED)</span><br><span class="line">...略</span><br></pre></td></tr></table></figure>
+<h3><span id="example-8-lie-chu-suo-you-udp-tcp-wang-luo-lian-jie">example 8：列出所有udp/tcp
+网络连接</span><a href="#example-8-lie-chu-suo-you-udp-tcp-wang-luo-lian-jie" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$lsof -i udp|more</span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">python  4797 liuwen03   10u  IPv4 215901407      0t0  UDP *:4000</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$lsof -i tcp|more</span><br></pre></td></tr></table></figure>
+<h3><span id="example-9-lie-chu-shui-zai-shi-yong-mou-ge-duan-kou">example
+9：列出谁在使用某个端口</span><a href="#example-9-lie-chu-shui-zai-shi-yong-mou-ge-duan-kou" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$lsof -i :4000</span><br><span class="line"></span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">python  2843 liuwen03    4u  IPv4 215901528      0t0  TCP localhost.i.nease.net:34189-&gt;localhost.i.nease.net:4000 (ESTABLISHED)</span><br><span class="line">python  2844 liuwen03    4u  IPv4 215901525      0t0  TCP localhost.i.nease.net:34187-&gt;localhost.i.nease.net:4000 (ESTABLISHED)</span><br><span class="line">python  2845 liuwen03    4u  IPv4 215896898      0t0  TCP localhost.i.nease.net:34188-&gt;localhost.i.nease.net:4000 (ESTABLISHED)</span><br><span class="line">python  4797 liuwen03    8u  IPv4 215900363      0t0  TCP *:4000 (LISTEN)</span><br><span class="line">python  4797 liuwen03   10u  IPv4 215901407      0t0  UDP *:4000</span><br></pre></td></tr></table></figure>
+<h3><span id="example-10-lie-chu-mou-ge-yong-hu-de-suo-you-huo-yue-de-wang-luo-duan-kou">example
+10：列出某个用户的所有活跃的网络端口</span><a href="#example-10-lie-chu-mou-ge-yong-hu-de-suo-you-huo-yue-de-wang-luo-duan-kou" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$lsof -a -u liuwen03 -i|more</span><br><span class="line"></span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">python  2834 liuwen03    7u  IPv4 215114357      0t0  TCP *:27183 (LISTEN)</span><br><span class="line">python  2843 liuwen03    4u  IPv4 215901528      0t0  TCP localhost.i.nease.net:34189-&gt;localhost.i.nease.net:4000 (ESTABLISHED)</span><br><span class="line">...略</span><br></pre></td></tr></table></figure>
+<h3><span id="example-11-lie-chu-bei-jin-cheng-hao-wei-1234-de-jin-cheng-suo-da-kai-de-suo-you-ipv4-network-files">example
+11：列出被进程号为1234的进程所打开的所有IPV4 network files</span><a href="#example-11-lie-chu-bei-jin-cheng-hao-wei-1234-de-jin-cheng-suo-da-kai-de-suo-you-ipv4-network-files" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$lsof -i 4 -a -p 4678</span><br><span class="line"></span><br><span class="line">COMMAND  PID     USER   FD   TYPE    DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">python  4678 liuwen03    7u  IPv4 215900052      0t0  TCP localhost.i.nease.net:54076-&gt;localhost.i.nease.net:x11 (ESTABLISHED)</span><br><span class="line">python  4678 liuwen03    8u  IPv4 215900054      0t0  TCP localhost.i.nease.net:39381-&gt;localhost.i.nease.net:30000 (ESTABLISHED)</span><br><span class="line">...略</span><br></pre></td></tr></table></figure>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<p>1.<a target="_blank" rel="noopener" href="https://www.cnblogs.com/peida/archive/2013/02/26/2932972.html" title="每天一个linux命令（51）：lsof命令">每天一个linux命令（51）：lsof命令</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/16/Python-eval-exec-compile%E7%AD%89%E5%87%BD%E6%95%B0/" rel="prev" title="[Python] eval,exec,compile等函数">
+      <i class="fa fa-chevron-left"></i> [Python] eval,exec,compile等函数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/16/linux-4-grep-tail%E7%AD%89%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%91%BD%E4%BB%A4/" rel="next" title="[linux] 4.grep,tail等查看文件命令">
+      [linux] 4.grep,tail等查看文件命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">lsof 做什么的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">lsof 怎么用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">命令格式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">命令参数：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">lsof实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.1.</span> <span class="nav-text">example 1: 无任何参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.2.</span> <span class="nav-text">example 2: 某个文件相关的进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.3.</span> <span class="nav-text">example
+3：某个用户打开的文件信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.4.</span> <span class="nav-text">example
+4：某个程序进程所打开的文件信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.5.</span> <span class="nav-text">example 5:
+某个用户以及某个进程所打开的文件信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.6.</span> <span class="nav-text">example 6:显示
+某个进程打开的文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.7.</span> <span class="nav-text">example 7：列出所有的网络连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.8.</span> <span class="nav-text">example 8：列出所有udp&#x2F;tcp
+网络连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.9.</span> <span class="nav-text">example
+9：列出谁在使用某个端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.10.</span> <span class="nav-text">example
+10：列出某个用户的所有活跃的网络端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.11.</span> <span class="nav-text">example
+11：列出被进程号为1234的进程所打开的所有IPV4 network files</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'af25fac782e60804db09afdd2fd2b082',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

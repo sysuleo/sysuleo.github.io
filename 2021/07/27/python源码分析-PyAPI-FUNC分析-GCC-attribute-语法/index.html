@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="PyAPI_xxx 在cpython源码中, 可以看到很多地方使用了PyAPI_DATA, PyAPI_FUNC, PyMODINIT_FUNC, 我们一起来看看这些都是什么。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] PyAPI_xxx解析: GCC __attribute__语法">
+<meta property="og:url" content="http://yoursite.com/2021/07/27/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-PyAPI-FUNC%E5%88%86%E6%9E%90-GCC-attribute-%E8%AF%AD%E6%B3%95/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="PyAPI_xxx 在cpython源码中, 可以看到很多地方使用了PyAPI_DATA, PyAPI_FUNC, PyMODINIT_FUNC, 我们一起来看看这些都是什么。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-27T09:06:17.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.935Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/07/27/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-PyAPI-FUNC%E5%88%86%E6%9E%90-GCC-attribute-%E8%AF%AD%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] PyAPI_xxx解析: GCC __attribute__语法 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/27/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-PyAPI-FUNC%E5%88%86%E6%9E%90-GCC-attribute-%E8%AF%AD%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] PyAPI_xxx解析: GCC __attribute__语法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-27 17:06:17" itemprop="dateCreated datePublished" datetime="2021-07-27T17:06:17+08:00">2021-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2><span id="pyapi-xxx">PyAPI_xxx</span><a href="#pyapi-xxx" class="header-anchor">#</a></h2>
+<p>在cpython源码中, 可以看到很多地方使用了<strong>PyAPI_DATA,
+PyAPI_FUNC, PyMODINIT_FUNC</strong>, 我们一起来看看这些都是什么。
+<a id="more"></a>
+在<strong>pyport.h</strong>中，我们可以看到对它们的定义（摘选部分）</p>
+<p>以下代码中会用到的一些宏标识符，先进行一下说明： - Py_ENABLE_SHARED
+值为1 ，windows平台下，Python核默认在DLL中，允许外部链接性 -
+HAVE_DECLSPEC_DLL
+所有windows编译器和cygwin均会定义，用于支持__declspec(). - Py_BUILD_CORE
+构建Python内核。提供对Python内部构件的访问权，但不应被第三方模块使用。 -
+Py_BUILD_CORE_MODULE 构建一个Python
+stdlib模块作为一个动态库，Windows上导出“PyInit_xxx”符号。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* only get special linkage if built as shared or platform is Cygwin *&#x2F;</span><br><span class="line">#if defined(Py_ENABLE_SHARED) || defined(__CYGWIN__)</span><br><span class="line">#       if defined(HAVE_DECLSPEC_DLL)</span><br><span class="line">#               if defined(Py_BUILD_CORE) &amp;&amp; !defined(Py_BUILD_CORE_MODULE)</span><br><span class="line">                    &#x2F;&#x2F;被预定义了的</span><br><span class="line">#                   ...</span><br><span class="line">#               else &#x2F;* Py_BUILD_CORE *&#x2F;</span><br><span class="line">        &#x2F;* Building an extension module(扩展模块), or an embedded situation *&#x2F;</span><br><span class="line">        &#x2F;* public Python functions and data are imported *&#x2F;</span><br><span class="line">#                       if !defined(__CYGWIN__)</span><br><span class="line">#                               define PyAPI_FUNC(RTYPE) Py_IMPORTED_SYMBOL RTYPE</span><br><span class="line">#                       endif &#x2F;* !__CYGWIN__ *&#x2F;</span><br><span class="line">#                       define PyAPI_DATA(RTYPE) extern Py_IMPORTED_SYMBOL RTYPE</span><br><span class="line">        &#x2F;* module init functions outside the core must be exported *&#x2F;</span><br><span class="line">#                       if defined(__cplusplus)</span><br><span class="line">#                               define PyMODINIT_FUNC extern &quot;C&quot; Py_EXPORTED_SYMBOL PyObject*</span><br><span class="line">#                       else &#x2F;* __cplusplus *&#x2F;</span><br><span class="line">#                               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL PyObject*</span><br><span class="line">#                       endif &#x2F;* __cplusplus *&#x2F;</span><br><span class="line">#               endif &#x2F;* Py_BUILD_CORE *&#x2F;</span><br><span class="line">#       endif &#x2F;* HAVE_DECLSPEC_DLL *&#x2F;</span><br><span class="line">#endif &#x2F;* Py_ENABLE_SHARED *&#x2F;</span><br><span class="line"></span><br><span class="line">&#x2F;* If no external linkage macros defined by now, create defaults(如 GCC, Unix) *&#x2F;</span><br><span class="line">#ifndef PyAPI_FUNC</span><br><span class="line">#       define PyAPI_FUNC(RTYPE) Py_EXPORTED_SYMBOL RTYPE</span><br><span class="line">#endif</span><br><span class="line">#ifndef PyAPI_DATA</span><br><span class="line">#       define PyAPI_DATA(RTYPE) extern Py_EXPORTED_SYMBOL RTYPE</span><br><span class="line">#endif</span><br><span class="line">#ifndef PyMODINIT_FUNC</span><br><span class="line">#       if defined(__cplusplus)</span><br><span class="line">#               define PyMODINIT_FUNC extern &quot;C&quot; Py_EXPORTED_SYMBOL PyObject*</span><br><span class="line">#       else &#x2F;* __cplusplus *&#x2F;</span><br><span class="line">#               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL PyObject*</span><br><span class="line">#       endif &#x2F;* __cplusplus *&#x2F;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+我们可以看到基本采用了<strong>Py_EXPORTED_SYMBOL</strong>,
+只有<strong>shared模式或Cygwin平台</strong>下的<strong>扩展模块</strong>才采用了<strong>Py_IMPORTED_SYMBOL</strong>。</p>
+<h2><span id="py-xxx-symbol">Py_xxx_SYMBOL</span><a href="#py-xxx-symbol" class="header-anchor">#</a></h2>
+<p>我们在export.h下可以看到Py_EXPORTED_SYMBOL、Py_IMPORTED_SYMBOL的定义。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;跨平台通用性</span><br><span class="line">#if defined(_WIN32) || defined(__CYGWIN__)</span><br><span class="line">    &#x2F;* 对于win32和Cygwin，使用__declspec()指定属性 *&#x2F;</span><br><span class="line">    #define Py_IMPORTED_SYMBOL __declspec(dllimport) &#x2F;&#x2F;从dll导入。其它模块可见</span><br><span class="line">    #define Py_EXPORTED_SYMBOL __declspec(dllexport) &#x2F;&#x2F;导出到dll。其它模块可见</span><br><span class="line">    #define Py_LOCAL_SYMBOL</span><br><span class="line">#else</span><br><span class="line"></span><br><span class="line">#else</span><br><span class="line">    &#x2F;&#x2F;__has_attribute参数为属性名，可以评估当前编译目标是否支持该属性，支持为1，不支持为0</span><br><span class="line">    #ifndef __has_attribute</span><br><span class="line">      #define __has_attribute(x) 0  &#x2F;&#x2F; Compatibility with non-clang compilers.</span><br><span class="line">    #endif</span><br><span class="line">    #if (defined(__GNUC__) &amp;&amp; (__GNUC__ &gt;&#x3D; 4)) ||\   &#x2F;&#x2F;如果 gcc版本&gt;&#x3D;4 或 clang判定编译目标支持visibility属性，则添加属性</span><br><span class="line">        (defined(__clang__) &amp;&amp; __has_attribute(visibility))</span><br><span class="line">        #define Py_IMPORTED_SYMBOL __attribute__ ((visibility (&quot;default&quot;))) &#x2F;&#x2F;具有外部链接性 (external linkage)，可以被外部其它模块引用，并且有可能被重写</span><br><span class="line">        #define Py_EXPORTED_SYMBOL __attribute__ ((visibility (&quot;default&quot;)))</span><br><span class="line">        #define Py_LOCAL_SYMBOL  __attribute__ ((visibility (&quot;hidden&quot;))) &#x2F;&#x2F;只能在同一共享对象（可简单理解为库文件）中被引用</span><br><span class="line">    #else</span><br><span class="line">        #define Py_IMPORTED_SYMBOL</span><br><span class="line">        #define Py_EXPORTED_SYMBOL</span><br><span class="line">        #define Py_LOCAL_SYMBOL</span><br><span class="line">    #endif</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+gcc下采用**关键字__attribute__<strong>可以为</strong>函数，结构体，类，枚举,
+变量，标签<strong>等</strong>添加属性<strong>；在winfows下</strong>关键字__declspec**可以实现同样的特性。</p>
+<ul>
+<li>Py_IMPORTED_SYMBOL:用于在Windows编译器或cygwin中，构建非核心模块时定义宏
+PyAPI_FUNC，PyAPI_DATA，意义是直接导入核心模块，<strong>不编译</strong>,
+防止编译器再次编译。</li>
+<li>Py_EXPORTED_SYMBOL: default，指定函数, class, struct
+等为公开可重写的。<strong>编译导出到动态库(DLL或so)</strong></li>
+<li>Py_LOCAL_SYMBOL: hidden，指定函数, class, struct
+等<strong>只能在同一共享对象中被引用</strong></li>
+</ul>
+<h3><span id="visibility-shu-xing">visibility 属性</span><a href="#visibility-shu-xing" class="header-anchor">#</a></h3>
+<p>visibility 属性用于<strong>指定可见性</strong>，可以用于
+<strong>函数, class, struct, union, enum</strong>。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void __attribute__ ((visibility (&quot;protected&quot;))) f () &#123; &#x2F;* Do something. *&#x2F;; &#125;</span><br><span class="line">int i __attribute__ ((visibility (&quot;hidden&quot;)));</span><br></pre></td></tr></table></figure>
+属性值： - default：具有外部链接性 (external
+linkage)，可以被外部其它模块引用，并且有可能被重写。 不编译，直接导入 -
+hidden：只能在同一共享对象（可简单理解为库文件）中被引用 -
+internal：无法被其它模块直接引用，但是可以通过指针间接引用 -
+protected：可以被引用，但无法被重写</p>
+<h2><span id="pyapi-func">PyAPI_FUNC</span><a href="#pyapi-func" class="header-anchor">#</a></h2>
+<p>在gcc下, 以genobject.h中的PyGen_New为例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyAPI_FUNC(PyObject *) PyGen_New(PyFrameObject *);</span><br></pre></td></tr></table></figure>
+根据define的使用方法替换一下，此处就相当于
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Py_EXPORTED_SYMBOL PyObject * PyGen_New(PyFrameObject *)</span><br></pre></td></tr></table></figure>
+继续替换
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__attribute__ ((visibility (&quot;default&quot;))) PyObject * PyGen_New(PyFrameObject *)</span><br></pre></td></tr></table></figure>
+这里其实是定义了一个<strong>公开</strong>的可以<strong>被其它模块调用或重写</strong>的函数PyObject
+* PyGen_New(PyFrameObject *)</p>
+<h3><span id="jie-lun">结论</span><a href="#jie-lun" class="header-anchor">#</a></h3>
+<p><strong>PyAPI_FUNC</strong>
+指定函数<strong>可以被各个模块访问</strong>。</p>
+<h2><span id="pyapi-data">PyAPI_DATA</span><a href="#pyapi-data" class="header-anchor">#</a></h2>
+<p>以boolobject.h中的PyBool_Type为例
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PyAPI_DATA(PyTypeObject) PyDictRevIterKey_Type;</span><br></pre></td></tr></table></figure>
+替换
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Py_EXPORTED_SYMBOL PyTypeObject PyDictRevIterKey_Type;</span><br></pre></td></tr></table></figure>
+继续替换
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__attribute__ ((visibility (&quot;default&quot;))) PyTypeObject PyDictRevIterKey_Type;</span><br></pre></td></tr></table></figure>
+结果是声明了一个可以被其它模块访问的<strong>PyTypeObject结构体</strong>变量。</p>
+<h3><span id="jie-lun">结论</span><a href="#jie-lun" class="header-anchor">#</a></h3>
+<p>PyAPI_DATA<strong>指定变量</strong>可以<strong>被其它模块访问</strong>。</p>
+<h2><span id="pymodinit-func">PyMODINIT_FUNC</span><a href="#pymodinit-func" class="header-anchor">#</a></h2>
+<p>以<strong>binassi.h</strong>的中的模块初始化函数为例
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PyMODINIT_FUNC</span><br><span class="line">PyInit_binascii(void)</span><br><span class="line">&#123;</span><br><span class="line">    return PyModuleDef_Init(&amp;binasciimodule);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+替换
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Py_EXPORTED_SYMBOL PyObject* PyInit_binascii(void)</span><br><span class="line">&#123;</span><br><span class="line">    return PyModuleDef_Init(&amp;binasciimodule);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+继续替换
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__attribute__ ((visibility (&quot;default&quot;))) PyObject* PyInit_binascii(void)</span><br><span class="line">&#123;</span><br><span class="line">    return PyModuleDef_Init(&amp;binasciimodule);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+到这里可以看出来，<strong>PyInit_binascii()函数</strong>调用了<strong>PyModuleDef_Init()方法</strong>对<strong>binasciimodule</strong>进行了<strong>初始化</strong>，然后<strong>返回一个PyObject结构体的指针</strong>变量</p>
+<h3><span id="jie-lun">结论</span><a href="#jie-lun" class="header-anchor">#</a></h3>
+<p>PyMODINIT_FUNC指定模块初始化函数可以&amp;&amp;被其它模块访问&amp;&amp;，并<strong>返回PyObject结构体的指针变量</strong></p>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<p>1.<a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15127642/2875208">GCC
+__attribute__语法：visibility属性在cpython中的应用（PyAPI_FUNC,
+PyAPI_DATA, PyMODINIT_FUNC）</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/26/problems-solution-linux-%E5%88%A0%E9%99%A4%E5%A4%A7%E6%96%87%E4%BB%B6%EF%BC%8C%E7%A3%81%E7%9B%98%E6%B2%A1%E6%9C%89%E9%87%8A%E6%94%BE%E7%A9%BA%E9%97%B4/" rel="prev" title="[problems solution] linux:删除大文件，磁盘没有释放空间">
+      <i class="fa fa-chevron-left"></i> [problems solution] linux:删除大文件，磁盘没有释放空间
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/17/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-random%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90/" rel="next" title="[python源码分析] random模块解析">
+      [python源码分析] random模块解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">PyAPI_xxx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">Py_xxx_SYMBOL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">visibility 属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">PyAPI_FUNC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.1.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">PyAPI_DATA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.1.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">PyMODINIT_FUNC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">5.1.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '2a4bcf8213cf8cfded6f6fcf1d66292e',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

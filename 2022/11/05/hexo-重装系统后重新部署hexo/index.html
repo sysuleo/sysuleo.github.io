@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="最近重装了windows系统，因此需要重新部署hexo博客，记录下重新部署的步骤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[hexo]重装系统后重新部署hexo">
+<meta property="og:url" content="http://yoursite.com/2022/11/05/hexo-%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%90%8E%E9%87%8D%E6%96%B0%E9%83%A8%E7%BD%B2hexo/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="最近重装了windows系统，因此需要重新部署hexo博客，记录下重新部署的步骤">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-11-05T05:02:21.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:52:59.364Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="tool">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2022/11/05/hexo-%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%90%8E%E9%87%8D%E6%96%B0%E9%83%A8%E7%BD%B2hexo/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[hexo]重装系统后重新部署hexo | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/11/05/hexo-%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%90%8E%E9%87%8D%E6%96%B0%E9%83%A8%E7%BD%B2hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [hexo]重装系统后重新部署hexo
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-11-05 13:02:21" itemprop="dateCreated datePublished" datetime="2022-11-05T13:02:21+08:00">2022-11-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:52:59" itemprop="dateModified" datetime="2024-10-13T11:52:59+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近重装了windows系统，因此需要重新部署hexo博客，记录下重新部署的步骤
+<a id="more"></a></p>
+<h2><span id="an-zhuang-node-js">安装Node.js</span><a href="#an-zhuang-node-js" class="header-anchor">#</a></h2>
+<ul>
+<li>下载
+<ul>
+<li>下载稳定版 <a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">nodejs</a></li>
+<li>我这里给的是64位的，选中安装路径后就一直点Next。</li>
+</ul></li>
+<li>设置环境变量
+<ul>
+<li>右键"此电脑"-"属性"-"高级系统设置"-"环境变量"-选中用户变量的Path编辑-"新增"将nodejs按照路径加入</li>
+<li>我的安装路径是 D:</li>
+</ul></li>
+<li>验证
+<ul>
+<li>按Win+R打开命令提示符，输入node -v和npm -v，出现版本号就成功了</li>
+</ul></li>
+</ul>
+<h2><span id="an-zhuang-git">安装Git</span><a href="#an-zhuang-git" class="header-anchor">#</a></h2>
+<p>为了把本地的文件上传到github上，我们需要用到分布式版本控制工具————Git</p>
+<p>下载地址<a target="_blank" rel="noopener" href="https://git-scm.com/download/win">Git</a></p>
+<ul>
+<li>验证
+<ul>
+<li>按Win+R打开命令提示符，输入git --version验证是否安装成功。</li>
+</ul></li>
+</ul>
+<h2><span id="github-jia-ru-mi-yao">Github加入密钥</span><a href="#github-jia-ru-mi-yao" class="header-anchor">#</a></h2>
+<ul>
+<li><p>设置git用户名和email
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;sysuleo&quot;</span><br><span class="line">git config --global user.email &quot;youremail@xx.com&quot;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>生成密钥
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;youremail@xx.com&quot;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>保存密钥到github 打开github，在头像下面点击settings，再点击SSH
+and GPG keys，新建一个SSH，将如下内容复制进去</p></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~&#x2F;.ssh&#x2F;id_rsa.pub</span><br></pre></td></tr></table></figure>
+<h2><span id="la-qu-hexo-ge-ren-bo-ke-yuan-ma">拉去hexo 个人博客源码</span><a href="#la-qu-hexo-ge-ren-bo-ke-yuan-ma" class="header-anchor">#</a></h2>
+<p>新建blog目录, 如 D:_blog</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd D:\github\sysuleo_blog</span><br><span class="line"></span><br><span class="line">git clone xxxxxx # 拉去博客源码</span><br></pre></td></tr></table></figure>
+<h2><span id="an-zhuang-hexo">安装Hexo</span><a href="#an-zhuang-hexo" class="header-anchor">#</a></h2>
+<ul>
+<li><p>安装hexo: cd到博客目录下, 输入
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/111998154">npm卡顿</a>时可以换源
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</span><br></pre></td></tr></table></figure></p></li>
+<li><p>验证： 输入
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h2><span id="shan-diao-yuan-blog-wen-jian-jia-bu-fen-wen-jian">删掉原blog文件夹部分文件</span><a href="#shan-diao-yuan-blog-wen-jian-jia-bu-fen-wen-jian" class="header-anchor">#</a></h2>
+<p>只需保留_config.yml，theme/，source/，scaffolds/，package.json，.gitignore
+这些项目, 删除其余文件</p>
+<h2><span id="an-zhuang-yi-lai-wen-jian">安装依赖文件</span><a href="#an-zhuang-yi-lai-wen-jian" class="header-anchor">#</a></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<h2><span id="an-zhuang-bu-shu-cha-jian">安装部署插件</span><a href="#an-zhuang-bu-shu-cha-jian" class="header-anchor">#</a></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>最后验证是否成成功
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s </span><br></pre></td></tr></table></figure></p>
+<h2><span id="wen-ti-hui-zong">问题汇总</span><a href="#wen-ti-hui-zong" class="header-anchor">#</a></h2>
+<h3><span id="1-pandoc-exited-with-code-null-bao-cuo">1. pandoc exited with code
+null报错</span><a href="#1-pandoc-exited-with-code-null-bao-cuo" class="header-anchor">#</a></h3>
+<p>执行hexo-g 时报错如下
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">INFO  Start processing</span><br><span class="line">ERROR &#123;</span><br><span class="line">  err: Error:</span><br><span class="line">  [ERROR][hexo-renderer-pandoc] On D:\github\sysuleo_blog\sysuleo.github.io_resource\themes\hexo-theme-next\languages\README.md</span><br><span class="line">  [ERROR][hexo-renderer-pandoc] pandoc exited with code null.</span><br><span class="line">      at Hexo.pandocRenderer (D:\github\sysuleo_blog\sysuleo.github.io_resource\node_modules\hexo-renderer-pandoc\index.js:114:11)</span><br><span class="line">      at Hexo.tryCatcher (D:\github\sysuleo_blog\sysuleo.github.io_resource\node_modules\bluebird\js\release\util.js:16:23)</span><br><span class="line">      at Hexo.&lt;anonymous&gt; (D:\github\sysuleo_blog\sysuleo.github.io_resource\node_modules\bluebird\js\release\method.js:15:34)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+参考<a target="_blank" rel="noopener" href="https://www.zepoch.cc/2022/2213706848">关于 pandoc exited
+with code null 的解决方案</a></p>
+<p>下载安装 <a target="_blank" rel="noopener" href="https://github.com/jgm/pandoc/releases">pandoc</a>，重新启动命令行就ok了</p>
+<h3><span id="2-tomorrow-night-css-que-shi">2. tomorrow-night.css缺失</span><a href="#2-tomorrow-night-css-que-shi" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">INFO  Start processing</span><br><span class="line">FATAL &#123;</span><br><span class="line">  err: Error: ENOENT: no such file or directory, open &#39;D:\github\sysuleo_blog\sysuleo.github.io_resource\node_modules\highlight.js&#x2F;styles&#x2F;tomorrow-night.css&#39;</span><br><span class="line">      at Object.openSync (node:fs:600:3)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>参考官网<a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">Troubleshooting</a>: If
+you get an error like Error: ENOENT: no such file or directory it’s
+probably due to to <strong>mixing uppercase and lowercase letters in
+your tags, categories, or filenames</strong>. Git cannot automatically
+merge this change so it breaks the automatic branching.</p>
+<p>最后没找到问题, 重新部署解决了...</p>
+<h3><span id="3-git-pull-bao-cuo-host-key-verification-failed">3. git pull报错Host
+key verification failed.</span><a href="#3-git-pull-bao-cuo-host-key-verification-failed" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @</span><br><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!</span><br><span class="line">Someone could be eavesdropping on you right now (man-in-the-middle attack)!</span><br><span class="line">It is also possible that a host key has just been changed.</span><br><span class="line">The fingerprint for the RSA key sent by the remote host is</span><br><span class="line">.........</span><br><span class="line">Please contact your system administrator.</span><br><span class="line">Add correct host key in &#x2F;c&#x2F;Users&#x2F;liuwen03&#x2F;.ssh&#x2F;known_hosts to get rid of this message.</span><br><span class="line">Offending RSA key in &#x2F;c&#x2F;Users&#x2F;liuwen03&#x2F;.ssh&#x2F;known_hosts:1</span><br><span class="line">RSA host key for github.com has changed and you have requested strict checking.</span><br><span class="line">Host key verification failed.</span><br><span class="line">fatal: Could not read from remote repository.</span><br></pre></td></tr></table></figure>
+<p>参考<a target="_blank" rel="noopener" href="https://github.blog/2023-03-23-we-updated-our-rsa-ssh-host-key/">We
+updated our RSA SSH host key</a>, 重新生成known_host文件
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -R github.com</span><br></pre></td></tr></table></figure></p>
+<h3><span id="4-git-bao-cuo-you-re-using-an-rsa-key-with-sha-1-which-is-no-longer-allowed">4.
+git报错"You're using an RSA key with SHA-1, which is no longer
+allowed.</span><a href="#4-git-bao-cuo-you-re-using-an-rsa-key-with-sha-1-which-is-no-longer-allowed" class="header-anchor">#</a></h3>
+<p>参考<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/71500791/eclipse-git-youre-using-an-rsa-key-with-sha-1-which-is-no-longer-allowed-pl">Eclipse/Git:
+"You're using an RSA key with SHA-1, which is no longer
+allowed"</a>：</p>
+<blockquote>
+<p>According to Github security blog RSA keys with SHA-1 are no longer
+accepted.</p>
+</blockquote>
+<blockquote>
+<p>Use the following command to create new SSH key with ECDSAencryption
+and add it to Github：</p>
+</blockquote>
+<blockquote>
+<p>ssh-keygen -t ecdsa -b 521 -C "your_email@example.com"</p>
+</blockquote>
+<h3><span id="5-git-clone-shi-bai-failed-to-connect-to-github-com-port-443-after-21106-ms-could-not-connect-to-server">5.
+git clone 失败"Failed to connect to github.com port 443 after 21106 ms:
+Could not connect to server"</span><a href="#5-git-clone-shi-bai-failed-to-connect-to-github-com-port-443-after-21106-ms-could-not-connect-to-server" class="header-anchor">#</a></h3>
+<ul>
+<li>本地使用了vpn科学上网，需要设置代理端口(因人而异，参考<a target="_blank" rel="noopener" href="https://simplestark.com/archives/%E7%BB%8F%E9%AA%8C%E5%AE%9D%E5%AE%9Dfailedtoconnecttogithubcomport443operationtimedout">【经验宝宝】Failed
+to connect to github.com port 443: Operation timed out</a>)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.proxy http:&#x2F;&#x2F;127.0.0.1:7890</span><br><span class="line">git config --global https.proxy http:&#x2F;&#x2F;127.0.0.1:7890</span><br></pre></td></tr></table></figure>
+<h3><span id="6-npm-install-bao-cuo-certificate-has-expired">6. npm install报错</span><a href="#6-npm-install-bao-cuo-certificate-has-expired" class="header-anchor">#</a></h3>
+<p>更换淘宝镜像时，发现报错证书已过期，那是因为淘宝的镜像网站更换了，原地址已不再维护但是仍然可访问。具体公告在：developer.aliyun.com/mirror/NPM，
+具体变化如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</span><br><span class="line"></span><br><span class="line"># http:&#x2F;&#x2F;npm.taobao.org &#x3D;&gt; http:&#x2F;&#x2F;npmmirror.com</span><br><span class="line"># http:&#x2F;&#x2F;registry.npm.taobao.org &#x3D;&gt; http:&#x2F;&#x2F;registry.npmmirror.com</span><br></pre></td></tr></table></figure>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://simplestark.com/archives/%E7%BB%8F%E9%AA%8C%E5%AE%9D%E5%AE%9Dfailedtoconnecttogithubcomport443operationtimedout">【经验宝宝】Failed
+to connect to github.com port 443: Operation timed out</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7330147786677567499">npm install
+提示 Error: certificate has expired</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tool/" rel="tag"># tool</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/01/%E8%AE%A1%E7%BD%91-socket%E7%BC%93%E5%86%B2%E5%8C%BA/" rel="prev" title="[计网]socket缓冲区">
+      <i class="fa fa-chevron-left"></i> [计网]socket缓冲区
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/11/05/vscode-markdown-plantuml%E7%94%BB%E5%9B%BE/" rel="next" title="[vscode]markdown+plantuml画图">
+      [vscode]markdown+plantuml画图 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">安装Node.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">安装Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">Github加入密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">拉去hexo 个人博客源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">安装Hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">删掉原blog文件夹部分文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">安装依赖文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">8.</span> <span class="nav-text">安装部署插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">9.</span> <span class="nav-text">问题汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.1.</span> <span class="nav-text">1. pandoc exited with code
+null报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.2.</span> <span class="nav-text">2. tomorrow-night.css缺失</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.3.</span> <span class="nav-text">3. git pull报错Host
+key verification failed.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.4.</span> <span class="nav-text">4.
+git报错&quot;You&#39;re using an RSA key with SHA-1, which is no longer
+allowed.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.5.</span> <span class="nav-text">5.
+git clone 失败&quot;Failed to connect to github.com port 443 after 21106 ms:
+Could not connect to server&quot;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">9.6.</span> <span class="nav-text">6. npm install报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">10.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'a18c08745d8e341e08c0c22b78358900',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

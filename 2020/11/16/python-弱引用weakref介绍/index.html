@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="虽然一般情况下python无需像cpp一样需要手动 内存申请和释放，但是某些情况，我们需要自己去管理对象的销毁，让它的生命周期符合我们的预期。weakref就是一种方式。 1. 概念# 首先需要了解的是在 Python 里每个对象都有一个 引用计数，当这个引用计数为 0 时，Python 的garbage collection(GC)是可以 安全销毁这个对象的， 比如对一个对象创建引用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python]弱引用weakref介绍">
+<meta property="og:url" content="http://yoursite.com/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="虽然一般情况下python无需像cpp一样需要手动 内存申请和释放，但是某些情况，我们需要自己去管理对象的销毁，让它的生命周期符合我们的预期。weakref就是一种方式。 1. 概念# 首先需要了解的是在 Python 里每个对象都有一个 引用计数，当这个引用计数为 0 时，Python 的garbage collection(GC)是可以 安全销毁这个对象的， 比如对一个对象创建引用">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-16T12:19:27.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.909Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python]弱引用weakref介绍 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/16/python-%E5%BC%B1%E5%BC%95%E7%94%A8weakref%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python]弱引用weakref介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-16 20:19:27" itemprop="dateCreated datePublished" datetime="2020-11-16T20:19:27+08:00">2020-11-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>虽然一般情况下python无需像cpp一样需要手动
+内存申请和释放，但是某些情况，我们需要自己去管理对象的销毁，让它的生命周期符合我们的预期。weakref就是一种方式。</p>
+<h2><span id="1-gai-nian">1. 概念</span><a href="#1-gai-nian" class="header-anchor">#</a></h2>
+<p>首先需要了解的是在 Python 里每个对象都有一个
+<strong>引用计数</strong>，当这个引用计数为 0 时，Python 的garbage
+collection(GC)是可以 <strong>安全销毁这个对象</strong>的，
+比如对一个对象创建引用则计数加 1,删除引用则计数减 1 。</p>
+<p>weakref 模块允许
+<strong>对一个对象创建弱引用</strong>，弱引用不像正常引用,
+<strong>弱引用不会增加引用计数</strong>，也就是说
+<strong>当一个对象上只有弱引用时，GC是可以销毁该对象的</strong>。</p>
+<h2><span id="2-weakref-ref">2 weakref.ref</span><a href="#2-weakref-ref" class="header-anchor">#</a></h2>
+<h3><span id="2-1-weakref-ref-yong-fa">2.1 weakref.ref用法</span><a href="#2-1-weakref-ref-yong-fa" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import weakref</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; class DBO(object):</span><br><span class="line">...     pass</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dbo1 &#x3D; DBO()                    # 创建对象，引用+1</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 调用sys.getrefcount，该函数引用了dbo1，对象引用+1</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; weakref_dbo &#x3D; weakref.ref(dbo1) # 创建弱引用</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 弱引用没有增加引用计数</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; weakref_dbo                     # 弱引用指向的对象</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;DBO&#39; at 0x7f9b03166ed0&gt;</span><br><span class="line">&gt;&gt;&gt; dbo2 &#x3D; weakref_dbo()            # 获取弱引用指向的对象</span><br><span class="line">&gt;&gt;&gt; dbo1 is dbo2                    # dbo1和dbo2引用的是同一个对象</span><br><span class="line">True</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 对象上的引用计数加 1</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo2)</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; dbo1 &#x3D; None                     # 删除引用</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)           # 这个数字是None对象的引用次数</span><br><span class="line">2545</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; weakref_dbo</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;DBO&#39; at 0x7f9b03166ed0&gt;</span><br><span class="line">&gt;&gt;&gt; dbo2 &#x3D; None                     # 删除引用</span><br><span class="line">&gt;&gt;&gt; weakref_dbo                     # 当对象引用计数为0时，弱引用失效</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; dead&gt;</span><br><span class="line">&gt;&gt;&gt; sys.getrefcount(dbo1)</span><br><span class="line">2546</span><br><span class="line">&gt;&gt;&gt; </span><br></pre></td></tr></table></figure>
+<h3><span id="2-1-weakref-ref-yuan-ma">2.1 weakref.ref源码</span><a href="#2-1-weakref-ref-yuan-ma" class="header-anchor">#</a></h3>
+<p>接下来我们看看它的源码套餐，定义在objects/weakrefObjects.c中
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyWeakref_NewRef(PyObject *ob, PyObject *callback)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;*PyWeakReference是一个弱引用对象，result做临时存储*&#x2F;</span><br><span class="line">    PyWeakReference *result &#x3D; NULL;</span><br><span class="line">    PyWeakReference **list;</span><br><span class="line">    PyWeakReference *ref, *proxy;</span><br><span class="line">    &#x2F;*检查当前对象类型是否支持弱引用*&#x2F;</span><br><span class="line">    if (!PyType_SUPPORTS_WEAKREFS(Py_TYPE(ob))) &#123;</span><br><span class="line">        PyErr_Format(PyExc_TypeError,</span><br><span class="line">                     &quot;cannot create weak reference to &#39;%s&#39; object&quot;,</span><br><span class="line">                     Py_TYPE(ob)-&gt;tp_name);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;*获取弱引用链表指针*&#x2F;</span><br><span class="line">    list &#x3D; GET_WEAKREFS_LISTPTR(ob);</span><br><span class="line">    &#x2F;*根据*list，给 ref 和 proxy 赋值*&#x2F;</span><br><span class="line">    get_basic_refs(*list, &amp;ref, &amp;proxy);</span><br><span class="line">    if (callback &#x3D;&#x3D; Py_None)</span><br><span class="line">        callback &#x3D; NULL;</span><br><span class="line">    if (callback &#x3D;&#x3D; NULL)</span><br><span class="line">        &#x2F;* return existing weak reference if it exists *&#x2F;</span><br><span class="line">        result &#x3D; ref;</span><br><span class="line">    if (result !&#x3D; NULL)</span><br><span class="line">        &#x2F;*给当前weak reference引用加1*&#x2F;</span><br><span class="line">        Py_INCREF(result);</span><br><span class="line">    else &#123;</span><br><span class="line">        &#x2F;* Note: new_weakref() can trigger cyclic GC, so the weakref</span><br><span class="line">           list on ob can be mutated.  This means that the ref and</span><br><span class="line">           proxy pointers we got back earlier may have been collected,</span><br><span class="line">           so we need to compute these values again before we use</span><br><span class="line">           them.</span><br><span class="line">            使用之前，先确认ob对象没有被析构</span><br><span class="line">            *&#x2F;</span><br><span class="line">        result &#x3D; new_weakref(ob, callback);</span><br><span class="line">        if (result !&#x3D; NULL) &#123;</span><br><span class="line">            get_basic_refs(*list, &amp;ref, &amp;proxy);</span><br><span class="line">            if (callback &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">                if (ref &#x3D;&#x3D; NULL)</span><br><span class="line">                    insert_head(result, list);</span><br><span class="line">                else &#123;</span><br><span class="line">                    &#x2F;* Someone else added a ref without a callback</span><br><span class="line">                       during GC.  Return that one instead of this one</span><br><span class="line">                       to avoid violating the invariants of the list</span><br><span class="line">                       of weakrefs for ob. *&#x2F;</span><br><span class="line">                    Py_DECREF(result);</span><br><span class="line">                    Py_INCREF(ref);</span><br><span class="line">                    result &#x3D; ref;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                PyWeakReference *prev;</span><br><span class="line"></span><br><span class="line">                prev &#x3D; (proxy &#x3D;&#x3D; NULL) ? ref : proxy;</span><br><span class="line">                if (prev &#x3D;&#x3D; NULL)</span><br><span class="line">                    insert_head(result, list);</span><br><span class="line">                else</span><br><span class="line">                    insert_after(result, prev);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return (PyObject *) result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="3" type="1">
+<li>weakref.proxy proxy
+像是弱引用对象，它们的行为就是它们所引用的对象的行为，这样就
+<strong>不必 首先调用弱引用对象来访问背后的对象</strong>。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from socket import *</span><br><span class="line">&gt;&gt;&gt; s &#x3D; socket(AF_INET, SOCK_STREAM)</span><br><span class="line">&gt;&gt;&gt; ref_s &#x3D; weakref.ref(s)</span><br><span class="line">&gt;&gt;&gt; ref_s</span><br><span class="line">&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; s</span><br><span class="line">&lt;socket._socketobject object at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; proxy_s &#x3D; weakref.proxy(s)</span><br><span class="line">&gt;&gt;&gt; proxy_s</span><br><span class="line">&lt;weakproxy at 0x7f9b03117208 to _socketobject at 0x7f9b0310b910&gt;</span><br><span class="line">&gt;&gt;&gt; </span><br><span class="line">&gt;&gt;&gt; ref_s.close()               #  不能直接调用对象方法</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">AttributeError: &#39;weakref&#39; object has no attribute &#39;close&#39;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<pre><code>&gt;&gt;&gt; ref_s().close()              #  不能直接调用对象方法，要加上()
+&gt;&gt;&gt;
+&gt;&gt;&gt; proxy_s.close()              #  可以直接调用对象方法
+&gt;&gt;&gt; 
+&gt;&gt;&gt; sys.getrefcount(s)
+2
+&gt;&gt;&gt; ref_s
+&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;
+&gt;&gt;&gt; r = ref_s()
+&gt;&gt;&gt; r.close()
+&gt;&gt;&gt; sys.getrefcount(s)
+3
+&gt;&gt;&gt; ref_s
+&lt;weakref at 0x7f9b0316d3c0; to &#39;_socketobject&#39; at 0x7f9b0310b910&gt;
+&gt;&gt;&gt; del ref_s
+&gt;&gt;&gt; ref_s
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+NameError: name &#39;ref_s&#39; is not defined
+&gt;&gt;&gt;</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/15/TCP-IP%E5%8D%B7%E4%B8%80-1-Internet%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84/" rel="prev" title="[TCP/IP卷一]1.Internet地址结构">
+      <i class="fa fa-chevron-left"></i> [TCP/IP卷一]1.Internet地址结构
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/18/svn-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/" rel="next" title="[svn]常用命令行">
+      [svn]常用命令行 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">1. 概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">2 weakref.ref</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 weakref.ref用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">2.1 weakref.ref源码</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'd74dc010c6898765378ae70a2df39318',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

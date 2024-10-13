@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Unicode是什么 计算机存储的基本单位是 八位字节 ，由 8 个比特位组成，简称 字节 。由于英文只由 26 个字母加若干符号组成，因此英文字符可以直接用 字节 来保存。其他诸如 中日韩等语言，由于字符众多，则不得不用多个字节来编码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 6.python3中的字符串str&#x2F;Unicode">
+<meta property="og:url" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="Unicode是什么 计算机存储的基本单位是 八位字节 ，由 8 个比特位组成，简称 字节 。由于英文只由 26 个字母加若干符号组成，因此英文字符可以直接用 字节 来保存。其他诸如 中日韩等语言，由于字符众多，则不得不用多个字节来编码。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/PyASCIIObject_sample.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/1byte_kind.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/kind_overview.png">
+<meta property="article:published_time" content="2020-12-06T08:29:51.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.918Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/PyASCIIObject_sample.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 6.python3中的字符串str/Unicode | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 6.python3中的字符串str/Unicode
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-12-06 16:29:51" itemprop="dateCreated datePublished" datetime="2020-12-06T16:29:51+08:00">2020-12-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2><span id="unicode-shi-shi-me">Unicode是什么</span><a href="#unicode-shi-shi-me" class="header-anchor">#</a></h2>
+<p>计算机存储的基本单位是 <strong>八位字节</strong> ，由 8
+个比特位组成，简称 字节 。由于英文只由 26
+个字母加若干符号组成，因此英文字符可以直接用 字节 来保存。其他诸如
+<strong>中日韩等语言</strong>，由于字符众多，则不得不用多个字节来编码。
+<a id="more"></a>
+随着计算机技术的传播，非拉丁文字符编码技术蓬勃发展，但存在两个比较大的局限性：</p>
+<ul>
+<li>不支持多语言 ，例如中文的编码方案不能表示日文；</li>
+<li>没有统一标准 ，例如中文有 <strong>GB2312 ，GBK 、 GB18030</strong>
+等多种编码标准；
+由于编码方式不统一，开发人员经常需要在不同编码间来回转化，错误频出。为了彻底解决这些问题，
+统一码联盟 提出了 <strong>Unicode</strong> 标准。Unicode
+<strong>对世界上大部分文字系统进行整理、编码</strong>，让计算机可以用统一的方式处理文本。Unicode
+目前已经收录了超过 <strong>13 万</strong>个字符，天然地支持多语言。</li>
+</ul>
+<h2><span id="python-zhong-de-zi-fu-chuan-unicode">Python中的字符串Unicode</span><a href="#python-zhong-de-zi-fu-chuan-unicode" class="header-anchor">#</a></h2>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr>
+<th>version</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>python2.7</td>
+<td>str等同于char指针, unicode默认用assic编码</td>
+</tr>
+<tr>
+<td>python3+</td>
+<td>str等同于unicode, 使用PyASCIIObject或PyCompactUnicodeObject实现</td>
+</tr>
+</tbody>
+</table>
+<p>在 Python 中处理文本数据是使用 str 对象，也称为 字符串。Python 在 3
+之后，str 字符串是由 <strong>Unicode</strong>
+码位构成的<strong>不可变序列</strong>，因而被源码称为 <strong>Unicode
+对象</strong>。这么做好处是显然易见的，程序核心逻辑统一用 Unicode
+，只需在输入、输入层进行编码、解码。</p>
+<p>字符串字面值有多种不同的写法：</p>
+<ul>
+<li><p>单引号: '允许包含有 "双" 引号'</p></li>
+<li><p>双引号: "允许包含有 '单' 引号"。</p></li>
+<li><p>三重引号: '''三重单引号''', """三重双引号"""</p></li>
+</ul>
+<p>使用三重引号的字符串可以<strong>跨越多行</strong> ——
+其中<strong>所有的空白字符都将包含在该字符串字面值</strong>中。</p>
+<p>由于 Unicode 收录字符已经超过 13 万个，每个字符 <strong>至少需要 4
+个字节</strong>来保存。英文字符用 ASCII 表示仅需 1 个字节，而用 Unicode
+表示内存开销却增加 <strong>4</strong> 倍！</p>
+<p>Python 作者们肯定不允许这样的事情发生( getsizeof 获取对象内存大小)：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line"># 英文字符还是1字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;ab&#39;) - sys.getsizeof(&#39;a&#39;)</span><br><span class="line">1</span><br><span class="line"># 中文字符需要2字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;中国&#39;) - sys.getsizeof(&#39;中&#39;)</span><br><span class="line">2</span><br><span class="line"># Emoji表情需要4字节</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;??&#39;) - sys.getsizeof(&#39;?&#39;)</span><br><span class="line">4</span><br></pre></td></tr></table></figure></p>
+<p>由此可见，Python 内部对 Unicode 进行优化：根据文本内容，选择
+<strong>底层存储单元</strong>。与 str 对象实现相关源码如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Include&#x2F;unicodeobject.h</span><br><span class="line">Objects&#x2F;unicodectype.c</span><br></pre></td></tr></table></figure>
+在 Include/unicodeobject.h 头文件中，我们发现 str
+对象底层存储根据文本字符 Unicode 码位范围分成几类：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PyUnicode_1BYTE_KIND ，所有字符码位均在 U+0000 到 U+00FF 之间；</span><br><span class="line">PyUnicode_2BYTE_KIND ，所有字符码位均在 U+0000 到 U+FFFF 之间，且至少一个大于 U+00FF；</span><br><span class="line">PyUnicode_4BYTE_KIND ，所有字符码位均在 U+0000 到 U+10FFFF 之间，且至少一个大于 U+FFFF；</span><br><span class="line">enum PyUnicode_Kind &#123;</span><br><span class="line">&#x2F;* String contains only wstr byte characters.  This is only possible</span><br><span class="line">   when the string was created with a legacy API and _PyUnicode_Ready()</span><br><span class="line">   has not been called yet.  *&#x2F;</span><br><span class="line">    PyUnicode_WCHAR_KIND &#x3D; 0,</span><br><span class="line">&#x2F;* Return values of the PyUnicode_KIND() macro: *&#x2F;</span><br><span class="line">    PyUnicode_1BYTE_KIND &#x3D; 1,</span><br><span class="line">    PyUnicode_2BYTE_KIND &#x3D; 2,</span><br><span class="line">    PyUnicode_4BYTE_KIND &#x3D; 4</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+这样一来，根据 <strong>文本码位范围</strong>，便可为字符选用
+<strong>尽量小的</strong> 存储单元，以最大限度节约内存。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">typedef uint32_t Py_UCS4;</span><br><span class="line">typedef uint16_t Py_UCS2;</span><br><span class="line">typedef uint8_t Py_UCS1;</span><br></pre></td></tr></table></figure></p>
+<p>Unicode 内部存储结构因文本类型而异，因此类型 <strong>kind</strong>
+必须作为 <strong>Unicode</strong> 对象公共字段保存。Python
+内部定义了若干个 <strong>标志位</strong> ，作为 Unicode 公共字段，kind
+便是其中之一：</p>
+<ul>
+<li>interned ，是否为 <strong>interned</strong> 机制维护， internel
+机制在本节后半部分介绍；</li>
+<li>kind ，类型，用于区分字符 <strong>底层存储单元大小</strong>；</li>
+<li>compact
+，内存分配方式，<strong>对象与文本缓冲区是否分离</strong>；</li>
+<li>ascii ，文本是否均为 <strong>纯 ASCII</strong> ；</li>
+</ul>
+<p>Objects/unicodectype.c 源文件中的 PyUnicode_New 函数，根据文本字符数
+size 以及最大字符 maxchar 初始化 Unicode 对象。该函数根据 maxchar 为
+Unicode 对象选择最紧凑的字符存储单元以及底层结构体：</p>
+<div class="line-block">  |maxchar &lt; 128| maxchar &lt; 256| maxchar
+&lt; 65536|maxchar &lt; MAX_UNICODE</div>
+<p>|-:-|-:-|-:-|-:-|-:-
+kind|PyUnicode_1BYTE_KIND|PyUnicode_1BYTE_KIND|PyUnicode_2BYTE_KIND|PyUnicode_4BYTE_KIND
+ascii |1 |0 |0 |0 字符存储单元大小 |1 |1 |2 |4 底层结构体 |PyASCIIObject
+|PyCompactUnicodeObject |PyCompactUnicodeObject
+|PyCompactUnicodeObject</p>
+<h2><span id="pyasciiobject">PyASCIIObject</span><a href="#pyasciiobject" class="header-anchor">#</a></h2>
+<p>如果 str 对象保存的文本均为 ASCII ，即
+maxchar&lt;128maxchar&lt;128，则底层由 <strong>PyASCIIObject</strong>
+结构存储：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* ASCII-only strings created through PyUnicode_New use the PyASCIIObject</span><br><span class="line">   structure. state.ascii and state.compact are set, and the data</span><br><span class="line">   immediately follow the structure. utf8_length and wstr_length can be found</span><br><span class="line">   in the length field; the utf8 pointer is equal to the data pointer. *&#x2F;</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    Py_ssize_t length;          &#x2F;* Number of code points in the string 文本长度*&#x2F;</span><br><span class="line">    Py_hash_t hash;             &#x2F;* Hash value; -1 if not set  文本哈希值*&#x2F;</span><br><span class="line">    struct &#123;</span><br><span class="line">        unsigned int interned:2;</span><br><span class="line">        unsigned int kind:3;</span><br><span class="line">        unsigned int compact:1;</span><br><span class="line">        unsigned int ascii:1;</span><br><span class="line">        unsigned int ready:1;</span><br><span class="line">        unsigned int :24;</span><br><span class="line">    &#125; state;                      &#x2F;*Unicode 对象标志位，包括 internel 、 kind 、 ascii 、 compact 等*&#x2F;</span><br><span class="line">    wchar_t *wstr;              &#x2F;* wchar_t representation (null-terminated) *&#x2F;</span><br><span class="line">&#125; PyASCIIObject;</span><br></pre></td></tr></table></figure></p>
+<p>ASCII 文本则紧接着位于 PyASCIIObject 结构体后面，以字符串对象 ‘abc’
+以及空字符串对象 ‘’ 为例：</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/PyASCIIObject_sample.jpg" class title="PyASCIIObject_sample图">
+</div>
+<h3><span id="state-zi-duan-hou-you-yi-ge-4-zi-jie-de-kong-dong">state 字段后有一个 4
+字节的空洞?</span><a href="#state-zi-duan-hou-you-yi-ge-4-zi-jie-de-kong-dong" class="header-anchor">#</a></h3>
+<p>这是结构体字段 <strong>内存对齐</strong> 造成的现象。在 64
+位机器下，指针大小为 <strong>8</strong> 字节，为优化内存访问效率，wstr
+必须 <strong>以 8 字节对齐</strong>；而 <strong>state 字段大小只是 4
+字节</strong>，便留下 4 字节的空洞。PyASCIIObject 结构体大小在 64
+位机器下为 48 字节，在 32 位机器下为 24 字节。</p>
+<p>与 bytes 对象一样，Python 也在 ASCII 文本末尾，额外添加一个
+<strong>\0</strong> 字符，以兼容 C 字符串。</p>
+<p>如此一来，以 Unicode 表示的 <strong>ASCII</strong>
+文本，额外内存开销仅为 <strong>PyASCIIObject</strong> 结构体加上末尾的
+\0 字节而已。PyASCIIObject 结构体在 64 位机器下，<strong>大小为 48
+字节</strong>。因此，长度为 n 的纯 ASCII 字符串对象，需要消耗 n+48+1，即
+<strong>n+49</strong> 字节的内存空间。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;&#39;)</span><br><span class="line">49</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;abcdef&#39;)</span><br><span class="line">55</span><br><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;1&#39; * 10000)</span><br><span class="line">10049</span><br></pre></td></tr></table></figure></p>
+<h2><span id="pycompactunicodeobject">PyCompactUnicodeObject</span><a href="#pycompactunicodeobject" class="header-anchor">#</a></h2>
+<p>PyCompactUnicodeObject 在 PyASCIIObject 基础上，增加 3 个字段：</p>
+<ul>
+<li>utf8_length : 文本 UTF8 编码长度；</li>
+<li>utf8 : 文本 UTF8
+编码形式，<strong>缓存以避免重复编码运算</strong>；</li>
+<li>wstr_length；</li>
+</ul>
+<p>在 64 位机器，PyCompactUnicodeObject 结构体大小为 <strong>72</strong>
+字节；在 32 位机器则是 <strong>36</strong> 字节。</p>
+PyCompactUnicodeObject结构如下图:
+<div style="width:80%;margin:auto">
+
+</div>
+<p>由于 <strong>ASCII</strong> 本身是 <strong>合法的 UTF8</strong>
+，无须保存 UTF8 编码形式，这也是 ASCII 文本底层由 PyASCIIObject
+保存的原因。在 64 位机器，PyCompactUnicodeObject 结构体大小为 72
+字节；在 32 位机器则是 36 字节。</p>
+<h3><span id="kong-zi-fu-chuan">空字符串</span><a href="#kong-zi-fu-chuan" class="header-anchor">#</a></h3>
+<div style="width:80%;margin:auto">
+
+</div>
+<h3><span id="interned-ji-zhi">interned机制</span><a href="#interned-ji-zhi" class="header-anchor">#</a></h3>
+<p>如果 str 对象 <strong>interned</strong> 标识位为 1 ，Python
+虚拟机将为其开启 interned 机制。那么，什么是 interned 机制？</p>
+<p>先考虑以下场景，如果程序中有大量 User 对象，有什么可优化的地方？
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class User:</span><br><span class="line">...</span><br><span class="line">...     def __init__(self, name, age):</span><br><span class="line">...         self.name &#x3D; name</span><br><span class="line">...         self.age &#x3D; age</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; user &#x3D; User(name&#x3D;&#39;tom&#39;, age&#x3D;20)</span><br><span class="line">&gt;&gt;&gt; user.__dict__</span><br><span class="line">&#123;&#39;name&#39;: &#39;tom&#39;, &#39;age&#39;: 20&#125;</span><br></pre></td></tr></table></figure>
+由于 <strong>对象的属性由 dict</strong> 保存，这意味着每个 User
+对象都需要保存 str 对象 name 。换句话讲，1 亿个 User 对象需要重复保存 1
+亿个同样的 str 对象，这将浪费多少内存！</p>
+<p>由于 <strong>str 是不可变对象</strong>，因此 Python
+内部将有潜在重复可能的字符串都做成 <strong>单例模式</strong> ，这就是
+interned 机制。Python 具体做法是 <strong>在内部维护一个全局 dict
+对象</strong>，所有开启 <strong>interned 机制 str 对象</strong>
+均保存在这里；后续需要用到相关对象的地方，则 <strong>优先到全局 dict
+中取</strong>，避免重复创建。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *interned &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
+<p>sample 1 :
+如果删除字符串并初始化一个新的相同字符串，则它们的ID相同，即首次创建时，它会存储在Interned词典中
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; del s</span><br><span class="line">&gt;&gt;&gt; s &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(s)</span><br><span class="line">4314134768</span><br><span class="line">&gt;&gt;&gt; y &#x3D; &quot;aaa&quot;</span><br><span class="line">&gt;&gt;&gt; id(y)</span><br><span class="line">4314134768</span><br></pre></td></tr></table></figure></p>
+<p>sample 2: 虽然 str 对象 ‘abc’
+由不同的运算产生，但背后却是同一个对象：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; &#39;abc&#39;</span><br><span class="line">&gt;&gt;&gt; b &#x3D; &#39;ab&#39; + &#39;c&#39;</span><br><span class="line">&gt;&gt;&gt; id(a), id(b), a is b</span><br><span class="line">(4424345224, 4424345224, True)</span><br></pre></td></tr></table></figure></p>
+<h3><span id="kind">kind</span><a href="#kind" class="header-anchor">#</a></h3>
+<p>在PyASCIIObject中总共有四个kind域的值，这意味着字符是如何在内部存储在unicode对象中的。</p>
+<ul>
+<li>PyUnicode_WCHAR_KIND</li>
+</ul>
+<p>我还没有找到一种方法来定义python层中
+<strong>用PyUnicode_WCHAR_KIND表示的unicode对象</strong>，它可能在
+<strong>c / c ++</strong>中使用</p>
+<h4><span id="pyunicode-1byte-kind">PyUnicode_1BYTE_KIND</span><a href="#pyunicode-1byte-kind" class="header-anchor">#</a></h4>
+<p>-- 8位/字符 -- ascii标志设置？ --- ascii标志设置为true：U + 0000-U +
+007F --- ascii标志设置为false：U + 0080-U + 00FF中至少一个字符
+<strong>utf8_length</strong>字段仍存储以null终止的c样式字符串，除了interned字段为0之外，只有特定范围内的字符才会存储在
+<strong>Interned字典</strong>中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s1 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s1)</span><br><span class="line">4472458224</span><br><span class="line">&gt;&gt;&gt; s2 &#x3D; &quot;\u007F\u0000&quot;</span><br><span class="line">&gt;&gt;&gt; id(s2) # bacause &quot;interned&quot; field is 0, the unicode object will not be shared</span><br><span class="line">4472458608</span><br></pre></td></tr></table></figure>
+<p>字符存储单元还是 1 字节，跟 ASCII 文本一样。 因此，Python®
+对象需要占用 80 字节的内存空间72+1*7+1=72+8=8072+1∗7+1=72+8=80：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; sys.getsizeof(&#39;Python®&#39;)</span><br><span class="line">80</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s &#x3D; &quot;\u0088\u0011\u00f1&quot;</span><br><span class="line"></span><br><span class="line">由于第一个字符为U + 0088，ascii标志变为0，并且PyUnicode_UTF8（unicode）不再返回utf8_length字段的地址，而是返回 **char * utf8**字段中的值，即0</span><br></pre></td></tr></table></figure>
+<p>如果PyUnicode_UTF8（unicode）为零，则这三个字节位于何处？我们没有在PyUnicodeObject中使用数据字段，让我们找出源码进行print（不感兴趣的可以跳过）:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">unicode_repr(PyObject *unicode)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">        &#x2F;*</span><br><span class="line">        &#x2F;&#x2F; there exists official marco to get the char in exact index,</span><br><span class="line">        &#x2F;&#x2F; I use my own to have a better understanding of how things work internally</span><br><span class="line">        Py_ssize_t isize &#x3D; PyUnicode_GET_LENGTH(unicode);</span><br><span class="line">        Py_ssize_t idata &#x3D; PyUnicode_DATA(unicode);</span><br><span class="line">        int ikind &#x3D; PyUnicode_KIND(unicode);</span><br><span class="line">        &#x2F;&#x2F; no mattner what ikind is, use Py_UCS4(4 bytes) to catch the result</span><br><span class="line">        Py_UCS4 ch &#x3D; PyUnicode_READ(ikind, idata, i);</span><br><span class="line">        *&#x2F;</span><br><span class="line"></span><br><span class="line">        switch (_PyUnicode_STATE(unicode).kind)</span><br><span class="line">        &#123;</span><br><span class="line">            case (PyUnicode_1BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_1BYTE_KIND, &quot;);</span><br><span class="line">                if (PyUnicode_UTF8(unicode) &#x3D;&#x3D; 0)</span><br><span class="line">                &#123;</span><br><span class="line"></span><br><span class="line">                    char *value &#x3D; &amp;(((PyUnicodeObject *)unicode)-&gt;data);</span><br><span class="line">                    printf(&quot;\nPyUnicodeObject-&gt;latin1: &quot;);</span><br><span class="line">                    for (size_t i &#x3D; 0; i &lt; _PyUnicode_LENGTH(unicode); ++i)</span><br><span class="line">                    &#123;</span><br><span class="line">                        printf(&quot;%#hhx &quot;, *(value + i));</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    printf(&quot;\n&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_2BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_2BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            case (PyUnicode_4BYTE_KIND):</span><br><span class="line">                printf(&quot;PyUnicode_4BYTE_KIND, &quot;);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                printf(&quot;unknown kind: %d, &quot;, _PyUnicode_STATE(unicode).kind);</span><br><span class="line">        &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+重新编译上面的代码后，我们可以在repr（）函数中跟踪latin1字段
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">PyUnicode_1BYTE_KIND,</span><br><span class="line">PyUnicodeObject-&gt;latin1: 0x88 0x11 0xf1</span><br></pre></td></tr></table></figure>
+<div style="width:80%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/1byte_kind.png" class title="1byte_kind图">
+</div>
+<h4><span id="pyunicode-2byte-kind">PyUnicode_2BYTE_KIND</span><a href="#pyunicode-2byte-kind" class="header-anchor">#</a></h4>
+<ul>
+<li>16位/字符</li>
+<li>所有字符都在U + 0000-U + FFFF范围内</li>
+<li>至少一个字符在U + 0100-U + FFFF范围内</li>
+</ul>
+<p>我们可以使用相同的代码来跟踪存储在数据字段中的字节，现在字段名称为ucs2（ucs2或latin1具有不同的名称，但是地址相同，它们位于相同的c并集结构中）
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; s &#x3D; &quot;\u0011\u0111\u1111&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_2BYTE_KIND,  PyUnicodeObject-&gt;ucs2: 0x11 0x111 0x1111</span><br></pre></td></tr></table></figure></p>
+现在，kind字段是PyUnicode_2BYTE_KIND，需要
+<strong>2个字节</strong>来存储每个字符
+<div style="width:80%;margin:auto">
+
+</div>
+<h4><span id="pyunicode-4byte-kind">PyUnicode_4BYTE_KIND</span><a href="#pyunicode-4byte-kind" class="header-anchor">#</a></h4>
+<ul>
+<li>32位/字符</li>
+<li>至少一个字符在U+10000-U+10FFFF范围内
+现在，种类字段变为PyUnicode_4BYTE_KIND
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s &#x3D; &quot;\u00ff\U0010FFFF\U00100111\U0010FFF1&quot;</span><br><span class="line">&gt;&gt;&gt; repr(s)</span><br><span class="line">kind: PyUnicode_4BYTE_KIND, PyUnicodeObject-&gt;ucs4: 00xff 0x10ffff 0x100111 0x10fff1</span><br></pre></td></tr></table></figure>
+<div style="width:80%;margin:auto">
+
+</div></li>
+</ul>
+<h4><span id="unicode-nei-cun-shi-yong-qing-kuang-zhai-yao">Unicode内存使用情况摘要</span><a href="#unicode-nei-cun-shi-yong-qing-kuang-zhai-yao" class="header-anchor">#</a></h4>
+<p>我们现在知道存在
+<strong>三种存储机制</strong>，CPython存储一个Unicode对象将消耗多少字节
+<strong>取决于字符的最大范围</strong>。 unicode对象内的所有字符必须
+<strong>具有相同的大小</strong>，如果CPython使用可变大小的表示形式（例如utf-8），则不可能在O（1）时间内进行索引操作</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/kind_overview.png" class title="kind_overview图">
+</div>
+<h3><span id="compact">compact</span><a href="#compact" class="header-anchor">#</a></h3>
+<p>如果compact为1，则意味着无论哪种字段，所有字符都存储在
+<strong>PyUnicodeObject</strong>中(上面的示例都将compact设置为1)。否则，数据块将不会直接存储在PyUnicodeObject对象内，该数据块将是
+<strong>新分配的位置</strong>。compact=0和compact=1之间的差异与Redis字符串编码raw和embstr之间的差异相同。</p>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/str/str.md" title="str">str</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1906" title="Python 源码深度剖析/10 str 对象，统一的 Unicode 字符串">Python
+源码深度剖析/10 str 对象，统一的 Unicode 字符串</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-5-bytes/" rel="prev" title="[python源码分析] 5.bytes">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 5.bytes
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/" rel="next" title="[python源码分析] 7.可变容器list">
+      [python源码分析] 7.可变容器list <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Unicode是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">Python中的字符串Unicode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">PyASCIIObject</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.1.</span> <span class="nav-text">state 字段后有一个 4
+字节的空洞?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">PyCompactUnicodeObject</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.1.</span> <span class="nav-text">空字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.2.</span> <span class="nav-text">interned机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.3.</span> <span class="nav-text">kind</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">4.3.1.</span> <span class="nav-text">PyUnicode_1BYTE_KIND</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">4.3.2.</span> <span class="nav-text">PyUnicode_2BYTE_KIND</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">4.3.3.</span> <span class="nav-text">PyUnicode_4BYTE_KIND</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">4.3.4.</span> <span class="nav-text">Unicode内存使用情况摘要</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.4.</span> <span class="nav-text">compact</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '15ebd1986df0b1c2c87279cfae3f155d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

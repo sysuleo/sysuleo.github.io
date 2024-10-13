@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[boost.asio] 2.proactor I&#x2F;0设计模式:单线程并发">
+<meta property="og:url" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="Boost.Asio 库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png">
+<meta property="article:published_time" content="2021-04-23T08:30:26.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.904Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[boost.asio] 2.proactor I/0设计模式:单线程并发 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [boost.asio] 2.proactor I/0设计模式:单线程并发
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-23 16:30:26" itemprop="dateCreated datePublished" datetime="2021-04-23T16:30:26+08:00">2021-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/boost/" itemprop="url" rel="index"><span itemprop="name">boost</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Boost.Asio
+库为支持同步和异步操作。异步支持基于proactor设计模式[POSA2]。与同步或Reactor方法相比，这种方法的优点和缺点概述如下。
+<a id="more"></a> ## Proactor 与 Reactor -
+Proactor和Reactor都是<strong>并发编程中的设计模式</strong> -
+Proactor用于<strong>异步IO</strong>，而Reactor用于<strong>同步IO</strong>，
+关键区别在于 <strong>何时IO</strong> -
+Reactor：非阻塞同步网络模型，关心<strong>就绪事件</strong>，
+可以理解为：来了事件我通知你，你来处理，如epoll_wait -
+Proactor：异步网络模型，关心<strong>完成事件</strong>，可以理解为：来了事件我来处理，处理完了我通知你。</p>
+<h2><span id="proactor-yu-boost-asio">Proactor 与 Boost.Asio</span><a href="#proactor-yu-boost-asio" class="header-anchor">#</a></h2>
+<div style="width:90%;margin:auto">
+<img src="/2021/04/23/boost-asio-2-proactor-I-0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/proactor.png" class title="proactor">
+</div>
+<h2><span id="proactor-she-ji-mo-shi">Proactor设计模式</span><a href="#proactor-she-ji-mo-shi" class="header-anchor">#</a></h2>
+<ul>
+<li>异步操作(Asynchronous Operation) 定义异步执行的操作，例如
+<strong>异步读</strong>或在<strong>套接字上写入</strong>。</li>
+<li>异步操作处理器(Asynchronous Operation Processor)
+执行异步操作，并在操作完成时<strong>对completion event
+queue中的事件进行排队</strong>。从高层次的角度来看，像<strong>reactive_socket_service</strong>这样的内部服务是异步操作处理器。</li>
+<li>完成事件队列(Completion Event Queue)
+缓冲完成事件，直到它们被<strong>Asynchronous Event
+Demultiplexer</strong>移出队列。</li>
+<li>完成处理程序(Completion Handler)
+处理异步操作的结果。这些是函数对象，通常<strong>使用boost::bind创建</strong>。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)
+阻塞并等待完成事件队列上发生的事件，并将完成的事件返回其调用者。</li>
+<li>前摄器(Proactor) 调用<strong>Asynchronous Event
+Demultiplexer</strong>将事件出列，并分派与事件关联的Completion
+Handler程序（即调用函数对象）。这个抽象由io_context类表示。</li>
+<li>发起者(Initiator)
+<strong>启动异步操作的应用程序</strong>特定代码。启动器通过高级接口（如basic_stream_socket）与异步操作处理器进行交互，而高级接口又
+<strong>委托给 （如reactive_socket_service）等服务</strong>。</li>
+</ul>
+<h3><span id="ji-yu-reactor-de-shi-xian">基于Reactor的实现</span><a href="#ji-yu-reactor-de-shi-xian" class="header-anchor">#</a></h3>
+<p>在许多平台上，Boost.Asio 在Reactor（如select,
+epoll或kqueue）中实现Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor) 使用<strong>select,
+epoll或kqueue</strong>实现的Reactor。当Reactor指示资源已准备好执行操作时，处理器将执行异步操作，并将关联的completion
+handler程序入列(enqueue)完成事件队列。</li>
+<li>完成事件队列(Completion Event Queue)
+完成处理程序（即函数对象）的链表。<br>
+</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer)
+这是通过等待事件或条件变量实现的，直到完成处理程序在完成事件队列中可用。</li>
+</ul>
+<h3><span id="shi-yong-windows-chong-die-overlapped-i-o-shi-xian">使用 Windows
+重叠（Overlapped）I/O 实现</span><a href="#shi-yong-windows-chong-die-overlapped-i-o-shi-xian" class="header-anchor">#</a></h3>
+<p>在 Windows NT、2000 和 XP 上，Boost.Asio 利用重叠 I/O
+提供Proactor模式的高效实现。此实现方法对应于Proactor设计模式，如下所示：</p>
+<ul>
+<li>异步操作处理器(Asynchronous Operation Processor)
+这是由操作系统实现的。操作通过调用Overlapped函数（如AcceptEx）启动。</li>
+<li>完成事件队列(Completion Event Queue) 这由操作系统实现，并关联到 I/O
+完成端口。每个io_context实例都有一个 I/O 完成端口。</li>
+<li>异步事件多路分配器(Asynchronous Event Demultiplexer) 由 Boost.Asio
+调用，使事件及其关联的完成处理程序出列。</li>
+</ul>
+<h2><span id="que-dian">缺点</span><a href="#que-dian" class="header-anchor">#</a></h2>
+<ul>
+<li>程序复杂性(Program complexity)。 由于操作启动和完成之间的
+<strong>时间和空间的分离</strong>，使用异步机制<strong>开发应用程序更加困难</strong>。由于<strong>控制流的倒置</strong>，应用程序也可能更<strong>难调试</strong>。</li>
+<li>内存使用情况(Memory usage)。
+在读取或写入操作期间必须<strong>提交缓冲区空间</strong>，此操作可能会<strong>无限期地继续</strong>，并且每个并发操作都需要单独的缓冲区。另一方面，在套接字准备好读取或写入之前，Reactor模式不需要缓冲空间。</li>
+</ul>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/26943938">如何深刻理解Reactor和Proactor？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_75_0/doc/html/boost_asio/overview/core/async.html">The
+Proactor Design Pattern: Concurrency Without Threads</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/22/boost-asio-1-basic-introduction-of-boost-asio/" rel="prev" title="[boost.asio] 1.basic introduction of boost asio">
+      <i class="fa fa-chevron-left"></i> [boost.asio] 1.basic introduction of boost asio
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/26/boost-asio-3-Overview/" rel="next" title="[boost.asio] 3.Overview (1)">
+      [boost.asio] 3.Overview (1) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Proactor 与 Boost.Asio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">Proactor设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">基于Reactor的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">使用 Windows
+重叠（Overlapped）I&#x2F;O 实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '2eea1859f3161c000b51e60f6b721f70',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

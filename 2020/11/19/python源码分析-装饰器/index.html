@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="要了解装饰器，首先我们来看看嵌套函数 ## 嵌套函数 1234def adder(n):    def handler(x):        return n+x    return handler    #返回的是一个函数的引用 像 adder 函数和 handler 这样，在一个函数的函数体内定义另一个函数，就构成了 嵌套函数 。adder-handler 这段简单的代码包含了 3 个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 装饰器">
+<meta property="og:url" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="要了解装饰器，首先我们来看看嵌套函数 ## 嵌套函数 1234def adder(n):    def handler(x):        return n+x    return handler    #返回的是一个函数的引用 像 adder 函数和 handler 这样，在一个函数的函数体内定义另一个函数，就构成了 嵌套函数 。adder-handler 这段简单的代码包含了 3 个">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/wrapper_func.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/add10%E5%AE%9E%E4%BE%8B.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/%E9%97%AD%E5%8C%85%E4%B8%8E%E8%BF%90%E8%A1%8C%E5%B8%A7.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/timer%E5%87%BD%E6%95%B0.jpg">
+<meta property="article:published_time" content="2020-11-19T04:58:11.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.937Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/wrapper_func.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 装饰器 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 装饰器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-19 12:58:11" itemprop="dateCreated datePublished" datetime="2020-11-19T12:58:11+08:00">2020-11-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>要了解装饰器，首先我们来看看嵌套函数 ## 嵌套函数
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def adder(n):</span><br><span class="line">    def handler(x):</span><br><span class="line">        return n+x</span><br><span class="line">    return handler    #返回的是一个函数的引用</span><br></pre></td></tr></table></figure>
+像 adder 函数和 handler
+这样，在一个函数的函数体内定义另一个函数，就构成了 嵌套函数
+。adder-handler 这段简单的代码包含了 3 个不同的作用域：</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/wrapper_func.jpg" class title="wrapper_func图">
+</div>
+<p>作用域是一个 <strong>静态概念</strong>，由 Python
+代码语法决定，与编译后产生的 代码对象
+一一对应。作用域规定了能够被某个代码块访问的变量有哪些，但对变量具体的值则一概不关心。</p>
+<p>一旦 Python 程序开始运行，<strong>虚拟机</strong>需要为
+<strong>作用域中的变量</strong> 分配一定的
+<strong>存储空间</strong>，这就是 <strong>名字空间</strong>
+。名字空间依照作用域规则实现，它
+<strong>决定了某个变量在运行时的取值</strong>，可以看做是
+<strong>作用域在运行时的动态表现</strong>方式。</p>
+<p>当 <strong>adder 函数执行</strong>时，作用域 A 在虚拟机中表现为 全局
+名字空间，作用域 B 表现为 局部 名字空间：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">globals: adder</span><br><span class="line">locals: n, handler</span><br></pre></td></tr></table></figure>
+当 <strong>handler 函数执行</strong>时，例如调用 adder(10) 时，作用域 A
+在虚拟机中表现为 <strong>全局 名字空间</strong>，作用域 B 表现为
+<strong>闭包 名字空间</strong>：作用域 C 表现为 <strong>局部
+名字空间</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">globals: adder</span><br><span class="line">locals: x</span><br><span class="line">enclosure: n</span><br></pre></td></tr></table></figure></p>
+<h2><span id="bi-bao">闭包</span><a href="#bi-bao" class="header-anchor">#</a></h2>
+<h3><span id="shi-me-shi-bi-bao-ni">什么是闭包呢？</span><a href="#shi-me-shi-bi-bao-ni" class="header-anchor">#</a></h3>
+<p><strong>闭包 ( closure )</strong> 是 <strong>词法闭包 ( Lexical
+Closure )</strong> 的简称，指
+<strong>延伸了作用域的函数</strong>，其中包含函数定义体中引用、但是不在定义体中定义的非全局变量。简单来说就是
+<strong>嵌套函数引用了外层函数的变量</strong>。这些被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。</p>
+<p>首先我们来看看adder(10)示例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; add10 &#x3D; adder(10)</span><br><span class="line">&gt;&gt;&gt; add10(10)</span><br><span class="line">20</span><br><span class="line">&gt;&gt;&gt; add10(15)</span><br><span class="line">25</span><br></pre></td></tr></table></figure>
+观察上面的例子，当函数 adder 返回，<strong>局部变量 n
+应该就被回收了</strong>，为什么 <strong>handler
+函数还能访问到它呢</strong>？这正是由于
+<strong>闭包空间</strong>的存在。</p>
+<p>以 adder(10) 为例，它是一个 handler 函数对象，闭包变量 n 值总是 10
+。那么，内层函数是如何访问闭包作用域的呢？我们对函数代码对象进行反汇编，从中可以看出端倪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; add10 &#x3D; adder(10)</span><br><span class="line">&gt;&gt;&gt; add10</span><br><span class="line">&lt;function adder.&lt;locals&gt;.handler at 0x10dc2b6a8&gt;</span><br><span class="line">&gt;&gt;&gt; add10.__code__</span><br><span class="line">&lt;code object handler at 0x10dbe5150, file &quot;&lt;stdin&gt;&quot;, line 2&gt;</span><br><span class="line">&gt;&gt;&gt; dis.dis(add10.__code__)</span><br><span class="line">  3           0 LOAD_DEREF               0 (n)      # 执行了闭包变量(藏于 PyFrameObject)查找工作</span><br><span class="line">              2 LOAD_FAST                0 (x)      # 局部变量(栈帧对象中)查找</span><br><span class="line">              4 BINARY_ADD</span><br><span class="line">              6 RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p>PyFrameObject 结构体最后部分是不固定的，依次存放着
+<strong>静态局部名字空间、闭包名字空间以及临时栈</strong>。以 add10(1)
+为例，函数运行时 PyFrameObject 状态如下如下：</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/add10%E5%AE%9E%E4%BE%8B.jpg" class title="add10实例图">
+</div>
+<p>由于函数 <strong>局部变量、闭包变量个数</strong> 在
+<strong>编译阶段</strong> 就能
+<strong>确定</strong>，<strong>运行时并不会增减</strong>，因此
+<strong>无须用 dict 对象来保存</strong>。相反，将这些变量依次排列
+<strong>保存在数组</strong>中，然后通过数组下标来访问即可。这就是所谓的
+<strong>静态名字空间</strong>。</p>
+<p>对于局部变量 n ，数组对应的槽位保存着整数对象 1 的地址，表示 n 与 1
+绑定。而闭包变量 x 则略有差别，槽位 <strong>不直接保存整数对象</strong>
+10 ，而是通过一个 <strong>PyCellObject 间接</strong>与整数对象 10
+绑定。</p>
+<h3><span id="bi-bao-bian-liang-ru-he-chu-shi-hua">闭包变量如何初始化</span><a href="#bi-bao-bian-liang-ru-he-chu-shi-hua" class="header-anchor">#</a></h3>
+<p>函数对象 <strong>PyFunctionObject</strong> 中有一个字段
+<strong>func_closure</strong> ，保存着函数
+<strong>所有闭包变量</strong>。我们可以通过名字
+<strong><strong>closure</strong></strong> 可以 <strong>访问</strong>
+到这个底层结构体字段：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>add10.__closure__ (&lt;cell at 0x10dc09e28: int object at
+0x10da161a0&gt;,)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>这是一个由 *<strong>PyCellObject</strong> 组成的
+<strong>元组</strong>，PyCellObject 则
+<strong>保存着闭包变量的值</strong>。当函数调用发生时，Python 虚拟机创建
+<strong>PyFrameObject 对象</strong>，并从
+<strong>函数对象取出该元组，依次填充相关静态槽位</strong>。</p>
+<div style="width:80%;margin:auto">
+<img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/%E9%97%AD%E5%8C%85%E4%B8%8E%E8%BF%90%E8%A1%8C%E5%B8%A7.jpg" class title="闭包与运行帧图">
+</div>
+<h3><span id="wei-shi-me-bi-bao-bian-liang-yao-tong-guo-pycellobject-jian-jie-yin-yong">为什么闭包变量要通过
+PyCellObject 间接引用?</span><a href="#wei-shi-me-bi-bao-bian-liang-yao-tong-guo-pycellobject-jian-jie-yin-yong" class="header-anchor">#</a></h3>
+<p>最新的 Python(3.7+) 提供了 <strong>nonlocal</strong> 关键字，支持
+<strong>修改闭包变量</strong>。如果没有 PyCellObject ，函数在运行时
+<strong>直接修改 PyFrameObject</strong>
+，<strong>函数返回就被回收了</strong>。借助 PyCellObject
+，<strong>函数在运行时修改的是 ob_ref</strong>
+。这样一来，<strong>就算函数返回，修改还是随函数而存在</strong>。</p>
+<h3><span id="shi-li-li-jie">示例理解</span><a href="#shi-li-li-jie" class="header-anchor">#</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">lst &#x3D; []</span><br><span class="line">for i in arange(5):</span><br><span class="line">  def f ():</span><br><span class="line">    print (i)</span><br><span class="line">  print (f)</span><br><span class="line">  lst.append(f)</span><br><span class="line"></span><br><span class="line">for f in lst:</span><br><span class="line">  f()  </span><br></pre></td></tr></table></figure>
+<p>输出为
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;function f at 0x000001E36692FE58&gt;  &#x2F;&#x2F;函数对象是动态生成的</span><br><span class="line">&lt;function f at 0x000001E366949048&gt;</span><br><span class="line">&lt;function f at 0x000001E36694E798&gt;</span><br><span class="line">&lt;function f at 0x000001E36694E4C8&gt;</span><br><span class="line">&lt;function f at 0x000001E36694E708&gt;</span><br><span class="line">4</span><br><span class="line">4</span><br><span class="line">4</span><br><span class="line">4</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+这是因为 <strong>闭包变量</strong>是通过 <strong>PyCellObject
+间接引用</strong>，PyCellObject中的
+ob_ref指针指向了i这个对象，而i最后变成了4。</p>
+<p>若要正常输出0，1，2，3，4，应该怎么修改呢？
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lst &#x3D; []</span><br><span class="line">for i in arange(5):</span><br><span class="line">  def f (i &#x3D; i):</span><br><span class="line">    print (i)</span><br><span class="line">  lst.append(f)</span><br><span class="line"></span><br><span class="line">for f in lst:</span><br><span class="line">  f()  </span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+<p>这里的i是局部变量</p>
+<h2><span id="zhuang-shi-qi">装饰器</span><a href="#zhuang-shi-qi" class="header-anchor">#</a></h2>
+<p>前面我们了解了 <strong>嵌套函数和闭包</strong>，我们可以
+<strong>让函数具备搭积木的魔法</strong>，例如：打印函数的执行时间。</p>
+<p>事不宜迟，我们来实践一下，实现 timer 函数：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def timer(func):</span><br><span class="line">    def wrapper(*args, **kwargs):</span><br><span class="line">        start &#x3D; time.time()</span><br><span class="line">        func(*args, **kwargs) #此处拿到了被装饰的函数func</span><br><span class="line">        time.sleep(2)#模拟耗时操作</span><br><span class="line">        long &#x3D; time.time() - start</span><br><span class="line">        print(f&#39;共耗时&#123;long&#125;秒。&#39;)</span><br><span class="line">    return wrapper          #返回内层函数的引用</span><br><span class="line"></span><br><span class="line">@timer</span><br><span class="line">def add(a, b):</span><br><span class="line">    print(a+b)</span><br><span class="line"></span><br><span class="line">add(1, 2) #正常调用add</span><br></pre></td></tr></table></figure>
+timer被我们改造成了
+<strong>装饰器</strong>，它接受被装饰函数为入参，返回内部
+<strong>嵌套函数的引用</strong>（注意：<strong>此处并未执行函数</strong>），内部嵌套函数
+<strong>wrapper持有被装饰函数的引用即func</strong>。</p>
+<p>“@”是Python的语法糖，它的作用类似于：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add &#x3D; timer(add) #此处返回的是timer.&lt;locals&gt;.wrapper函数引用</span><br><span class="line">add(1, 2)</span><br></pre></td></tr></table></figure></p>
+<div style="width:80%;margin:auto">
+<img src="/2020/11/19/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A3%85%E9%A5%B0%E5%99%A8/timer%E5%87%BD%E6%95%B0.jpg" class title="timer函数图">
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/18/svn-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/" rel="prev" title="[svn]常用命令行">
+      <i class="fa fa-chevron-left"></i> [svn]常用命令行
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/24/linux-2-curl%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/" rel="next" title="[linux] 2.curl命令行工具">
+      [linux] 2.curl命令行工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">什么是闭包呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.2.</span> <span class="nav-text">闭包变量如何初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.3.</span> <span class="nav-text">为什么闭包变量要通过
+PyCellObject 间接引用?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.4.</span> <span class="nav-text">示例理解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">装饰器</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '759db6a2dc2f1bcdf4a54e56e3eda4de',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

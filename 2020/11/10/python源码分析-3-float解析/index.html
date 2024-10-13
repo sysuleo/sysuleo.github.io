@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="内部结构# float 实例对象在 Include&#x2F;floatobject.h 中定义如下： 1234typedef struct &amp;#123;    PyObject_HEAD   &#x2F;&#x2F;定长对象共用的头部    double ob_fval;  &#x2F;&#x2F;额外字段,存储对象所承载的浮点值&amp;#125; PyFloatObject; 下面是浮点实例对象内部结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 3.float解析">
+<meta property="og:url" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="内部结构# float 实例对象在 Include&#x2F;floatobject.h 中定义如下： 1234typedef struct &amp;#123;    PyObject_HEAD   &#x2F;&#x2F;定长对象共用的头部    double ob_fval;  &#x2F;&#x2F;额外字段,存储对象所承载的浮点值&amp;#125; PyFloatObject; 下面是浮点实例对象内部结构">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_create.jpg">
+<meta property="article:published_time" content="2020-11-10T14:26:12.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.913Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat1.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 3.float解析 | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 3.float解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-10 22:26:12" itemprop="dateCreated datePublished" datetime="2020-11-10T22:26:12+08:00">2020-11-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1><span id="nei-bu-jie-gou">内部结构</span><a href="#nei-bu-jie-gou" class="header-anchor">#</a></h1>
+<p>float 实例对象在 Include/floatobject.h 中定义如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    PyObject_HEAD   &#x2F;&#x2F;定长对象共用的头部</span><br><span class="line">    double ob_fval;  &#x2F;&#x2F;额外字段,存储对象所承载的浮点值</span><br><span class="line">&#125; PyFloatObject;</span><br></pre></td></tr></table></figure></p>
+下面是浮点<strong>实例对象</strong>内部结构图：
+<div style="width:95%;margin:auto">
+<img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat1.png" class title="PyFloatObject图">
+</div>
+<h2><span id="float-lei-xing-dui-xiang">float 类型对象</span><a href="#float-lei-xing-dui-xiang" class="header-anchor">#</a></h2>
+<p>与实例对象不同， <strong>float 类型对象 全局唯一</strong>
+，因此可以作为 <strong>全局变量</strong> 定义。 在 C 文件
+<strong>Objects/floatobject.c</strong> 中，我们找到了代表 float
+类型对象的<strong>全局变量 PyFloat_Type</strong> ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyFloat_Type &#x3D; &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)</span><br><span class="line">    &quot;float&quot;,                                  &#x2F;*tp_name 字段保存类型名称，常量 float*&#x2F;</span><br><span class="line">    sizeof(PyFloatObject),</span><br><span class="line">    0,</span><br><span class="line">    (destructor)float_dealloc,                  &#x2F;* tp_dealloc 对象销毁相关*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_print *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_getattr *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_setattr *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_reserved *&#x2F;</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_repr 生成语法字符串表示形式的函数*&#x2F;</span><br><span class="line">    &amp;float_as_number,                           &#x2F;* tp_as_number 数值操作集*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_sequence *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_mapping *&#x2F;</span><br><span class="line">    (hashfunc)float_hash,                       &#x2F;* tp_hash 哈希值生成函数*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_call *&#x2F;</span><br><span class="line">    (reprfunc)float_repr,                       &#x2F;* tp_str 生成普通字符串表示形式的函数*&#x2F;</span><br><span class="line">    PyObject_GenericGetAttr,                    &#x2F;* tp_getattro *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_setattro *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_as_buffer *&#x2F;</span><br><span class="line">    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   &#x2F;* tp_flags *&#x2F;</span><br><span class="line">    float_new__doc__,                           &#x2F;* tp_doc *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_traverse *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_clear *&#x2F;</span><br><span class="line">    float_richcompare,                          &#x2F;* tp_richcompare *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_weaklistoffset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_iter *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_iternext *&#x2F;</span><br><span class="line">    float_methods,                              &#x2F;* tp_methods *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_members *&#x2F;</span><br><span class="line">    float_getset,                               &#x2F;* tp_getset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_base *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_dict *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_descr_get *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_descr_set *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_dictoffset *&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_init 对象创建相关(tp_init 函数指针在这为空，因为float对象简单，只需要tp_new赋值就行)*&#x2F;</span><br><span class="line">    0,                                          &#x2F;* tp_alloc 对象创建相关*&#x2F;</span><br><span class="line">    float_new,                                  &#x2F;* tp_new 对象创建相关*&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>PyFloat_Type 中保存了很多关于浮点对象的 <strong>元信息</strong></p>
+<p>PyFloat_Type 很重要，作为浮点 <strong>类型对象</strong>
+，它决定了<strong>浮点 实例对象 的 生死和行为</strong> 。</p>
+<h1><span id="dui-xiang-de-chuang-jian">对象的创建</span><a href="#dui-xiang-de-chuang-jian" class="header-anchor">#</a></h1>
+<p>调用<strong>类型对象 float 创建实例对象</strong>: Python 执行的是
+type 类型对象中的 <strong>tp_call</strong> 函数。 tp_call 函数进而调用
+<strong>float 类型对象的 tp_new 函数创建实例对象</strong>， 再调用
+<strong>tp_init 函数对其进行初始化</strong>：</p>
+<div style="width:95%;margin:auto">
+<img src="/2020/11/10/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-3-float%E8%A7%A3%E6%9E%90/%5Bpython%5Dfloat_create.jpg" class title="Float对象创建图">
+</div>
+<p>除了通用的流程， Python 为内置对象实现了对象创建 API
+，简化调用，提高效率：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyFloat_FromDouble(double fval);  &#x2F;*通过浮点值创建浮点对象*&#x2F;</span><br><span class="line"></span><br><span class="line">PyObject *</span><br><span class="line">PyFloat_FromString(PyObject *v);  &#x2F;*通过字符串对象创建浮点对象*&#x2F;</span><br></pre></td></tr></table></figure></p>
+<p>以 <strong>PyFloat_FromDouble</strong> 为例，特化的对象创建流程如下：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyFloat_FromDouble(double fval)</span><br><span class="line">&#123;</span><br><span class="line">    PyFloatObject *op &#x3D; free_list;</span><br><span class="line">    &#x2F;*为对象 分配内存空间，优先使用空闲对象缓存池 *&#x2F;</span><br><span class="line">    if (op !&#x3D; NULL) &#123;                 </span><br><span class="line">        free_list &#x3D; (PyFloatObject *) Py_TYPE(op);</span><br><span class="line">        numfree--;</span><br><span class="line">    &#125; </span><br><span class="line">    &#x2F;*空闲对象缓存池为空，调用PyObject_MALLOC申请内存 *&#x2F;</span><br><span class="line">    else &#123;</span><br><span class="line">        op &#x3D; (PyFloatObject*) PyObject_MALLOC(sizeof(PyFloatObject));</span><br><span class="line">        if (!op)</span><br><span class="line">            return PyErr_NoMemory();</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;* Inline PyObject_New *&#x2F;</span><br><span class="line">    (void)PyObject_INIT(op, &amp;PyFloat_Type);</span><br><span class="line"></span><br><span class="line">    &#x2F;*将 ob_fval 字段初始化为指定 浮点值 *&#x2F;</span><br><span class="line">    op-&gt;ob_fval &#x3D; fval;    </span><br><span class="line">    return (PyObject *) op;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面用到的宏 PyObject_INIT 在头文件 Include/objimpl.h 中定义为：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define PyObject_INIT(op, typeobj) \</span><br><span class="line">    ( Py_TYPE(op) &#x3D; (typeobj), _Py_NewReference((PyObject *)(op)), (op) )  &#x2F;&#x2F;前半部分调用  Py_TYPE(op) 初始化 对象类型 字段 ob_type，后面语句初始化 引用计数 字段 ob_refcnt</span><br></pre></td></tr></table></figure></p>
+<p>上面提到的宏定义 <strong>Py_TYPE</strong>，位于 Include/object.h
+头文件：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define Py_TYPE(ob) (((PyObject*)(ob))&amp;ob_type)</span><br></pre></td></tr></table></figure>
+它的作用是：将 <strong>给定对象的类型对象取出,
+返回对象的ob_type字段</strong>。</p>
+<p>宏 _Py_NewReference，在 Include/Object.h 中定义：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#define _Py_NewReference(op) (                          \</span><br><span class="line">    _Py_INC_TPALLOCS(op) _Py_COUNT_ALLOCS_COMMA         \</span><br><span class="line">    _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA               \</span><br><span class="line">    Py_REFCNT(op) &#x3D; 1)   &#x2F;*将对象引用计数初始化为 1*&#x2F;</span><br></pre></td></tr></table></figure></p>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%">
+</colgroup>
+<tbody>
+<tr>
+<td># 对象的销毁 当对象不再需要时， Python 通过 <strong>Py_DECREF 或者
+Py_XDECREF 宏减少引用计数</strong>； 当引用计数降为 0 时， Python 通过
+**_Py_Dealloc** 宏回收对象：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define _Py_Dealloc(op) (                               \</span><br><span class="line">    _Py_INC_TPFREES(op) _Py_COUNT_ALLOCS_COMMA          \</span><br><span class="line">    (*Py_TYPE(op)-&gt;tp_dealloc)((PyObject *)(op)))   &#x2F;*调用类型对象 **PyFloat_Type 中的 tp_dealloc 函数指针*&#x2F;</span><br></pre></td></tr></table></figure>
+因此，实际调用的函数是 float_dealloc (代码在下一小节 空闲对象缓存池
+中解析)：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static void</span><br><span class="line">float_dealloc(PyFloatObject *op)</span><br><span class="line">&#123;</span><br><span class="line">    if (PyFloat_CheckExact(op)) &#123;</span><br><span class="line">      &#x2F;*空闲对象缓存池满了，直接销毁*&#x2F;</span><br><span class="line">        if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;</span><br><span class="line">            PyObject_FREE(op);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        numfree++;</span><br><span class="line">        Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;</span><br><span class="line">        free_list &#x3D; op;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">        Py_TYPE(op)-&gt;tp_free((PyObject *)op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+总结起来，对象从创建到销毁整个生命周期所涉及的
+<strong>关键函数、宏及调用关系</strong> 如下：</td>
+</tr>
+</tbody>
+</table>
+<h1><span id="kong-xian-dui-xiang-huan-cun-chi">空闲对象缓存池</span><a href="#kong-xian-dui-xiang-huan-cun-chi" class="header-anchor">#</a></h1>
+<p>浮点运算背后涉及 大量临时对象创建以及销毁 ，以下面计算为例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; area &#x3D; pi * r ** 2</span><br></pre></td></tr></table></figure>
+这个语句首先计算半径 r **
+2，中间结果由一个<strong>临时对象</strong>来保存，假设是 t ；
+然后计算圆周率 <strong>pi 与 t 的乘积</strong>，得到最终结果并赋值给变量
+area ； 最后，销毁<strong>临时对象 t</strong> 。
+这么简单的语句，背后居然都隐藏着一个
+<strong>临时对象的创建以及销毁</strong>操作！</p>
+<p>创建对象时需要分配内存，销毁对象时又需要回收内存。
+大量临时对象创建销毁 ，意味着 大量内存分配回收操作
+，这显然是是不可接受的。</p>
+<p>因此 <strong>Python
+在浮点对象销毁后，并不急于回收内存</strong>，而是<strong>将对象放入一个
+空闲链表</strong> 。
+后续需要创建浮点对象时，先到空闲链表中取，省去分配内存的开销。</p>
+浮点对象的空闲链表同样在 Objects/floatobject.c 中定义：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifndef PyFloat_MAXFREELIST</span><br><span class="line">#define PyFloat_MAXFREELIST    100           &#x2F;*该宏  限制空闲链表的 最大长度 ，避免占用过多内存*&#x2F;</span><br><span class="line">#endif</span><br><span class="line">static int numfree &#x3D; 0;                     &#x2F;*维护空闲链表 当前长度*&#x2F;</span><br><span class="line">static PyFloatObject *free_list &#x3D; NULL;    &#x2F;*指向空闲链表 头节点 的指针*&#x2F;</span><br></pre></td></tr></table></figure>
+为了保持简洁， Python 把 <strong>ob_type 字段当作 next
+指针来用</strong>，将 <strong>空闲对象串成链表</strong>：
+<div style="width:95%;margin:auto">
+
+</div>
+<p>因此创建浮点对象时，可以从 <strong>链表中取出空闲对象</strong>，省去
+<strong>申请内存的开销</strong>！ 以 PyFloat_FromDouble 为例：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PyFloatObject *op &#x3D; free_list;                  &#x2F;*op指向第一个 空闲对象*&#x2F;</span><br><span class="line">if (op !&#x3D; NULL) &#123;</span><br><span class="line">    free_list &#x3D; (PyFloatObject *) Py_TYPE(op);  &#x2F;*free_list指向第一个 空闲对象(op)的ob_type所指向的 下一个空闲对象(相当于链表的头部删除)*&#x2F;</span><br><span class="line">    numfree--;                                  &#x2F;*更新空闲链表维护的数量*&#x2F;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    op &#x3D; (PyFloatObject*) PyObject_MALLOC(sizeof(PyFloatObject));    &#x2F;*free_list为空时，重新分配内存*&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对象销毁时， Python 将其缓存在空闲链表中，以备后用。考察
+float_dealloc 函数：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (numfree &gt;&#x3D; PyFloat_MAXFREELIST)  &#123;   &#x2F;*销毁时，判断free_list是否达到最大容量*&#x2F;</span><br><span class="line">    PyObject_FREE(op);                   &#x2F;*回收对象内*&#x2F;</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br><span class="line">numfree++;                                      </span><br><span class="line">Py_TYPE(op) &#x3D; (struct _typeobject *)free_list;  &#x2F;*op的ob_type指向当前 第一个空闲对象*&#x2F;</span><br><span class="line">free_list &#x3D; op;                                 &#x2F;* free_list指向op(相当于链表的头部插入)*&#x2F;</span><br></pre></td></tr></table></figure>
+空闲对象缓存池在 <strong>提高对象分配效率</strong>
+方面发挥着至关重要的作用。</p>
+<h1><span id="dui-xiang-de-xing-wei">对象的行为</span><a href="#dui-xiang-de-xing-wei" class="header-anchor">#</a></h1>
+<p>PyFloat_Type 中定义了很多函数指针，包括 tp_repr 、 tp_str 、 tp_hash
+等。 这些函数指针将一起决定 float 对象的行为，例如 tp_hash
+函数决定浮点哈希值的计算：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; pi &#x3D; 3.14</span><br><span class="line">&gt;&gt;&gt; hash(pi)</span><br><span class="line">322818021289917443</span><br></pre></td></tr></table></figure>
+tp_hash 函数指针指向 <strong>float_hash 函数</strong>，实现了
+<strong>针对浮点对象的哈希值算法</strong>：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static Py_hash_t</span><br><span class="line">float_hash(PyFloatObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    return _Py_HashDouble(v-&gt;ob_fval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+## 数值操作集 由于加减乘除等数值操作很常见， Python 将其抽象成数值操作集
+<strong>PyNumberMethods</strong> 。 数值操作集 PyNumberMethods 在头文件
+<strong>Include/object.h</strong> 中定义：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    &#x2F;* Number implementations must check *both*</span><br><span class="line">    arguments for proper type and implement the necessary conversions</span><br><span class="line">    in the slot functions themselves. *&#x2F;</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_add;</span><br><span class="line">    binaryfunc nb_subtract;</span><br><span class="line">    binaryfunc nb_multiply;</span><br><span class="line">    binaryfunc nb_remainder;</span><br><span class="line">    binaryfunc nb_divmod;</span><br><span class="line">    ternaryfunc nb_power;</span><br><span class="line">    unaryfunc nb_negative;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    binaryfunc nb_inplace_add;</span><br><span class="line">    binaryfunc nb_inplace_subtract;</span><br><span class="line">    binaryfunc nb_inplace_multiply;</span><br><span class="line">    binaryfunc nb_inplace_remainder;</span><br><span class="line">    ternaryfunc nb_inplace_power;</span><br><span class="line">    &#x2F;&#x2F;...</span><br><span class="line">&#125; PyNumberMethods;</span><br></pre></td></tr></table></figure>
+PyNumberMethods
+定义了各种数学算子的处理函数，数值计算最终由这些函数执行。
+处理函数根据参数个数可以分为： <strong>一元函数 ( unaryfunc )、 二元函数
+( binaryfunc )</strong>等。</p>
+<ul>
+<li>一元函数 ( unaryfunc ): 需要传入一个参数的函数。</li>
+<li>二元函数 ( binaryfunc): 需要传入两个参数的函数。</li>
+</ul>
+<p>回到 Objects/floatobject.c 观察浮点对象数值操作集 float_as_number
+是如何初始化的：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static PyNumberMethods float_as_number &#x3D; &#123;</span><br><span class="line">    float_add,          &#x2F;* nb_add *&#x2F;</span><br><span class="line">    float_sub,          &#x2F;* nb_subtract *&#x2F;</span><br><span class="line">    float_mul,          &#x2F;* nb_multiply *&#x2F;</span><br><span class="line">    float_rem,          &#x2F;* nb_remainder *&#x2F;</span><br><span class="line">    float_divmod,       &#x2F;* nb_divmod *&#x2F;</span><br><span class="line">    float_pow,          &#x2F;* nb_power *&#x2F;</span><br><span class="line">    (unaryfunc)float_neg, &#x2F;* nb_negative *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line"></span><br><span class="line">    0,                  &#x2F;* nb_inplace_add *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_subtract *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_multiply *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_remainder *&#x2F;</span><br><span class="line">    0,                  &#x2F;* nb_inplace_power *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+以加法为例，以下语句在 Python 内部最终由 float_add 函数执行：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a &#x3D; 1.5</span><br><span class="line">&gt;&gt;&gt; b &#x3D; 1.1</span><br><span class="line">&gt;&gt;&gt; a + b</span><br><span class="line">2.6</span><br></pre></td></tr></table></figure>
+float_add 是一个 二元函数 ，位于 Objects/floatobject.h 中：
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static PyObject *</span><br><span class="line">float_add(PyObject *v, PyObject *w)</span><br><span class="line">&#123;</span><br><span class="line">    double a,b;</span><br><span class="line">    &#x2F;&#x2F;将两个参数对象转化成浮点值，CONVERT_TO_DOUBLE是一个宏，将PyFloatObject里面的ob_fval抽出来给double变量</span><br><span class="line">    CONVERT_TO_DOUBLE(v, a);</span><br><span class="line">    CONVERT_TO_DOUBLE(w, b);</span><br><span class="line">    PyFPE_START_PROTECT(&quot;add&quot;, return 0)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;对两个浮点值求和</span><br><span class="line">    a &#x3D; a + b;</span><br><span class="line">    PyFPE_END_PROTECT(a)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;创建一个新浮点对象保存计算结果并返回</span><br><span class="line">    return PyFloat_FromDouble(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+浮点数计算一般都遵循
+<strong>IEEE-754</strong>标准，如果计算时出现了错误，那么需要
+<strong>将IEEE-754异常转换成Python中的异常</strong>，而
+<strong>PyFPE_START_PROTECT和PyFPE_END_PROTECT</strong>这两个宏就是用来干这件事情的。
+它们的定义在Include/pyfpe.h中，并且Python3.9的时候会被删除掉。</p>
+<p>所以如果是 <strong>C中的两个浮点数相加，直接a +
+b就可以了，编译之后就是一条简单的机器指令</strong>，然而
+<strong>Python则需要额外做很多其它工作</strong>。从一个简单的加法上面就可以看出来Python为什么会比C慢几十倍了。</p>
+<h1><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1902" title="小试牛刀，解剖浮点对象 float">小试牛刀，解剖浮点对象
+float</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/u/4355012/blog/4464067" title="浮点数的底层实现">浮点数的底层实现</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/27/cocos-%E5%B8%B8%E7%94%A8API/" rel="prev" title="[Cocos]常用API">
+      <i class="fa fa-chevron-left"></i> [Cocos]常用API
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/12/linux-1-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" rel="next" title="[linux] 1.常用指令">
+      [linux] 1.常用指令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">float 类型对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">对象的创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">空闲对象缓存池</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">对象的行为</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : 'bdeee9fc882697eab94b4375a5df3df7',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

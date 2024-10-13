@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="code-uUIis3aZOy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="内部结构#    list 对象是一种 变长对象 ，因此包含变长对象公共头部。 除了公共头部， list 内部维护了一个动态数组，而 数组则依次保存元素对象的指针：  **ob_item ，指向动态数组的指针，动态数组保存元素对象的指针； allocated ，动态数组 长度，即列表 容量； ob_size ，动态数组 当前保存元素个数，即列表 长度 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[python源码分析] 7.可变容器list">
+<meta property="og:url" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/index.html">
+<meta property="og:site_name" content="LiuWen&#39;s Blogs">
+<meta property="og:description" content="内部结构#    list 对象是一种 变长对象 ，因此包含变长对象公共头部。 除了公共头部， list 内部维护了一个动态数组，而 数组则依次保存元素对象的指针：  **ob_item ，指向动态数组的指针，动态数组保存元素对象的指针； allocated ，动态数组 长度，即列表 容量； ob_size ，动态数组 当前保存元素个数，即列表 长度 。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/memory_layout.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pylistObject.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/list_empty.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_a.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_d.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_e.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png">
+<meta property="article:published_time" content="2020-12-14T05:05:51.000Z">
+<meta property="article:modified_time" content="2024-10-13T03:36:19.928Z">
+<meta property="article:author" content="Liu Wen">
+<meta property="article:tag" content="python源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/memory_layout.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>[python源码分析] 7.可变容器list | LiuWen's Blogs</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiuWen's Blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Wen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuWen's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [python源码分析] 7.可变容器list
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-12-14 13:05:51" itemprop="dateCreated datePublished" datetime="2020-12-14T13:05:51+08:00">2020-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-13 11:36:19" itemprop="dateModified" datetime="2024-10-13T11:36:19+08:00">2024-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">python源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1><span id="nei-bu-jie-gou">内部结构</span><a href="#nei-bu-jie-gou" class="header-anchor">#</a></h1>
+<div style="width:95%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/memory_layout.png" class title="list_memory_layout图">
+</div>
+<p>list 对象是一种 <strong>变长对象</strong>
+，因此包含变长对象公共头部。 除了公共头部， list
+内部维护了一个动态数组，而
+<strong>数组则依次保存元素对象的指针</strong>：</p>
+<ul>
+<li>**ob_item ，指向动态数组的指针，动态数组保存元素对象的指针；</li>
+<li>allocated ，动态数组 <strong>长度</strong>，即列表
+<strong>容量</strong>；</li>
+<li>ob_size ，动态数组 <strong>当前保存元素个数</strong>，即列表
+<strong>长度</strong> 。</li>
+</ul>
+<div style="width:95%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pylistObject.jpg" class title="pylistObject图">
+</div>
+<h1><span id="dui-xiang-cao-zuo">对象操作</span><a href="#dui-xiang-cao-zuo" class="header-anchor">#</a></h1>
+<h2><span id="append">append</span><a href="#append" class="header-anchor">#</a></h2>
+<p>python中的list的实现非常像 <strong>C++ 中的Vector</strong>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l &#x3D; list（） # 初始化一个空列表</span><br></pre></td></tr></table></figure>
+字段 ob_size存储实际大小，其类型为Py_ssize_t，通常为64位，1 &lt;&lt;
+64可以表示的数非常大，通常在ob_size字段 <strong>溢出之前会耗尽
+RAM</strong></p>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/list_empty.png" class title="list_empty图">
+</div>
+<p>如果我们append('a') 1个元素：</p>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_a.png" class title="append_a图">
+</div>
+<p><strong>ob_size</strong> 变为 1, <strong>ob_item</strong> 指向一个
+<strong>大小为4的新内存块</strong></p>
+<p>相继append三个元素：</p>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_d.png" class title="append_d图">
+</div>
+<p><strong>ob_size</strong> 变为 4, <strong>内存块满了</strong></p>
+<p>大多数情况下， append 方法性能都足够好，<strong>时间复杂度是
+O(1)</strong>。</p>
+<h2><span id="dong-tai-kuo-rong">动态扩容</span><a href="#dong-tai-kuo-rong" class="header-anchor">#</a></h2>
+继续append一个元素：
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/append_e.png" class title="append_e图">
+</div>
+<p>这是resize相关代码
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* The growth pattern is:  0, 4, 8, 16, 25, 35, 46, 58, 72, 88, ... *&#x2F;</span><br><span class="line">&#x2F;* currently: new_allocated &#x3D; 5 + (5 &gt;&gt; 3) + 3 &#x3D; 8 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);  # 扩容时，预留一定的余量，(newsize &gt;&gt; 3)表明余量一般是 1&#x2F;8 左右</span><br></pre></td></tr></table></figure></p>
+<p>如果 list 对象内部数组已用满，再添加元素时则需要进行扩容。 append
+等方法在操作时都会对内部数组进行检查，如需扩容则调用 list_resize
+函数。在 list_resize 函数， <strong>Python
+重新分配一个长度更大的数组并替换旧数组</strong>。</p>
+<p>由于内部数组扩容时，需要将列表元素
+<strong>从旧数组拷贝到新数组</strong>，时间复杂度为
+<strong>O(n)</strong> ，开销较大。为此， Python
+在为内部数组扩容时，会预留一定余量，一般是 <strong>1/8 左右</strong>
+。</p>
+<h2><span id="pop">pop</span><a href="#pop" class="header-anchor">#</a></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;e&#39;</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_e.png" class title="pop_e图">
+</div>
+<p>我们可以看到这里只是简单将 元素e 弹出，内存布局并未发生变化。</p>
+<h2><span id="dong-tai-jian-rong">动态减容</span><a href="#dong-tai-jian-rong" class="header-anchor">#</a></h2>
+实际上，每次pop，都会调用 <strong>resize</strong> 函数。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* cpython&#x2F;Objects&#x2F;listobject.c *&#x2F;</span><br><span class="line">&#x2F;* allocated: 8, newsize: 3, 8 &gt;&#x3D; 3 &amp;&amp; (3 &gt;&#x3D; 4?), no *&#x2F;</span><br><span class="line">if (allocated &gt;&#x3D; newsize &amp;&amp; newsize &gt;&#x3D; (allocated &gt;&gt; 1)) &#123;</span><br><span class="line">    &#x2F;* Do not realloc if the newsize deos not fall</span><br><span class="line">       lower than half the allocated size</span><br><span class="line">        不分配内存，仅改变ob_size的值    *&#x2F;</span><br><span class="line">    assert(self-&gt;ob_item !&#x3D; NULL || newsize &#x3D;&#x3D; 0);</span><br><span class="line">    &#x2F;* only change the ob_size field *&#x2F;</span><br><span class="line">    Py_SIZE(self) &#x3D; newsize;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;* newsize小于allocated的一半时，会重新分配内存 *&#x2F;</span><br><span class="line">&#x2F;* 3 + (3 &gt;&gt; 3) + 3 &#x3D; 6 *&#x2F;</span><br><span class="line">new_allocated &#x3D; (size_t)newsize + (newsize &gt;&gt; 3) + (newsize &lt; 9 ? 3 : 6);</span><br></pre></td></tr></table></figure>
+如果理解了pop 每次都会调用 resize 函数，下面情形就很容易理解了
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; l.pop()</span><br><span class="line">&#39;d&#39;</span><br></pre></td></tr></table></figure>
+<div style="width:100%;margin:auto">
+<img src="/2020/12/14/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-7-%E5%8F%AF%E5%8F%98%E5%AE%B9%E5%99%A8list/pop_d.png" class title="pop_d图">
+</div>
+<h2><span id="reference">reference</span><a href="#reference" class="header-anchor">#</a></h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://github.com/zpoint/CPython-Internals/blob/master/BasicObject/list/list.md" title="list">list</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/read/76/article/1907" title="Python 源码深度剖析/11 list 对象，容量自适应的数组式容器">Python
+源码深度剖析/11 list 对象，容量自适应的数组式容器</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># python源码分析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/06/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-6-%E5%AD%97%E7%AC%A6%E4%B8%B2str/" rel="prev" title="[python源码分析] 6.python3中的字符串str/Unicode">
+      <i class="fa fa-chevron-left"></i> [python源码分析] 6.python3中的字符串str/Unicode
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/16/python%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-import%E6%A8%A1%E5%9D%97/" rel="next" title="[python源码分析] import模块">
+      [python源码分析] import模块 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">对象操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.1.</span> <span class="nav-text">append</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">动态扩容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.3.</span> <span class="nav-text">pop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text">动态减容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.5.</span> <span class="nav-text">reference</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Wen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sysuleo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sysuleo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/leo666-40" title="zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;leo666-40" rel="noopener" target="_blank"><i class="fa fa-user fa-fw"></i>zhihu</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liu Wen</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e06a4b8906757c42331f',
+      clientSecret: '5b0fe4dc7f1d7b47ea86f07155d29e5824e5dc9a',
+      repo        : 'mygitalk',
+      owner       : 'sysuleo',
+      admin       : ['sysuleo'],
+      id          : '611490e860a8420c5a1012c220d3b727',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
